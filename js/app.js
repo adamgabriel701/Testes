@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initLightbox();
     initSearch();
     initAccessibility();
+    initDarkMode();
+    initReadingProgress();
+    initShareFab();
+    initFavorites();
     registerSW();
 });
 
@@ -45,47 +49,62 @@ async function injectComponents() {
             </div>
         </div>
     </div>`;
-
     const mobileHTML = `<div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div>`;
-
     const header = document.getElementById('navbar');
     if (header && !header.innerHTML.trim()) header.innerHTML = headerHTML;
-
     const mobile = document.getElementById('mobileMenu');
     if (mobile && !mobile.innerHTML.trim()) mobile.innerHTML = mobileHTML;
 }
 
-// ===== PWA SERVICE WORKER =====
+// ===== PWA =====
 function registerSW() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
 // ===== PRELOADER =====
 function initPreloader() {
     const p = document.getElementById('preloader');
     if (!p) return;
-    window.addEventListener('load', () => {
-        setTimeout(() => p.classList.add('hidden'), 2200);
-    });
+    window.addEventListener('load', () => setTimeout(() => p.classList.add('hidden'), 2200));
 }
 
 // ===== NAVBAR =====
 function initNavbar() {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
-    window.addEventListener('scroll', () => {
-        navbar.classList.toggle('navbar-scrolled', window.scrollY > 80);
-    });
+    window.addEventListener('scroll', () => navbar.classList.toggle('navbar-scrolled', window.scrollY > 80));
 }
 
-// ===== BACK TO TOP =====
+// ===== BACK TO TOP WITH PROGRESS RING =====
 function initBackToTop() {
     const btn = document.getElementById('backToTop');
     if (!btn) return;
+    // Add progress ring SVG
+    btn.innerHTML = `
+        <svg class="progress-ring" width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="25"></circle>
+        </svg>
+        <iconify-icon icon="lucide:arrow-up" class="text-lg relative z-10"></iconify-icon>`;
+    const circle = btn.querySelector('circle');
+    const circumference = 2 * Math.PI * 25; // ~157
+
     window.addEventListener('scroll', () => {
-        btn.classList.toggle('visible', window.scrollY > 600);
+        const scrollY = window.scrollY;
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = Math.min(scrollY / docH, 1);
+        btn.classList.toggle('visible', scrollY > 600);
+        if (circle) circle.style.strokeDashoffset = circumference - (progress * circumference);
+    });
+}
+
+// ===== READING PROGRESS BAR =====
+function initReadingProgress() {
+    const bar = document.createElement('div');
+    bar.className = 'reading-progress';
+    document.body.appendChild(bar);
+    window.addEventListener('scroll', () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = h > 0 ? Math.min((window.scrollY / h) * 100, 100) + '%' : '0%';
     });
 }
 
@@ -102,11 +121,10 @@ function toggleMobileMenu() {
 
 // ===== SCROLL REVEAL =====
 function initScrollReveal() {
-    const els = document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale');
     const obs = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    els.forEach(el => obs.observe(el));
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el => obs.observe(el));
 }
 
 // ===== COUNTERS =====
@@ -134,8 +152,7 @@ function initCounters() {
 }
 
 // ===== TESTIMONIALS =====
-let currentTest = 0;
-let testInterval;
+let currentTest = 0, testInterval;
 function initTestimonials() {
     const track = document.getElementById('testimonialTrack');
     if (!track) return;
@@ -180,17 +197,15 @@ function initSmoothScroll() {
         const a = e.target.closest('a[href^="#"]');
         if (!a) return;
         const target = document.querySelector(a.getAttribute('href'));
-        if (target) {
-            e.preventDefault();
-            window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
-        }
+        if (target) { e.preventDefault(); window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' }); }
     });
 }
 
 // ===== TOAST =====
-function showToast(message, icon = 'lucide:check-circle') {
+function showToast(message, icon = 'lucide:check-circle', type = 'success') {
     const t = document.getElementById('toast');
     if (!t) return;
+    t.className = `toast ${type}`;
     t.innerHTML = `<iconify-icon icon="${icon}" class="text-sol text-lg"></iconify-icon> ${message}`;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3500);
@@ -200,27 +215,16 @@ function showToast(message, icon = 'lucide:check-circle') {
 function handleNewsletter(e) {
     e.preventDefault();
     const input = document.getElementById('newsletterEmail');
-    if (input && input.value) {
-        showToast('Inscrição realizada com sucesso!');
-        input.value = '';
-    }
+    if (input && input.value) { showToast('Inscrição realizada com sucesso!'); input.value = ''; }
 }
 
-// ===== FILTER CARDS (turismo) =====
+// ===== FILTER =====
 function filterCards(category) {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === category);
-    });
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === category));
     document.querySelectorAll('.tour-card').forEach(card => {
         const match = category === 'all' || card.dataset.category === category;
-        if (match) {
-            card.style.display = '';
-            requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; });
-        } else {
-            card.style.opacity = '0';
-            card.style.transform = 'scale(0.95)';
-            setTimeout(() => { card.style.display = 'none'; }, 400);
-        }
+        if (match) { card.style.display = ''; requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }); }
+        else { card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; setTimeout(() => { card.style.display = 'none'; }, 400); }
     });
 }
 
@@ -233,74 +237,172 @@ function toggleFaq(item) {
 
 // ===== COUNTDOWN =====
 function initCountdown() {
-    function getNextFesta() {
-        const now = new Date();
-        let d = new Date(now.getFullYear(), 10, 15);
-        if (now > d) d = new Date(now.getFullYear() + 1, 10, 15);
-        return d;
-    }
+    function getNextFesta() { const n = new Date(); let d = new Date(n.getFullYear(), 10, 15); if (n > d) d = new Date(n.getFullYear() + 1, 10, 15); return d; }
     function update() {
-        const diff = getNextFesta() - new Date();
-        if (diff <= 0) return;
-        const d = Math.floor(diff / 864e5), h = Math.floor(diff / 36e5) % 24, m = Math.floor(diff / 6e4) % 60, s = Math.floor(diff / 1e3) % 60;
+        const diff = getNextFesta() - new Date(); if (diff <= 0) return;
         const el = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = String(v).padStart(2, '0'); };
-        el('cd-days', d); el('cd-hours', h); el('cd-mins', m); el('cd-secs', s);
+        el('cd-days', Math.floor(diff / 864e5));
+        el('cd-hours', Math.floor(diff / 36e5) % 24);
+        el('cd-mins', Math.floor(diff / 6e4) % 60);
+        el('cd-secs', Math.floor(diff / 1e3) % 60);
     }
-    update();
-    setInterval(update, 1000);
+    update(); setInterval(update, 1000);
 }
 if (document.getElementById('cd-days')) initCountdown();
 
-// ===== WEATHER WIDGET =====
+// ===== WEATHER =====
 function initWeather() {
-    const container = document.getElementById('weatherWidget');
-    if (!container) return;
-    // Dados simulados (em produção, usar API real)
-    const weather = {
-        temp: 29, feelsLike: 33, humidity: 78, condition: 'Parcialmente Nublado',
-        icon: 'lucide:cloud-sun', wind: 12, uv: 9
-    };
-    container.innerHTML = `
-        <div class="flex items-center gap-4 flex-wrap">
-            <div class="flex items-center gap-2">
-                <iconify-icon icon="${weather.icon}" class="text-sol text-2xl"></iconify-icon>
-                <span class="font-heading font-black text-2xl text-white">${weather.temp}°C</span>
-            </div>
-            <div class="text-white/60 text-xs font-body space-y-1">
-                <div>Sensação: ${weather.feelsLike}°C • ${weather.condition}</div>
-                <div>Umidade: ${weather.humidity}% • Vento: ${weather.wind} km/h • UV: ${weather.uv}</div>
-            </div>
-        </div>`;
+    const c = document.getElementById('weatherWidget');
+    if (!c) return;
+    const w = { temp: 29, feelsLike: 33, humidity: 78, condition: 'Parcialmente Nublado', icon: 'lucide:cloud-sun', wind: 12, uv: 9 };
+    c.innerHTML = `<div class="flex items-center gap-4 flex-wrap"><div class="flex items-center gap-2"><iconify-icon icon="${w.icon}" class="text-sol text-2xl"></iconify-icon><span class="font-heading font-black text-2xl text-white">${w.temp}°C</span></div><div class="text-white/60 text-xs font-body space-y-1"><div>Sensação: ${w.feelsLike}°C • ${w.condition}</div><div>Umidade: ${w.humidity}% • Vento: ${w.wind} km/h • UV: ${w.uv}</div></div></div>`;
 }
 
 // ===== LEAFLET MAP =====
 function initLeafletMap(mapId, points, center = [-3.383, -57.717], zoom = 13) {
     const el = document.getElementById(mapId);
     if (!el || typeof L === 'undefined') return;
-
     const map = L.map(mapId, { scrollWheelZoom: false }).setView(center, zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    const guaranaIcon = L.divIcon({
-        html: '<div style="background:#C02626;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">🌱</span></div>',
-        iconSize: [28, 28], iconAnchor: [14, 14], className: ''
-    });
-    const foodIcon = L.divIcon({
-        html: '<div style="background:#F2A900;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">🍽️</span></div>',
-        iconSize: [28, 28], iconAnchor: [14, 14], className: ''
-    });
-    const defaultIcon = L.divIcon({
-        html: '<div style="background:#0B4F26;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">📍</span></div>',
-        iconSize: [28, 28], iconAnchor: [14, 14], className: ''
-    });
-
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    const icons = {
+        guarana: L.divIcon({ html: '<div style="background:#C02626;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">🌱</span></div>', iconSize: [28, 28], iconAnchor: [14, 14], className: '' }),
+        food: L.divIcon({ html: '<div style="background:#F2A900;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">🍽️</span></div>', iconSize: [28, 28], iconAnchor: [14, 14], className: '' }),
+        default: L.divIcon({ html: '<div style="background:#0B4F26;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">📍</span></div>', iconSize: [28, 28], iconAnchor: [14, 14], className: '' }),
+        user: L.divIcon({ html: '<div style="background:#3b82f6;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid white"><span style="color:white;font-size:14px">🧭</span></div>', iconSize: [28, 28], iconAnchor: [14, 14], className: '' })
+    };
     points.forEach(p => {
-        const icon = p.icon === 'guarana' ? guaranaIcon : p.icon === 'food' ? foodIcon : defaultIcon;
-        L.marker(p.coords, { icon }).addTo(map).bindPopup(`<strong>${p.name}</strong><br><span style="font-size:12px">${p.desc}</span>`);
+        L.marker(p.coords, { icon: icons[p.icon] || icons.default }).addTo(map)
+            .bindPopup(`<strong>${p.name}</strong><br><span style="font-size:12px">${p.desc}</span>`);
     });
-
-    // Fix rendering after reveal
     setTimeout(() => map.invalidateSize(), 1000);
+    return map;
+}
+
+// ===== DARK MODE =====
+function initDarkMode() {
+    const saved = localStorage.getItem('maues-dark-mode');
+    if (saved === 'true') document.body.classList.add('dark');
+}
+function toggleDarkMode() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('maues-dark-mode', isDark);
+    const btn = document.getElementById('darkModeBtn');
+    if (btn) {
+        btn.innerHTML = isDark
+            ? '<iconify-icon icon="lucide:sun" class="text-sm"></iconify-icon><span class="text-[10px] font-heading font-bold">Claro</span>'
+            : '<iconify-icon icon="lucide:moon" class="text-sm"></iconify-icon><span class="text-[10px] font-heading font-bold">Escuro</span>';
+        btn.classList.toggle('active', isDark);
+    }
+    // Refresh Leaflet tiles if map exists
+    document.querySelectorAll('.leaflet-tile-pane').forEach(t => {
+        t.style.filter = isDark ? 'brightness(0.7) invert(1) hue-rotate(120deg) saturate(0.3) brightness(0.8)' : '';
+    });
+}
+
+// ===== SHARE FAB =====
+let shareOpen = false;
+function initShareFab() {
+    if (document.getElementById('shareFab')) return;
+    const fab = document.createElement('div');
+    fab.className = 'share-fab';
+    fab.id = 'shareFab';
+    fab.innerHTML = `
+        <button class="share-fab-main" onclick="toggleShare()" aria-label="Compartilhar" id="shareFabMain">
+            <iconify-icon icon="lucide:share-2" class="text-xl" id="shareFabIcon"></iconify-icon>
+        </button>
+        <div class="share-fab-options" id="shareFabOptions">
+            <button class="share-fab-opt whatsapp" onclick="shareWhatsApp()" title="WhatsApp" aria-label="Compartilhar no WhatsApp">
+                <iconify-icon icon="lucide:message-circle" class="text-lg"></iconify-icon>
+            </button>
+            <button class="share-fab-opt copy-link" onclick="copyLink()" title="Copiar link" aria-label="Copiar link">
+                <iconify-icon icon="lucide:link" class="text-lg"></iconify-icon>
+            </button>
+            <button class="share-fab-opt native-share" onclick="nativeShare()" title="Mais opções" aria-label="Compartilhar">
+                <iconify-icon icon="lucide:share" class="text-lg"></iconify-icon>
+            </button>
+        </div>`;
+    document.body.appendChild(fab);
+}
+function toggleShare() {
+    shareOpen = !shareOpen;
+    document.getElementById('shareFabOptions').classList.toggle('open', shareOpen);
+    document.getElementById('shareFabMain').classList.toggle('open', shareOpen);
+}
+function shareWhatsApp() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('Confira: ' + document.title);
+    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+    closeShare();
+}
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast('Link copiado!', 'lucide:link', 'success');
+    }).catch(() => {
+        // Fallback
+        const input = document.createElement('input');
+        input.value = window.location.href;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        showToast('Link copiado!', 'lucide:link', 'success');
+    });
+    closeShare();
+}
+function nativeShare() {
+    if (navigator.share) {
+        navigator.share({ title: document.title, text: document.querySelector('meta[name="description"]')?.content || '', url: window.location.href }).catch(() => {});
+    } else {
+        copyLink();
+    }
+    closeShare();
+}
+function closeShare() {
+    shareOpen = false;
+    const opts = document.getElementById('shareFabOptions');
+    const main = document.getElementById('shareFabMain');
+    if (opts) opts.classList.remove('open');
+    if (main) main.classList.remove('open');
+}
+
+// ===== FAVORITES =====
+function initFavorites() {
+    // Restore saved favorites on tour cards
+    const saved = JSON.parse(localStorage.getItem('maues-favs') || '[]');
+    saved.forEach(id => {
+        const btn = document.querySelector(`.fav-btn[data-id="${id}"]`);
+        if (btn) btn.classList.add('active');
+    });
+}
+function toggleFavorite(id, name) {
+    const btn = document.querySelector(`.fav-btn[data-id="${id}"]`);
+    if (!btn) return;
+    let saved = JSON.parse(localStorage.getItem('maues-favs') || '[]');
+    const idx = saved.findIndex(f => f.id === id);
+    if (idx > -1) {
+        saved.splice(idx, 1);
+        btn.classList.remove('active');
+        showToast(`"${name}" removido dos favoritos`, 'lucide:heart', 'info');
+    } else {
+        saved.push({ id, name });
+        btn.classList.add('active');
+        btn.querySelector('iconify-icon').classList.add('heart-pop');
+        setTimeout(() => btn.querySelector('iconify-icon').classList.remove('heart-pop'), 400);
+        showToast(`"${name}" salvo nos favoritos`, 'lucide:heart', 'success');
+    }
+    localStorage.setItem('maues-favs', JSON.stringify(saved));
+}
+
+// ===== BREADCRUMB HELPER =====
+function setBreadcrumb(items) {
+    const container = document.querySelector('.page-hero-content');
+    if (!container || !items.length) return;
+    const bc = document.createElement('div');
+    bc.className = 'breadcrumb';
+    bc.innerHTML = items.map((item, i) => {
+        if (i === items.length - 1) return `<span class="current">${item.label}</span>`;
+        return `<a href="${item.href}">${item.label}</a><span>›</span>`;
+    }).join('');
+    container.insertBefore(bc, container.firstChild);
 }
