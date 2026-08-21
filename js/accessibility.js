@@ -8,6 +8,7 @@ function initAccessibility() {
 
     const toolbar = document.createElement('div');
     toolbar.id = 'a11yToolbar';
+    // Canto inferior direito — não conflita com o FAB (canto esquerdo)
     toolbar.className = 'a11y-toolbar';
     toolbar.innerHTML = `
         <button onclick="changeFontSize(-10)" title="Diminuir fonte" aria-label="Diminuir fonte">
@@ -33,7 +34,7 @@ function initAccessibility() {
     `;
     document.body.appendChild(toolbar);
 
-    // Restore
+    // Restaurar preferências salvas
     const savedSize = localStorage.getItem('maues-font-size');
     const savedContrast = localStorage.getItem('maues-high-contrast');
     if (savedSize) { currentFontSize = parseInt(savedSize); applyFontSize(); }
@@ -48,12 +49,17 @@ function changeFontSize(delta) {
     localStorage.setItem('maues-font-size', currentFontSize);
     applyFontSize();
 }
-function applyFontSize() { document.documentElement.style.fontSize = currentFontSize + '%'; }
+
+function applyFontSize() {
+    document.documentElement.style.fontSize = currentFontSize + '%';
+}
+
 function toggleContrast() {
     highContrast = !highContrast;
     localStorage.setItem('maues-high-contrast', highContrast);
     applyContrast();
 }
+
 function applyContrast() {
     document.body.classList.toggle('high-contrast', highContrast);
     document.getElementById('contrastBtn').classList.toggle('active', highContrast);
