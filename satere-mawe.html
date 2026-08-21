@@ -9,13 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/tailwind.config.js"></script>
+    <meta name="description" content="[descrição da página]">
+    <meta property="og:title" content="[título da página]">
+    <meta property="og:description" content="[descrição curta]">
+    <meta property="og:image" content="https://picsum.photos/seed/[seed-da-hero-image]/1200/630.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0B4F26">
 </head>
 <body>
     <div class="toast" id="toast"></div>
     <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="" alt="" id="lightboxImg"></div>
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
 
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"></header>
     <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
 
     <!-- PAGE HERO -->
@@ -123,6 +129,8 @@
 
     <footer id="siteFooter"></footer>
     <script src="js/nav-data.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/accessibility.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "nome": "Festa do Guaraná — Abertura",
+    "data": "2025-11-15",
+    "mes": "Novembro",
+    "tipo": "Cultural",
+    "cor": "guarana",
+    "desc": "Abertura oficial na Praia da Maresia com encenação teatral do mito de nascimento do guaraná pelo grupo cultural Sateré-Mawé. Queima de fogos.",
+    "local": "Praia da Maresia"
+  },
+  {
+    "id": 2,
+    "nome": "Concurso Rainha do Guaraná",
+    "data": "2025-11-16",
+    "mes": "Novembro",
+    "tipo": "Cultural",
+    "cor": "sol",
+    "desc": "Desfile das candidatas na Passarela da Praia. Show com banda regional e apresentação de danças indígenas.",
+    "local": "Praia da Maresia"
+  },
+  {
+    "id": 3,
+    "nome": "Feira do Guaraná & Gastronomia",
+    "data": "2025-11-17",
+    "mes": "Novembro",
+    "tipo": "Gastronomia",
+    "cor": "amazon",
+    "desc": "Stands de produtores rurais, degustação de guaraná batido, licores artesanais e pratos típicos. Oficina de ralação.",
+    "local": "Praia da Maresia"
+  },
+  {
+    "id": 4,
+    "nome": "Grande Show & Encerramento",
+    "data": "2025-12-01",
+    "mes": "Dezembro",
+    "tipo": "Show",
+    "cor": "guarana",
+    "desc": "Show nacional na Praia da Maresia (artista a confirmar). Coroação da Rainha e megashow pirotécnico.",
+    "local": "Praia da Maresia"
+  },
+  {
+    "id": 5,
+    "nome": "Verão de Maués — Abertura",
+    "data": "2025-07-15",
+    "mes": "Julho",
+    "tipo": "Festival",
+    "cor": "sol",
+    "desc": "Início do festival de 5 dias na Praia da Maresia com campeonato de vôlei de areia e jet-ski.",
+    "local": "Praia da Maresia"
+  },
+  {
+    "id": 6,
+    "nome": "Festejos de N. Sra. da Conceição",
+    "data": "2025-10-08",
+    "mes": "Outubro",
+    "tipo": "Religioso",
+    "cor": "amazon",
+    "desc": "Procissão fluvial, novenas, barracas de comidas típicas e fogos de artifício nas margens do rio.",
+    "local": "Centro / Porto"
+  },
+  {
+    "id": 7,
+    "nome": "Rituais Sateré-Mawé Abertos",
+    "data": "2025-09-20",
+    "mes": "Setembro",
+    "tipo": "Indígena",
+    "cor": "guarana",
+    "desc": "Cerimônias tradicionais abertas ao público com danças, cantos e o ritual do Tucandera.",
+    "local": "Aldeias Sateré-Mawé"
+  },
+  {
+    "id": 8,
+    "nome": "Maratona Aquática Rio Maués-Açu",
+    "data": "2025-08-10",
+    "mes": "Agosto",
+    "tipo": "Esportivo",
+    "cor": "sol",
+    "desc": "Prova de natação de águas abertas no trecho da Praia da Maresia. Inscrições abertas até junho.",
+    "local": "Rio Maués-Açu"
+  }
+]

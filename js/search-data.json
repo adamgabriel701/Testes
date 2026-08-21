@@ -1,0 +1,14 @@
+[
+  { "title": "Página Inicial", "desc": "Portal de turismo de Maués, Capital Nacional do Guaraná", "url": "index.html", "tags": ["inicio", "home", "maués", "turismo"] },
+  { "title": "Rota Sagrada do Guaraná", "desc": "Fazendas visitáveis, processo artesanal de torrefação e onde comprar o pó puro", "url": "guarana.html", "tags": ["guaraná", "lavoura", "fazenda", "pó", "artesanal", "torrefação"] },
+  { "title": "Cultura Sateré-Mawé", "desc": "Turismo comunitário, artesanato, lendas e vivências indígenas", "url": "satere-mawe.html", "tags": ["sateré-mawé", "indígena", "artesanato", "aldeia", "lendas", "comunitário"] },
+  { "title": "Onde Ficar", "desc": "Pousadas, hotéis, hostels e barco-hotéis por faixa de preço", "url": "onde-ficar.html", "tags": ["hospedagem", "pousada", "hotel", "hostel", "barco-hotel", "dormir", "ficar"] },
+  { "title": "Onde Comer", "desc": "Restaurantes, quirimbós, pratos típicos e cachaça artesanal", "url": "onde-comer.html", "tags": ["comida", "restaurante", "tambaqui", "tucumã", "cupuaçu", "cachaça", "gastronomia"] },
+  { "title": "Pesca Esportiva", "desc": "Calendário de pesca, regulamento, guias e barco-hotéis para tucunaré-açu", "url": "pesca-esportiva.html", "tags": ["pesca", "tucunaré", "pirarucu", "barco-hotel", "guia", "regulamento", "defeso"] },
+  { "title": "Notícias & Eventos", "desc": "Festa do Guaraná, Verão de Maués, programação e blog de viagem", "url": "noticias-e-eventos.html", "tags": ["festa", "evento", "guaraná", "verão", "programação", "calendário", "show"] },
+  { "title": "Contato & Suporte", "desc": "Emergências, formulário de dúvidas e agências receptivas credenciadas", "url": "contato-e-suporte.html", "tags": ["contato", "emergência", "samu", "polícia", "agência", "lancha", "transporte"] },
+  { "title": "Festa do Guaraná", "desc": "Maior evento cultural de Maués em novembro/dezembro", "url": "noticias-e-eventos.html", "tags": ["festa do guaraná", "novembro", "dezembro", "rainha", "show"] },
+  { "title": "Longevidade em Maués", "desc": "Segredo da longevidade: guaraná diário, alimentação natural e vida ativa", "url": "index.html#longevidade", "tags": ["longevidade", "idosos", "saúde", "centenários"] },
+  { "title": "Praia da Maresia", "desc": "Cartão-postal de Maués: areia branca no Rio Maués-Açu durante a estiagem", "url": "index.html#galeria", "tags": ["praia", "maresia", "areia", "rio", "estiagem"] },
+  { "title": "Fazenda Santa Helena", "desc": "Visita guiada com demonstração completa do processo artesanal do guaraná", "url": "guarana.html", "tags": ["santa helena", "fazenda", "visita", "guaraná"] }
+]

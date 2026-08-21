@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onde Ficar em Maués — Guia de Hospedagem</title>
+    <meta name="description" content="Pousadas, hotéis, hostels e barco-hotéis em Maués. Filtros por faixa de preço e tipo. Reserve direto pelo WhatsApp.">
+    <meta property="og:title" content="Onde Ficar em Maués">
+    <meta property="og:description" content="De pousadas rústicas à beira-rio a hotéis confortáveis. Opções para todos os bolsos.">
+    <meta property="og:image" content="https://picsum.photos/seed/hotel-amazon-river-view/1200/630.jpg">
+    <meta property="og:type" content="website">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0B4F26">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -13,8 +20,8 @@
 <body>
     <div class="toast" id="toast"></div>
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
-    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"></header>
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"></div>
 
     <div class="page-hero">
         <img src="https://picsum.photos/seed/hotel-amazon-river-view/1920/600.jpg" alt="Hospedagem em Maués" class="page-hero-bg">
@@ -22,73 +29,107 @@
         <div class="page-hero-content">
             <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Guia de Hospedagem</span>
             <h1 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1] mb-4">Onde Ficar<br>em Maués</h1>
-            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">De pousadas rústicas à beira-rio a hotéis confortáveis no centro. Opções para todos os bolsos.</p>
+            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">De pousadas rústicas à beira-rio a hotéis confortáveis. Opções para todos os bolsos.</p>
         </div>
     </div>
 
-    <!-- FILTRO POR FAIXA -->
     <section class="py-16 bg-areia">
         <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <!-- Filtros por preço -->
+            <div class="flex flex-wrap gap-3 mb-6 reveal">
+                <button class="filter-btn active font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20" onclick="filterLodging('all','tier',this)">Todas</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('eco','tier',this)">Econômico (até R$120)</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('medio','tier',this)">Intermediário (R$120-250)</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('alto','tier',this)">Superior (R$250+)</button>
+            </div>
+            <!-- Filtros por tipo -->
             <div class="flex flex-wrap gap-3 mb-10 reveal">
-                <button class="filter-btn active font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20" onclick="filterLodging('all',this)">Todas</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('eco',this)">Econômico (até R$120)</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('medio',this)">Intermediário (R$120-250)</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('alto',this)">Superior (R$250+)</button>
+                <button class="type-btn active font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('all','tipo',this)">Todos os tipos</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Pousada','tipo',this)">Pousada</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Hostel','tipo',this)">Hostel</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Hotel','tipo',this)">Hotel</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Chalé','tipo',this)">Chalé</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Barco-hotel','tipo',this)">Barco-hotel</button>
+                <button class="type-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('Comunitário','tipo',this)">Comunitário</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="lodgingGrid">
-                <div class="reveal info-card lodging-card" data-tier="eco">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/guesthouse-river-simple/600/400.jpg" alt="Pousada Rio Belo" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Pousada Rio Belo</h3><span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Econômico</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Quartos com ventilador, banheiro compartilhado. Vista para o rio. Café da manhã incluído.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 80 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.0</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="eco" style="transition-delay:.05s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/hostel-amazon-beds/600/400.jpg" alt="Hostel Guaraná" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Hostel Guaraná</h3><span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Econômico</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Dormitórios e quartos privativos. Cozinha compartilhada, área social e terraço.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 45 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.2</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="medio" style="transition-delay:.1s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/inn-amazon-comfort/600/400.jpg" alt="Pousada Maresia" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Pousada Marésia</h3><span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Intermediário</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">AC, Wi-Fi, banheiro privado. Piscina e restaurante próprio. Próxima à Praia da Maresia.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 180 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.6</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="medio" style="transition-delay:.15s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/lodge-jungle-nature/600/400.jpg" alt="Chalés Floresta" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Chalés da Floresta</h3><span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Intermediário</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Chalés independentes em meio à vegetação. Ideal para casais. Café com frutas regionais.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 220 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.8</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="alto" style="transition-delay:.2s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/hotel-luxury-amazon-pool/600/400.jpg" alt="Hotel Maués Plaza" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Hotel Maués Plaza</h3><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Superior</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">O mais completo da cidade. Piscina, academia, restaurante, transfer, guia exclusivo.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 320 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.9</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="alto" style="transition-delay:.25s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/boat-hotel-amazon/600/400.jpg" alt="Barco-Hotel" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Barco-Hotel Rio Maués</h3><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Superior</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Experiência única: pernoite em barco ancorado. Inclui pesca noturna e café da manhã no rio.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 400 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 5.0</div></div>
-                </div>
-            </div>
+            <!-- Grid dinâmico -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="lodgingGrid"></div>
         </div>
     </section>
 
     <footer id="siteFooter"></footer>
     <script src="js/nav-data.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/accessibility.js"></script>
     <script src="js/app.js"></script>
     <script>
-        function filterLodging(tier, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('active'); b.style.background=''; b.style.color=''; b.style.borderColor=''; });
-            btn.classList.add('active');
-            document.querySelectorAll('.lodging-card').forEach(card => {
-                const match = tier === 'all' || card.dataset.tier === tier;
-                card.style.display = match ? '' : 'none';
-                if (match) { card.style.opacity='0'; card.style.transform='translateY(20px)'; requestAnimationFrame(()=>{ card.style.transition='all .5s ease'; card.style.opacity='1'; card.style.transform='translateY(0)'; }); }
+        let lodgings = [];
+        let activeTier = 'all';
+        let activeTipo = 'all';
+
+        async function loadLodgings() {
+            try {
+                const res = await fetch('data/hospedagens.json');
+                lodgings = await res.json();
+            } catch { lodgings = []; }
+            renderLodgings();
+        }
+
+        function renderLodgings() {
+            const grid = document.getElementById('lodgingGrid');
+            if (!grid) return;
+            const filtered = lodgings.filter(h => {
+                const tierMatch = activeTier === 'all' || h.tier === activeTier;
+                const tipoMatch = activeTipo === 'all' || h.tipo === activeTipo;
+                return tierMatch && tipoMatch;
+            });
+
+            if (!filtered.length) {
+                grid.innerHTML = '<div class="col-span-full text-center py-16"><iconify-icon icon="lucide:search-x" class="text-areia-dark/20 text-5xl mb-4 block mx-auto"></iconify-icon><p class="text-gray-400 font-body">Nenhuma hospedagem encontrada com esses filtros.</p></div>';
+                return;
+            }
+
+            const tierLabels = { eco: 'Econômico', medio: 'Intermediário', alto: 'Superior' };
+            const tierColors = { eco: 'amazon', medio: 'sol', alto: 'guarana' };
+
+            grid.innerHTML = filtered.map((h, i) => `
+                <div class="info-card lodging-card" style="opacity:0;transform:translateY(20px);transition:all .5s cubic-bezier(.16,1,.3,1) ${i*0.06}s">
+                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="${h.img}" alt="${h.nome}" class="w-full h-full object-cover" loading="lazy"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-heading font-bold text-amazon-dark">${h.nome}</h3>
+                        <span class="bg-${tierColors[h.tier]}/10 text-${tierColors[h.tier]} text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">${tierLabels[h.tier]}</span>
+                    </div>
+                    <span class="bg-amazon/5 text-amazon-dark/60 text-[10px] font-heading font-semibold uppercase px-2 py-0.5 rounded inline-block mb-3">${h.tipo}</span>
+                    <p class="text-gray-500 text-sm font-body mb-4">${h.desc}</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="price-badge">R$ ${h.preco} / noite</span>
+                        <div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> ${h.avaliacao}</div>
+                    </div>
+                    <a href="https://wa.me/55${h.whatsapp}?text=Olá! Vi o site Turismo Maués e gostaria de saber sobre disponibilidade na ${encodeURIComponent(h.nome)}." target="_blank" rel="noopener" class="whatsapp-btn w-full justify-center">
+                        <iconify-icon icon="lucide:message-circle" class="text-sm"></iconify-icon> Reservar via WhatsApp
+                    </a>
+                </div>
+            `).join('');
+
+            // Animar entrada
+            requestAnimationFrame(() => {
+                grid.querySelectorAll('.lodging-card').forEach(c => { c.style.opacity='1'; c.style.transform='translateY(0)'; });
             });
         }
+
+        function filterLodging(value, type, btn) {
+            if (type === 'tier') {
+                activeTier = value;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            } else {
+                activeTipo = value;
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            }
+            btn.classList.add('active');
+            renderLodgings();
+        }
+
+        loadLodgings();
     </script>
 </body>
 </html>

@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "nome": "Pousada Rio Belo",
+    "tier": "eco",
+    "tipo": "Pousada",
+    "preco": 80,
+    "avaliacao": 4.0,
+    "img": "https://picsum.photos/seed/guesthouse-river-simple/600/400.jpg",
+    "desc": "Quartos com ventilador, banheiro compartilhado. Vista para o rio. Café da manhã incluído.",
+    "whatsapp": "92998111111"
+  },
+  {
+    "id": 2,
+    "nome": "Hostel Guaraná",
+    "tier": "eco",
+    "tipo": "Hostel",
+    "preco": 45,
+    "avaliacao": 4.2,
+    "img": "https://picsum.photos/seed/hostel-amazon-beds/600/400.jpg",
+    "desc": "Dormitórios e quartos privativos. Cozinha compartilhada, área social e terraço.",
+    "whatsapp": "92998222222"
+  },
+  {
+    "id": 3,
+    "nome": "Pousada Marésia",
+    "tier": "medio",
+    "tipo": "Pousada",
+    "preco": 180,
+    "avaliacao": 4.6,
+    "img": "https://picsum.photos/seed/inn-amazon-comfort/600/400.jpg",
+    "desc": "AC, Wi-Fi, banheiro privado. Piscina e restaurante próprio. Próxima à Praia da Maresia.",
+    "whatsapp": "92998333333"
+  },
+  {
+    "id": 4,
+    "nome": "Chalés da Floresta",
+    "tier": "medio",
+    "tipo": "Chalé",
+    "preco": 220,
+    "avaliacao": 4.8,
+    "img": "https://picsum.photos/seed/lodge-jungle-nature/600/400.jpg",
+    "desc": "Chalés independentes em meio à vegetação. Ideal para casais. Café com frutas regionais.",
+    "whatsapp": "92998444444"
+  },
+  {
+    "id": 5,
+    "nome": "Hotel Maués Plaza",
+    "tier": "alto",
+    "tipo": "Hotel",
+    "preco": 320,
+    "avaliacao": 4.9,
+    "img": "https://picsum.photos/seed/hotel-luxury-amazon-pool/600/400.jpg",
+    "desc": "O mais completo da cidade. Piscina, academia, restaurante, transfer e guia exclusivo.",
+    "whatsapp": "92998555555"
+  },
+  {
+    "id": 6,
+    "nome": "Barco-Hotel Rio Maués",
+    "tier": "alto",
+    "tipo": "Barco-hotel",
+    "preco": 400,
+    "avaliacao": 5.0,
+    "img": "https://picsum.photos/seed/boat-hotel-amazon/600/400.jpg",
+    "desc": "Experiência única: pernoite em barco ancorado. Inclui pesca noturna e café no rio.",
+    "whatsapp": "92998666666"
+  },
+  {
+    "id": 7,
+    "nome": "Comunidade Tapajós",
+    "tier": "eco",
+    "tipo": "Comunitário",
+    "preco": 60,
+    "avaliacao": 4.5,
+    "img": "https://picsum.photos/seed/community-stay-village/600/400.jpg",
+    "desc": "Hospedagem em casa de família ribeirinha. Refeições caseiras. Renda direta à comunidade.",
+    "whatsapp": "92998777777"
+  }
+]

@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onde Ficar em Maués — Guia de Hospedagem</title>
+    <title>Onde Comer em Maués — Gastronomia Amazônica</title>
+    <meta name="description" content="Tambaqui, tucumã, cupuaçu e cachaça artesanal. Guia gastronômico completo de Maués com mapa interativo.">
+    <meta property="og:title" content="Onde Comer em Maués — Gastronomia Amazônica">
+    <meta property="og:description" content="Tambaqui assado, tucumã, cupuaçu e a cachaça artesanal que só existe aqui.">
+    <meta property="og:image" content="https://picsum.photos/seed/amazon-food-fish-grilled/1200/630.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0B4F26">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/tailwind.config.js"></script>
@@ -13,64 +21,65 @@
 <body>
     <div class="toast" id="toast"></div>
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
-    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"></header>
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"></div>
 
     <div class="page-hero">
-        <img src="https://picsum.photos/seed/hotel-amazon-river-view/1920/600.jpg" alt="Hospedagem em Maués" class="page-hero-bg">
+        <img src="https://picsum.photos/seed/amazon-food-fish-grilled/1920/600.jpg" alt="Gastronomia de Maués" class="page-hero-bg">
         <div class="absolute inset-0 bg-gradient-to-r from-amazon-dark/95 via-amazon/80 to-amazon/40"></div>
         <div class="page-hero-content">
-            <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Guia de Hospedagem</span>
-            <h1 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1] mb-4">Onde Ficar<br>em Maués</h1>
-            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">De pousadas rústicas à beira-rio a hotéis confortáveis no centro. Opções para todos os bolsos.</p>
+            <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Sabores da Floresta</span>
+            <h1 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1] mb-4">Onde Comer<br>em Maués</h1>
+            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">Tambaqui assado, tucumã, cupuaçu e a cachaça artesanal que só existe aqui.</p>
         </div>
     </div>
 
-    <!-- FILTRO POR FAIXA -->
-    <section class="py-16 bg-areia">
+    <!-- PRATOS DESTAQUE -->
+    <section class="py-20 md:py-28 bg-areia">
         <div class="max-w-[1400px] mx-auto px-4 md:px-8">
-            <div class="flex flex-wrap gap-3 mb-10 reveal">
-                <button class="filter-btn active font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20" onclick="filterLodging('all',this)">Todas</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('eco',this)">Econômico (até R$120)</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('medio',this)">Intermediário (R$120-250)</button>
-                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterLodging('alto',this)">Superior (R$250+)</button>
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-guarana text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Não Pode Faltar</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Pratos Icônicos</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="lodgingGrid">
-                <div class="reveal info-card lodging-card" data-tier="eco">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/guesthouse-river-simple/600/400.jpg" alt="Pousada Rio Belo" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Pousada Rio Belo</h3><span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Econômico</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Quartos com ventilador, banheiro compartilhado. Vista para o rio. Café da manhã incluído.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 80 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.0</div></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="reveal info-card text-center group" data-dish="peixe"><div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/tambaqui-grilled-fish/400/300.jpg" alt="Tambaqui" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><h3 class="font-heading font-bold text-amazon-dark">Tambaqui Assado</h3><p class="text-gray-500 text-xs font-body mt-1">Peixe nobre do rio, com farinha d'água.</p></div>
+                <div class="reveal info-card text-center group" data-dish="fruta" style="transition-delay:.05s"><div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/tucuma-fruit-cut/400/300.jpg" alt="Tucumã" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><h3 class="font-heading font-bold text-amazon-dark">Tucumã</h3><p class="text-gray-500 text-xs font-body mt-1">Fruta laranja, rica em vitamina A.</p></div>
+                <div class="reveal info-card text-center group" data-dish="sobremesa" style="transition-delay:.1s"><div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/cupuacu-fruit-fresh/400/300.jpg" alt="Cupuaçu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><h3 class="font-heading font-bold text-amazon-dark">Cupuaçu</h3><p class="text-gray-500 text-xs font-body mt-1">Suco, doce, polpa ou cupulate.</p></div>
+                <div class="reveal info-card text-center group" data-dish="bebida" style="transition-delay:.15s"><div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/artisanal-cachaca-glass/400/300.jpg" alt="Cachaça" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><h3 class="font-heading font-bold text-amazon-dark">Cachaça Artesanal</h3><p class="text-gray-500 text-xs font-body mt-1">Envelhecida em castanheira.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAPA + RESTAURANTES -->
+    <section class="py-20 md:py-28 bg-white">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-amazon text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Mapa Interativo</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Restaurantes & Quirimbós</h2>
+            </div>
+
+            <!-- Filtro por tipo de prato -->
+            <div class="flex flex-wrap gap-3 mb-8 reveal">
+                <button class="filter-btn active font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20" onclick="filterRestaurants('all',this)">Todos</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterRestaurants('peixe',this)">Peixes</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterRestaurants('fruta',this)">Frutas Regionais</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterRestaurants('bebida',this)">Bebidas</button>
+                <button class="filter-btn font-heading font-semibold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-amazon/20 bg-areia text-amazon-dark" onclick="filterRestaurants('sobremesa',this)">Sobremesas</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <!-- Mapa -->
+                <div class="lg:col-span-2 reveal-left">
+                    <div id="foodMap" class="h-[500px] rounded-2xl border border-areia-dark/30"></div>
                 </div>
-                <div class="reveal info-card lodging-card" data-tier="eco" style="transition-delay:.05s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/hostel-amazon-beds/600/400.jpg" alt="Hostel Guaraná" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Hostel Guaraná</h3><span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Econômico</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Dormitórios e quartos privativos. Cozinha compartilhada, área social e terraço.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 45 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.2</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="medio" style="transition-delay:.1s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/inn-amazon-comfort/600/400.jpg" alt="Pousada Maresia" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Pousada Marésia</h3><span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Intermediário</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">AC, Wi-Fi, banheiro privado. Piscina e restaurante próprio. Próxima à Praia da Maresia.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 180 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.6</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="medio" style="transition-delay:.15s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/lodge-jungle-nature/600/400.jpg" alt="Chalés Floresta" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Chalés da Floresta</h3><span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Intermediário</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Chalés independentes em meio à vegetação. Ideal para casais. Café com frutas regionais.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 220 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.8</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="alto" style="transition-delay:.2s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/hotel-luxury-amazon-pool/600/400.jpg" alt="Hotel Maués Plaza" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Hotel Maués Plaza</h3><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Superior</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">O mais completo da cidade. Piscina, academia, restaurante, transfer, guia exclusivo.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 320 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.9</div></div>
-                </div>
-                <div class="reveal info-card lodging-card" data-tier="alto" style="transition-delay:.25s">
-                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/boat-hotel-amazon/600/400.jpg" alt="Barco-Hotel" class="w-full h-full object-cover"></div>
-                    <div class="flex items-center justify-between mb-2"><h3 class="font-heading font-bold text-amazon-dark">Barco-Hotel Rio Maués</h3><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded-full">Superior</span></div>
-                    <p class="text-gray-500 text-xs font-body mb-3">Experiência única: pernoite em barco ancorado. Inclui pesca noturna e café da manhã no rio.</p>
-                    <div class="flex items-center justify-between"><span class="price-badge">R$ 400 / noite</span><div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 5.0</div></div>
+                <!-- Lista -->
+                <div class="lg:col-span-3 reveal-right space-y-4" id="restaurantList">
+                    <div class="info-card restaurant-card" data-food="peixe"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-guarana/10 flex items-center justify-center"><iconify-icon icon="lucide:utensils" class="text-guarana"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Restaurante do Seu Zé</h3></div><p class="text-gray-500 text-sm font-body mb-3">Tambaqui assado, caldeirada de tucunaré e vatapá amazônico. Almoço executivo R$25.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 11h-15h</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$20-50</span></div></div>
+                    <div class="info-card restaurant-card" data-food="peixe" style="transition-delay:.05s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-sol/10 flex items-center justify-center"><iconify-icon icon="lucide:utensils" class="text-sol"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Quirimbó da Praia</h3></div><p class="text-gray-500 text-sm font-body mb-3">À beira do rio. Peixe frito, açaí e cachaça gelada. Música ao vivo na estiagem.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 10h-22h (estiagem)</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$15-40</span></div></div>
+                    <div class="info-card restaurant-card" data-food="fruta" style="transition-delay:.1s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center"><iconify-icon icon="lucide:utensils" class="text-amazon"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Lanchonete do Açaí</h3></div><p class="text-gray-500 text-sm font-body mb-3">Açaí batido com tucumã e banana. Tacacá e pão de queijo regional.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 6h-20h</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$10-25</span></div></div>
+                    <div class="info-card restaurant-card" data-food="bebida" style="transition-delay:.15s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-guarana/10 flex items-center justify-center"><iconify-icon icon="lucide:wine" class="text-guarana"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Casa da Cachaça</h3></div><p class="text-gray-500 text-sm font-body mb-3">Degustação de cachaças artesanais envelhecidas. Tabuleiro de tucumã e castanha.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 17h-23h</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$20-60</span></div></div>
+                    <div class="info-card restaurant-card" data-food="peixe" style="transition-delay:.2s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-sol/10 flex items-center justify-center"><iconify-icon icon="lucide:utensils" class="text-sol"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Restaurante Marésia</h3></div><p class="text-gray-500 text-sm font-body mb-3">Tucunaré grelhado com molho de cupuaçu, saladas tropicais. Cardápio elaborado.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 11h-22h</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$35-80</span></div></div>
+                    <div class="info-card restaurant-card" data-food="fruta,sobremesa" style="transition-delay:.25s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center"><iconify-icon icon="lucide:shopping-bag" class="text-amazon"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark">Mercado Municipal</h3></div><p class="text-gray-500 text-sm font-body mb-3">Barracas com tudo fresquinho dos produtores. Frutas, peixes, doces de cupuaçu.</p><div class="flex items-center gap-4 text-xs text-gray-400 font-body"><span class="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-sol"></iconify-icon> 6h-14h</span><span class="flex items-center gap-1"><iconify-icon icon="lucide:wallet" class="text-sol"></iconify-icon> R$8-20</span></div></div>
                 </div>
             </div>
         </div>
@@ -78,15 +87,35 @@
 
     <footer id="siteFooter"></footer>
     <script src="js/nav-data.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/accessibility.js"></script>
     <script src="js/app.js"></script>
     <script>
-        function filterLodging(tier, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('active'); b.style.background=''; b.style.color=''; b.style.borderColor=''; });
+        // Mapa com pins dos restaurantes
+        const mapPoints = [
+            { name: 'Restaurante do Seu Zé', desc: 'Tambaqui assado • R$20-50', coords: [-3.383, -57.717], icon: 'food' },
+            { name: 'Quirimbó da Praia', desc: 'Peixe frito à beira-rio • R$15-40', coords: [-3.390, -57.710], icon: 'food' },
+            { name: 'Lanchonete do Açaí', desc: 'Açaí com tucumã • R$10-25', coords: [-3.381, -57.715], icon: 'food' },
+            { name: 'Casa da Cachaça', desc: 'Cachaça artesanal • R$20-60', coords: [-3.385, -57.720], icon: 'food' },
+            { name: 'Restaurante Marésia', desc: 'Tucunaré grelhado • R$35-80', coords: [-3.388, -57.708], icon: 'food' },
+            { name: 'Mercado Municipal', desc: 'Frutas e peixes frescos • R$8-20', coords: [-3.382, -57.718], icon: 'food' }
+        ];
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => initLeafletMap('foodMap', mapPoints, [-3.383, -57.715], 15), 500);
+        });
+
+        // Filtro por tipo de prato
+        function filterRestaurants(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.querySelectorAll('.lodging-card').forEach(card => {
-                const match = tier === 'all' || card.dataset.tier === tier;
+            document.querySelectorAll('.restaurant-card').forEach(card => {
+                const foods = (card.dataset.food || '').split(',');
+                const match = category === 'all' || foods.includes(category);
                 card.style.display = match ? '' : 'none';
-                if (match) { card.style.opacity='0'; card.style.transform='translateY(20px)'; requestAnimationFrame(()=>{ card.style.transition='all .5s ease'; card.style.opacity='1'; card.style.transform='translateY(0)'; }); }
+                if (match) {
+                    card.style.opacity = '0'; card.style.transform = 'translateY(10px)';
+                    requestAnimationFrame(() => { card.style.transition = 'all .4s ease'; card.style.opacity = '1'; card.style.transform = 'translateY(0)'; });
+                }
             });
         }
     </script>

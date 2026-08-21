@@ -1,0 +1,22 @@
+{
+  "name": "Maués — Capital Nacional do Guaraná",
+  "short_name": "Maués",
+  "description": "Portal turístico oficial de Maués, AM. Guaraná, praias fluviais, pesca esportiva e cultura Sateré-Mawé.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0B4F26",
+  "theme_color": "#0B4F26",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/maues-pwa-icon/192/192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://picsum.photos/seed/maues-pwa-icon/512/512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

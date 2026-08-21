@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesca Esportiva em Maués — Paraíso do Tucunaré</title>
+    <meta name="description" content="Tucunaré-açu, pirarucu, surubim. Calendário de pesca, regulamento oficial, guias e barco-hotéis em Maués.">
+    <meta property="og:title" content="Pesca Esportiva em Maués — Paraíso do Tucunaré">
+    <meta property="og:description" content="Os rios de Maués são um santuário da pesca esportiva brasileira. Calendário, regulamento e guias.">
+    <meta property="og:image" content="https://picsum.photos/seed/fishing-peacock-bass-river/1200/630.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0B4F26">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -13,10 +19,9 @@
 <body>
     <div class="toast" id="toast"></div>
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
-    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"></header>
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"></div>
 
-    <!-- PAGE HERO -->
     <div class="page-hero">
         <img src="https://picsum.photos/seed/fishing-peacock-bass-river/1920/600.jpg" alt="Pesca esportiva" class="page-hero-bg">
         <div class="absolute inset-0 bg-gradient-to-r from-amazon-dark/95 via-amazon/80 to-amazon/40"></div>
@@ -27,29 +32,48 @@
         </div>
     </div>
 
-    <!-- CALENDÁRIO -->
-    <section class="py-20 md:py-28 bg-areia">
+    <!-- TABELA DINÂMICA DE TEMPORADA -->
+    <section class="py-20 md:py-28 bg-areia overflow-x-auto">
         <div class="max-w-[1200px] mx-auto px-4 md:px-8">
             <div class="text-center mb-14 reveal">
                 <span class="inline-block text-amazon text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Planejamento</span>
-                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Calendário de Pesca</h2>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Temporada de Pesca</h2>
+                <p class="text-gray-500 text-sm font-body mt-3">Condições dos rios e disponibilidade de espécies mês a mês.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div class="reveal info-card border-t-4 border-t-amazon">
-                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Julho — Outubro</h3>
-                    <span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Melhor Época</span>
-                    <p class="text-gray-500 text-sm font-body leading-relaxed">Estiagem: águas baixas concentram os peixes. Tucunaré-açu mais agressivo. Praias e lagoaçés acessíveis.</p>
-                </div>
-                <div class="reveal info-card border-t-4 border-t-sol" style="transition-delay:.1s">
-                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Novembro — Janeiro</h3>
-                    <span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Boa</span>
-                    <p class="text-gray-500 text-sm font-body leading-relaxed">Início das chuvas. Ainda há boas condições. Colheita do guaraná como programa secundário.</p>
-                </div>
-                <div class="reveal info-card border-t-4 border-t-guarana" style="transition-delay:.2s">
-                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Fevereiro — Junho</h3>
-                    <span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Desafiadora</span>
-                    <p class="text-gray-500 text-sm font-body leading-relaxed">Cheia dos rios. Peixes dispersos na floresta alagada. Apenas para pescadores muito experientes com guias especializados.</p>
-                </div>
+            <div class="reveal overflow-x-auto">
+                <table class="season-table min-w-[800px]">
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Nível do Rio</th>
+                            <th>Tucunaré</th>
+                            <th>Pirarucu</th>
+                            <th>Surubim</th>
+                            <th>Traíra</th>
+                            <th>Recomendação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Jan</td><td>🔴 Subindo</td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge boa">Aproveite início da cheia</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Fev</td><td>🔴 Cheio</td><td><span class="season-badge ruim">Difícil</span></td><td><span class="season-badge ruim">Difícil</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge ruim">Apenas com guia experiente</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Mar</td><td>🔴 Cheio</td><td><span class="season-badge ruim">Difícil</span></td><td><span class="season-badge ruim">Fechado (defeso)</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge ruim">Verificar período de defeso</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Abr</td><td>🟡 Baixando</td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge ruim">Fechado (defeso)</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge boa">Início da vazante</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Mai</td><td>🟡 Baixando</td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Ótimo período</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Jun</td><td>🟢 Baixo</td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Início da estiagem</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Jul</td><td>🟢 Muito baixo</td><td><span class="season-badge excelente">Top!</span></td><td><span class="season-badge excelente">Top!</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Melhor mês — praias abertas</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Ago</td><td>🟢 Muito baixo</td><td><span class="season-badge excelente">Top!</span></td><td><span class="season-badge excelente">Top!</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Melhor mês — Verão de Maués</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Set</td><td>🟢 Baixo</td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Ainda excelente</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Out</td><td>🟡 Subindo</td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Último mês seguro</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Nov</td><td>🔴 Subindo</td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge excelente">Excelente</span></td><td><span class="season-badge boa">Verificar defeso anual</span></td></tr>
+                        <tr><td class="font-heading font-semibold text-amazon-dark">Dez</td><td>🔴 Cheio</td><td><span class="season-badge ruim">Difícil</span></td><td><span class="season-badge ruim">Difícil</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge boa">Boa</span></td><td><span class="season-badge ruim">Festa do Guaraná, não para pesca</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="reveal mt-6 flex flex-wrap gap-4 justify-center text-xs font-body text-gray-400">
+                <span class="flex items-center gap-2"><span class="season-badge excelente">Top!</span> Melhor época</span>
+                <span class="flex items-center gap-2"><span class="season-badge boa">Boa</span> Condições favoráveis</span>
+                <span class="flex items-center gap-2"><span class="season-badge ruim">Difícil</span> Evitar ou guia obrigatório</span>
+                <span>🟢 Baixo = praias visíveis • 🔴 Cheio = floresta alagada</span>
             </div>
         </div>
     </section>
@@ -62,56 +86,13 @@
                 <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Regulamento de Pesca</h2>
             </div>
             <div class="reveal bg-guarana/5 border-2 border-guarana/20 rounded-2xl p-8 mb-8">
-                <div class="flex items-start gap-4 mb-6">
-                    <iconify-icon icon="lucide:shield-alert" class="text-guarana text-2xl mt-1 flex-shrink-0"></iconify-icon>
-                    <div>
-                        <h3 class="font-heading font-bold text-amazon-dark text-lg mb-2">Legislação Estadual e Federal</h3>
-                        <p class="text-gray-600 text-sm font-body leading-relaxed">A pesca em Maués está sujeita às normas do IBAMA, IPAAM (Instituto de Proteção Ambiental do Amazonas) e à Lei Estadual nº 4.073/2014. O descumprimento pode gerar multas de R$ 700 a R$ 100.000 e apreensão de equipamentos.</p>
-                    </div>
-                </div>
+                <div class="flex items-start gap-4"><iconify-icon icon="lucide:shield-alert" class="text-guarana text-2xl mt-1 flex-shrink-0"></iconify-icon><div><h3 class="font-heading font-bold text-amazon-dark text-lg mb-2">Legislação Estadual e Federal</h3><p class="text-gray-600 text-sm font-body leading-relaxed">A pesca em Maués está sujeita às normas do IBAMA, IPAAM e à Lei Estadual nº 4.073/2014. Multas de R$ 700 a R$ 100.000 e apreensão de equipamentos.</p></div></div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="reveal info-card">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:ruler" class="text-amazon"></iconify-icon></div>
-                        <h3 class="font-heading font-bold text-amazon-dark text-sm">Tamanhos Mínimos</h3>
-                    </div>
-                    <ul class="text-gray-500 text-xs font-body space-y-2 pl-[52px]">
-                        <li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Tucunaré (todas as espécies)</span><strong class="text-amazon-dark">30 cm</strong></li>
-                        <li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Pirarucu</span><strong class="text-amazon-dark">150 cm</strong></li>
-                        <li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Surubim / Cachara</span><strong class="text-amazon-dark">80 cm</strong></li>
-                        <li class="flex justify-between"><span>Traíra</span><strong class="text-amazon-dark">30 cm</strong></li>
-                    </ul>
-                </div>
-                <div class="reveal info-card" style="transition-delay:.1s">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-sol/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:package" class="text-sol"></iconify-icon></div>
-                        <h3 class="font-heading font-bold text-amazon-dark text-sm">Limites de Captura</h3>
-                    </div>
-                    <ul class="text-gray-500 text-xs font-body space-y-2 pl-[52px]">
-                        <li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Pesca esportiva (geral)</span><strong class="text-amazon-dark">10 kg + 1 exemplar</strong></li>
-                        <li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Pirarucu (soltas obrigatórias abaixo de 150cm)</span><strong class="text-amazon-dark">Apenas 1 por pescador</strong></li>
-                        <li class="flex justify-between"><span>Isca viva</span><strong class="text-guarana">Proibida no estado</strong></li>
-                    </ul>
-                </div>
-                <div class="reveal info-card" style="transition-delay:.2s">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-guarana/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:calendar-x" class="text-guarana"></iconify-icon></div>
-                        <h3 class="font-heading font-bold text-amazon-dark text-sm">Períodos de Defeso</h3>
-                    </div>
-                    <p class="text-gray-500 text-xs font-body leading-relaxed pl-[52px]">Piracema (reprodução): normalmente novembro a março, mas varia anualmente por portaria do IPAAM. Consulte antes de viajar.</p>
-                </div>
-                <div class="reveal info-card" style="transition-delay:.3s">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:file-text" class="text-amazon"></iconify-icon></div>
-                        <h3 class="font-heading font-bold text-amazon-dark text-sm">Documentação Necessária</h3>
-                    </div>
-                    <ul class="text-gray-500 text-xs font-body space-y-1 pl-[52px]">
-                        <li>• Licença de pesca (emitida pelo IBAMA online)</li>
-                        <li>• RG e CPF</li>
-                        <li>• Contrato com guia credenciado (recomendado)</li>
-                    </ul>
-                </div>
+                <div class="reveal info-card"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:ruler" class="text-amazon"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark text-sm">Tamanhos Mínimos</h3></div><ul class="text-gray-500 text-xs font-body space-y-2 pl-[52px]"><li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Tucunaré</span><strong class="text-amazon-dark">30 cm</strong></li><li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Pirarucu</span><strong class="text-amazon-dark">150 cm</strong></li><li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Surubim / Cachara</span><strong class="text-amazon-dark">80 cm</strong></li><li class="flex justify-between"><span>Traíra</span><strong class="text-amazon-dark">30 cm</strong></li></ul></div>
+                <div class="reveal info-card" style="transition-delay:.1s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-sol/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:package" class="text-sol"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark text-sm">Limites de Captura</h3></div><ul class="text-gray-500 text-xs font-body space-y-2 pl-[52px]"><li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Geral</span><strong class="text-amazon-dark">10 kg + 1 exemplar</strong></li><li class="flex justify-between border-b border-areia-dark/20 pb-2"><span>Pirarucu</span><strong class="text-amazon-dark">Apenas 1/pescador</strong></li><li class="flex justify-between"><span>Isca viva</span><strong class="text-guarana">Proibida no AM</strong></li></ul></div>
+                <div class="reveal info-card" style="transition-delay:.2s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-guarana/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:calendar-x" class="text-guarana"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark text-sm">Períodos de Defeso</h3></div><p class="text-gray-500 text-xs font-body leading-relaxed pl-[52px]">Piracema: normalmente novembro a março (varia por portaria IPAAM). Consulte antes de viajar.</p></div>
+                <div class="reveal info-card" style="transition-delay:.3s"><div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full bg-amazon/10 flex items-center justify-center flex-shrink-0"><iconify-icon icon="lucide:file-text" class="text-amazon"></iconify-icon></div><h3 class="font-heading font-bold text-amazon-dark text-sm">Documentação</h3></div><ul class="text-gray-500 text-xs font-body space-y-1 pl-[52px]"><li>• Licença IBAMA (online)</li><li>• RG e CPF</li><li>• Contrato com guia (recomendado)</li></ul></div>
             </div>
         </div>
     </section>
@@ -124,10 +105,7 @@
                 <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Guias & Barco-Hotéis</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="reveal info-card">
-                    <div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/fishing-boat-guide/600/400.jpg" alt="Seu Adalberto" class="w-full h-full object-cover"></div>
-                    <h3 class="font-heading font-bold text-amazon-dark mb-1">Seu Adalberto — Guia de Pesca</h3>
-                    <p class="text-gray-500 text-sm font-body mb-3">25 anos de experiência. Conhece todos os poços e cachoeiras do Rio Maués-Açu. Barco motorizado 18 pés com tamboril.</p>
+                <div class="reveal info-card"><div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/fishing-boat-guide/600/400.jpg" alt="Seu Adalberto" class="w-full h-full object-cover"></div><h3 class="font-heading font-bold text-amazon-dark mb-1">Seu Adalberto — Guia de Pesca</h3><p class="text-gray-500 text-sm font-body mb-3">25 anos de experiência. Todos os poços do Rio Maués-Açu. Barco motorizado 18 pés com tamboril.</p>
                     <div class="flex items-center justify-between">
                         <span class="price-badge text-sm">R$ 400 / dia</span>
                         <div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.9 (127 avaliações)</div>
@@ -137,7 +115,7 @@
                 <div class="reveal info-card" style="transition-delay:.1s">
                     <div class="rounded-xl overflow-hidden h-40 mb-4"><img src="https://picsum.photos/seed/houseboat-amazon-river/600/400.jpg" alt="Barco-Hotel Rio Azul" class="w-full h-full object-cover"></div>
                     <h3 class="font-heading font-bold text-amazon-dark mb-1">Barco-Hotel Rio Azul</h3>
-                    <p class="text-gray-500 text-sm font-body mb-3">Pacote 3 dias/2 noites. Inclui alojamento, alimentação, guia e todo equipamento de pesca. Para até 6 pescadores.</p>
+                    <p class="text-gray-500 text-sm font-body mb-3">Pacote 3 dias/2 noites. Inclui alojamento, alimentação, guia e todo equipamento. Para até 6 pescadores.</p>
                     <div class="flex items-center justify-between">
                         <span class="price-badge text-sm">R$ 2.800 / pax</span>
                         <div class="flex items-center gap-1 text-sol text-xs"><iconify-icon icon="lucide:star" class="text-sm"></iconify-icon> 4.8 (89 avaliações)</div>
@@ -169,6 +147,8 @@
 
     <footer id="siteFooter"></footer>
     <script src="js/nav-data.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/accessibility.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

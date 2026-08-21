@@ -1,10 +1,9 @@
-// Estrutura centralizada de navegação — edita aqui, reflete em todas as páginas
 const NAV_ITEMS = [
-    { label: 'Início', href: 'index.html', id: 'hero' },
+    { label: 'Início', href: 'index.html' },
     { label: 'Guaraná', href: 'guarana.html' },
     { label: 'Sateré-Mawé', href: 'satere-mawe.html' },
-    { label: 'Turismo', href: '#galeria', id: 'galeria' },
-    { label: 'Longevidade', href: '#longevidade', id: 'longevidade' },
+    { label: 'Turismo', href: 'index.html#galeria' },
+    { label: 'Longevidade', href: 'index.html#longevidade' },
     { label: 'Pesca', href: 'pesca-esportiva.html' },
     { label: 'Onde Ficar', href: 'onde-ficar.html' },
     { label: 'Onde Comer', href: 'onde-comer.html' },
@@ -15,17 +14,14 @@ const NAV_ITEMS = [
 function renderNav() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-    // Desktop
     const desktop = document.getElementById('desktopNav');
     if (desktop) {
         desktop.innerHTML = NAV_ITEMS.map(item => {
             const isActive = item.href === currentPage || (currentPage === '' && item.href === 'index.html');
-            const clickHandler = item.href.startsWith('#') ? '' : '';
             return `<a href="${item.href}" class="nav-link px-3 py-2 text-sm font-medium text-white/80 hover:text-sol transition-colors rounded-lg hover:bg-white/10 ${isActive ? '!text-sol' : ''}">${item.label}</a>`;
         }).join('');
     }
 
-    // Mobile
     const mobile = document.getElementById('mobileNavLinks');
     if (mobile) {
         mobile.innerHTML = NAV_ITEMS.map(item =>
@@ -54,11 +50,11 @@ function renderNav() {
                     </div>
                     <div>
                         <h4 class="font-heading font-bold text-white text-sm uppercase tracking-wider mb-5">Navegação</h4>
-                        <ul class="space-y-3">${NAV_ITEMS.slice(0,6).map(i=>`<li><a href="${i.href}" class="text-white/50 text-sm font-body hover:text-sol transition-colors">${i.label}</a></li>`).join('')}</ul>
+                        <ul class="space-y-3">${NAV_ITEMS.slice(0,5).map(i=>`<li><a href="${i.href}" class="text-white/50 text-sm font-body hover:text-sol transition-colors">${i.label}</a></li>`).join('')}</ul>
                     </div>
                     <div>
                         <h4 class="font-heading font-bold text-white text-sm uppercase tracking-wider mb-5">Mais</h4>
-                        <ul class="space-y-3">${NAV_ITEMS.slice(6).map(i=>`<li><a href="${i.href}" class="text-white/50 text-sm font-body hover:text-sol transition-colors">${i.label}</a></li>`).join('')}<li><a href="#" class="text-white/50 text-sm font-body hover:text-sol transition-colors">Política de Privacidade</a></li></ul>
+                        <ul class="space-y-3">${NAV_ITEMS.slice(5).map(i=>`<li><a href="${i.href}" class="text-white/50 text-sm font-body hover:text-sol transition-colors">${i.label}</a></li>`).join('')}<li><a href="#" class="text-white/50 text-sm font-body hover:text-sol transition-colors">Política de Privacidade</a></li></ul>
                     </div>
                     <div>
                         <h4 class="font-heading font-bold text-white text-sm uppercase tracking-wider mb-5">Contato</h4>
