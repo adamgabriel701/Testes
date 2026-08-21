@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maués — Capital Nacional do Guaraná</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/tailwind.config.js"></script>
+</head>
+<body>
+    <!-- PRELOADER -->
+    <div class="preloader" id="preloader">
+        <div class="text-center">
+            <div class="preloader-text">Maués</div>
+            <p class="text-areia/60 text-sm tracking-widest font-body mt-2" style="clip-path:inset(0 100% 0 0);animation:slideReveal 1.2s .4s cubic-bezier(.77,0,.175,1) forwards">Capital Nacional do Guaraná</p>
+            <div class="preloader-bar"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img src="" alt="" id="lightboxImg">
+    </div>
+
+    <!-- BACK TO TOP -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
+        <iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon>
+    </button>
+
+    <!-- NAVIGATION -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <div class="flex items-center justify-between h-20 md:h-24">
+                <a href="index.html" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30">
+                        <iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span>
+                        <span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span>
+                    </div>
+                </a>
+                <nav class="hidden xl:flex items-center gap-1" id="desktopNav">
+                    <!-- Preenchido por JS -->
+                </nav>
+                <div class="flex items-center gap-3">
+                    <a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30">
+                        <iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon>
+                        Planeje sua Viagem
+                    </a>
+                    <button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu">
+        <div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks">
+            <!-- Preenchido por JS -->
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <section id="hero" class="relative h-screen min-h-[600px] overflow-hidden">
+        <div class="absolute inset-0">
+            <img src="https://picsum.photos/seed/maues-amazon-river-2/1920/1080.jpg" alt="Rio Maués-Açu" class="hero-bg w-full h-full object-cover" loading="eager">
+            <div class="absolute inset-0 bg-gradient-to-r from-amazon-dark/90 via-amazon/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-amazon-dark/80 via-transparent to-amazon-dark/30"></div>
+        </div>
+        <div class="absolute top-1/4 right-[15%] hidden lg:block float-shape opacity-20"><div class="w-32 h-32 border-2 border-sol/40 rounded-full"></div></div>
+        <div class="absolute bottom-1/3 right-[25%] hidden lg:block float-shape opacity-10"><div class="w-20 h-20 border-2 border-white/30 rounded-full"></div></div>
+
+        <div class="relative z-10 h-full flex items-end pb-20 md:pb-28">
+            <div class="max-w-[1400px] mx-auto px-4 md:px-8 w-full">
+                <div class="max-w-3xl">
+                    <div class="inline-flex items-center gap-2 bg-sol/20 backdrop-blur-sm border border-sol/30 rounded-full px-4 py-2 mb-6" style="animation:slideReveal 1s .5s cubic-bezier(.77,0,.175,1) both">
+                        <iconify-icon icon="lucide:sparkles" class="text-sol text-sm"></iconify-icon>
+                        <span class="text-sol text-xs font-heading font-semibold uppercase tracking-widest">Amazônia • Brasil</span>
+                    </div>
+                    <h1 class="font-heading font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6" style="animation:slideReveal 1.2s .7s cubic-bezier(.77,0,.175,1) both">
+                        Maués<br><span class="text-sol">Terra do</span><br>Guaraná
+                    </h1>
+                    <p class="text-white/70 text-base md:text-lg max-w-xl mb-8 font-body font-light leading-relaxed" style="animation:slideReveal 1s 1s cubic-bezier(.77,0,.175,1) both">
+                        Onde a ancestralidade Sateré-Mawé encontra praias de água doce, e o segredo da longevidade nasce no fruto sagrado da Amazônia.
+                    </p>
+                    <div class="flex flex-wrap gap-4" style="animation:slideReveal 1s 1.2s cubic-bezier(.77,0,.175,1) both">
+                        <a href="contato-e-suporte.html" class="inline-flex items-center gap-3 bg-guarana hover:bg-guarana-light text-white font-heading font-bold uppercase tracking-wider text-sm px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-xl shadow-guarana/30">
+                            <iconify-icon icon="lucide:compass" class="text-lg"></iconify-icon> Planeje sua Viagem
+                        </a>
+                        <a href="guarana.html" class="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-heading font-semibold uppercase tracking-wider text-sm px-8 py-4 rounded-full transition-all duration-300">
+                            <iconify-icon icon="lucide:play-circle" class="text-lg"></iconify-icon> Conheça a História
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 z-10 bg-white/10 backdrop-blur-lg border-t border-white/10 hidden md:block" style="animation:slideReveal 1s 1.6s cubic-bezier(.77,0,.175,1) both">
+            <div class="max-w-[1400px] mx-auto px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-2"><iconify-icon icon="lucide:map-pin" class="text-sol text-sm"></iconify-icon><span class="text-white/80 text-xs font-body">Interior do Amazonas</span></div>
+                    <div class="flex items-center gap-2"><iconify-icon icon="lucide:thermometer-sun" class="text-sol text-sm"></iconify-icon><span class="text-white/80 text-xs font-body">27°C média anual</span></div>
+                    <div class="flex items-center gap-2"><iconify-icon icon="lucide:users" class="text-sol text-sm"></iconify-icon><span class="text-white/80 text-xs font-body">~66 mil habitantes</span></div>
+                </div>
+                <div class="flex items-center gap-2"><iconify-icon icon="lucide:star" class="text-sol text-sm"></iconify-icon><span class="text-white/80 text-xs font-body">Destaque turístico da Amazônia</span></div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40 animate-bounce md:bottom-16">
+            <span class="text-[10px] uppercase tracking-widest font-heading">Explore</span>
+            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+        </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="bg-amazon overflow-hidden py-3 border-y border-amazon-light">
+        <div class="marquee-track flex items-center whitespace-nowrap">
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:flower2" class="text-sol"></iconify-icon> Capital Nacional do Guaraná</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:heart" class="text-guarana"></iconify-icon> Terra da Longevidade</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:palmtree" class="text-sol"></iconify-icon> Praias de Água Doce</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:users" class="text-sol"></iconify-icon> Povo Sateré-Mawé</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:fish" class="text-sol"></iconify-icon> Pesca Esportiva</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:waves" class="text-sol"></iconify-icon> Rio Maués-Açu</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:flower2" class="text-sol"></iconify-icon> Capital Nacional do Guaraná</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:heart" class="text-guarana"></iconify-icon> Terra da Longevidade</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:palmtree" class="text-sol"></iconify-icon> Praias de Água Doce</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:users" class="text-sol"></iconify-icon> Povo Sateré-Mawé</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:fish" class="text-sol"></iconify-icon> Pesca Esportiva</span>
+            <span class="mx-8 text-areia/60 text-xs font-heading font-semibold uppercase tracking-[0.3em] flex items-center gap-3"><iconify-icon icon="lucide:waves" class="text-sol"></iconify-icon> Rio Maués-Açu</span>
+        </div>
+    </div>
+
+    <!-- HIGHLIGHT CARDS — Links para sub-páginas -->
+    <section class="py-16 md:py-24 bg-areia">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="guarana.html" class="reveal group bg-white rounded-2xl p-6 border border-areia-dark/50 hover:border-amazon/30 transition-all duration-500 hover:shadow-xl hover:shadow-amazon/5 cursor-pointer block">
+                    <div class="w-14 h-14 rounded-2xl bg-amazon/10 flex items-center justify-center mb-5 group-hover:bg-amazon transition-colors duration-300">
+                        <iconify-icon icon="lucide:flower2" class="text-amazon text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-amazon-dark mb-2">A Terra do Guaraná</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed">Rota sagrada do guaraná: lavouras, artesanato e cadeia produtiva.</p>
+                    <span class="inline-flex items-center gap-1 text-amazon text-xs font-heading font-semibold mt-4 group-hover:gap-2 transition-all">Explorar <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon></span>
+                </a>
+                <a href="satere-mawe.html" class="reveal group bg-white rounded-2xl p-6 border border-areia-dark/50 hover:border-guarana/30 transition-all duration-500 hover:shadow-xl hover:shadow-guarana/5 cursor-pointer block" style="transition-delay:.1s">
+                    <div class="w-14 h-14 rounded-2xl bg-guarana/10 flex items-center justify-center mb-5 group-hover:bg-guarana transition-colors duration-300">
+                        <iconify-icon icon="lucide:heart-pulse" class="text-guarana text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-amazon-dark mb-2">Cultura Sateré-Mawé</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed">Turismo comunitário, artesanato ancestral e lendas do povo guaraná.</p>
+                    <span class="inline-flex items-center gap-1 text-guarana text-xs font-heading font-semibold mt-4 group-hover:gap-2 transition-all">Explorar <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon></span>
+                </a>
+                <a href="pesca-esportiva.html" class="reveal group bg-white rounded-2xl p-6 border border-areia-dark/50 hover:border-sol/30 transition-all duration-500 hover:shadow-xl hover:shadow-sol/5 cursor-pointer block" style="transition-delay:.2s">
+                    <div class="w-14 h-14 rounded-2xl bg-sol/10 flex items-center justify-center mb-5 group-hover:bg-sol transition-colors duration-300">
+                        <iconify-icon icon="lucide:fish" class="text-sol text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-amazon-dark mb-2">Pesca Esportiva</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed">Paraíso do tucunaré-açu: calendário, guias e barco-hotéis.</p>
+                    <span class="inline-flex items-center gap-1 text-sol text-xs font-heading font-semibold mt-4 group-hover:gap-2 transition-all">Explorar <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon></span>
+                </a>
+                <a href="noticias-e-eventos.html" class="reveal group bg-white rounded-2xl p-6 border border-areia-dark/50 hover:border-amazon/30 transition-all duration-500 hover:shadow-xl hover:shadow-amazon/5 cursor-pointer block" style="transition-delay:.3s">
+                    <div class="w-14 h-14 rounded-2xl bg-amazon/10 flex items-center justify-center mb-5 group-hover:bg-amazon transition-colors duration-300">
+                        <iconify-icon icon="lucide:calendar-heart" class="text-amazon text-2xl group-hover:text-white transition-colors duration-300"></iconify-icon>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg text-amazon-dark mb-2">Notícias & Eventos</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed">Festa do Guaraná, Verão de Maués, programação e blog de viagem.</p>
+                    <span class="inline-flex items-center gap-1 text-amazon text-xs font-heading font-semibold mt-4 group-hover:gap-2 transition-all">Explorar <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon></span>
+                </a>
+            </div>
+
+            <!-- Segunda fileira de links rápidos -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+                <a href="onde-ficar.html" class="reveal group bg-white rounded-2xl p-5 border border-areia-dark/50 hover:border-amazon/30 transition-all duration-500 hover:shadow-xl cursor-pointer flex items-center gap-4" style="transition-delay:.35s">
+                    <div class="w-12 h-12 rounded-xl bg-amazon/10 flex items-center justify-center flex-shrink-0 group-hover:bg-amazon transition-colors duration-300"><iconify-icon icon="lucide:bed" class="text-amazon text-xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+                    <div><h3 class="font-heading font-bold text-base text-amazon-dark">Onde Ficar</h3><p class="text-xs text-gray-500 font-body">Pousadas, hotéis e hospedagens</p></div>
+                </a>
+                <a href="onde-comer.html" class="reveal group bg-white rounded-2xl p-5 border border-areia-dark/50 hover:border-sol/30 transition-all duration-500 hover:shadow-xl cursor-pointer flex items-center gap-4" style="transition-delay:.4s">
+                    <div class="w-12 h-12 rounded-xl bg-sol/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sol transition-colors duration-300"><iconify-icon icon="lucide:utensils" class="text-sol text-xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+                    <div><h3 class="font-heading font-bold text-base text-amazon-dark">Onde Comer</h3><p class="text-xs text-gray-500 font-body">Gastronomia amazônica autêntica</p></div>
+                </a>
+                <a href="contato-e-suporte.html" class="reveal group bg-white rounded-2xl p-5 border border-areia-dark/50 hover:border-guarana/30 transition-all duration-500 hover:shadow-xl cursor-pointer flex items-center gap-4" style="transition-delay:.45s">
+                    <div class="w-12 h-12 rounded-xl bg-guarana/10 flex items-center justify-center flex-shrink-0 group-hover:bg-guarana transition-colors duration-300"><iconify-icon icon="lucide:headphones" class="text-guarana text-xl group-hover:text-white transition-colors duration-300"></iconify-icon></div>
+                    <div><h3 class="font-heading font-bold text-base text-amazon-dark">Contato & Suporte</h3><p class="text-xs text-gray-500 font-body">Central do visitante</p></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LONGEVIDADE (resumo) -->
+    <section id="longevidade" class="py-20 md:py-32 bg-amazon relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5"><div class="absolute top-0 right-0 w-96 h-96 bg-sol rounded-full blur-3xl"></div><div class="absolute bottom-0 left-0 w-96 h-96 bg-guarana rounded-full blur-3xl"></div></div>
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Qualidade de Vida</span>
+                <h2 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1]">O Segredo da<br>Longevidade</h2>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 reveal">
+                <div class="text-center"><div class="font-heading font-black text-4xl md:text-5xl text-sol counter-num" data-target="85">0</div><span class="text-white/60 text-xs font-heading uppercase tracking-widest mt-2 block">Anos média</span></div>
+                <div class="text-center"><div class="font-heading font-black text-4xl md:text-5xl text-sol counter-num" data-target="120">0</div><span class="text-white/60 text-xs font-heading uppercase tracking-widest mt-2 block">Centenários+</span></div>
+                <div class="text-center"><div class="font-heading font-black text-4xl md:text-5xl text-sol counter-num" data-target="90">0</div><span class="text-white/60 text-xs font-heading uppercase tracking-widest mt-2 block">% Guaraná nacional</span></div>
+                <div class="text-center"><div class="font-heading font-black text-4xl md:text-5xl text-sol counter-num" data-target="66">0</div><span class="text-white/60 text-xs font-heading uppercase tracking-widest mt-2 block">Mil habitantes</span></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="pillar-card reveal bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center">
+                    <div class="pillar-icon w-16 h-16 rounded-2xl bg-guarana/20 flex items-center justify-center mx-auto mb-5"><iconify-icon icon="lucide:coffee" class="text-guarana text-3xl"></iconify-icon></div>
+                    <h3 class="font-heading font-bold text-lg text-white mb-3">Guaraná Diário</h3>
+                    <p class="text-white/60 text-sm font-body leading-relaxed">Propriedades antioxidantes e estimulantes comprovadas pela ciência.</p>
+                </div>
+                <div class="pillar-card reveal bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center" style="transition-delay:.1s">
+                    <div class="pillar-icon w-16 h-16 rounded-2xl bg-sol/20 flex items-center justify-center mx-auto mb-5"><iconify-icon icon="lucide:fish" class="text-sol text-3xl"></iconify-icon></div>
+                    <h3 class="font-heading font-bold text-lg text-white mb-3">Alimentação Natural</h3>
+                    <p class="text-white/60 text-sm font-body leading-relaxed">Peixes de rio, frutas amazônicas e farinha — zero ultraprocessados.</p>
+                </div>
+                <div class="pillar-card reveal bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center" style="transition-delay:.2s">
+                    <div class="pillar-icon w-16 h-16 rounded-2xl bg-amazon-light/30 flex items-center justify-center mx-auto mb-5"><iconify-icon icon="lucide:activity" class="text-green-300 text-3xl"></iconify-icon></div>
+                    <h3 class="font-heading font-bold text-lg text-white mb-3">Vida Ativa</h3>
+                    <p class="text-white/60 text-sm font-body leading-relaxed">Lavoura, caminhadas e vida comunitária em movimento constante.</p>
+                </div>
+                <div class="pillar-card reveal bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center" style="transition-delay:.3s">
+                    <div class="pillar-icon w-16 h-16 rounded-2xl bg-guarana/20 flex items-center justify-center mx-auto mb-5"><iconify-icon icon="lucide:heart-handshake" class="text-guarana text-3xl"></iconify-icon></div>
+                    <h3 class="font-heading font-bold text-lg text-white mb-3">Comunidade & Fé</h3>
+                    <p class="text-white/60 text-sm font-body leading-relaxed">Lares multigeracionais e espiritualidade como pilares emocionais.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERIA (resumo) -->
+    <section id="galeria" class="py-20 md:py-28 bg-white overflow-hidden">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-12 reveal">
+                <span class="inline-block text-amazon text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Registros</span>
+                <h2 class="font-heading font-black text-3xl md:text-5xl text-amazon-dark tracking-tight leading-[1]">Galeria de Fotos</h2>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal-scale">
+                <div class="gallery-item col-span-2 row-span-2 aspect-square md:aspect-auto" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-1/1200/1200.jpg')"><img src="https://picsum.photos/seed/maues-gallery-1/800/800.jpg" alt="Vista aérea" class="w-full h-full min-h-[200px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-2/800/800.jpg')"><img src="https://picsum.photos/seed/maues-gallery-2/400/400.jpg" alt="Guaraná" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-3/800/800.jpg')"><img src="https://picsum.photos/seed/maues-gallery-3/400/400.jpg" alt="Rio" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-4/800/800.jpg')"><img src="https://picsum.photos/seed/maues-gallery-4/400/400.jpg" alt="Praia" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-5/800/800.jpg')"><img src="https://picsum.photos/seed/maues-gallery-5/400/400.jpg" alt="Artesanato" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item col-span-2 aspect-video" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-6/1200/600.jpg')"><img src="https://picsum.photos/seed/maues-gallery-6/800/400.jpg" alt="Cachoeira" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item col-span-2 aspect-video" onclick="openLightbox('https://picsum.photos/seed/maues-gallery-7/1200/600.jpg')"><img src="https://picsum.photos/seed/maues-gallery-7/800/400.jpg" alt="Festa" class="w-full h-full min-h-[150px]"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEPOIMENTOS -->
+    <section class="py-20 md:py-28 bg-amazon-dark relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-sol/30 rounded-full"></div></div>
+        <div class="max-w-[1000px] mx-auto px-4 md:px-8 relative z-10">
+            <div class="text-center mb-12 reveal"><iconify-icon icon="lucide:quote" class="text-sol/40 text-5xl mb-4 block mx-auto"></iconify-icon></div>
+            <div class="overflow-hidden reveal">
+                <div class="testimonial-track" id="testimonialTrack">
+                    <div class="testimonial-slide text-center">
+                        <p class="text-white/90 text-lg md:text-xl font-body font-light leading-relaxed mb-8 max-w-2xl mx-auto">"Maués mudou minha perspectiva sobre a Amazônia. A hospitalidade, as praias de água doce e o guaraná artesanal são inesquecíveis."</p>
+                        <div class="flex items-center justify-center gap-3"><div class="w-12 h-12 rounded-full bg-guarana/30 flex items-center justify-center"><iconify-icon icon="lucide:user" class="text-white/70 text-lg"></iconify-icon></div><div class="text-left"><span class="block font-heading font-bold text-white text-sm">Camila Rodrigues</span><span class="block text-white/50 text-xs font-body">São Paulo — 2024</span></div></div>
+                    </div>
+                    <div class="testimonial-slide text-center">
+                        <p class="text-white/90 text-lg md:text-xl font-body font-light leading-relaxed mb-8 max-w-2xl mx-auto">"A travessia de Manaus a Maués de lancha é uma das experiências mais bonitas que já tive no Brasil."</p>
+                        <div class="flex items-center justify-center gap-3"><div class="w-12 h-12 rounded-full bg-sol/30 flex items-center justify-center"><iconify-icon icon="lucide:user" class="text-white/70 text-lg"></iconify-icon></div><div class="text-left"><span class="block font-heading font-bold text-white text-sm">Lucas Mendes</span><span class="block text-white/50 text-xs font-body">Belo Horizonte — 2023</span></div></div>
+                    </div>
+                    <div class="testimonial-slide text-center">
+                        <p class="text-white/90 text-lg md:text-xl font-body font-light leading-relaxed mb-8 max-w-2xl mx-auto">"Conhecer a lavoura e ouvir o mito Sateré-Mawé dos indígenas foi profundamente transformador."</p>
+                        <div class="flex items-center justify-center gap-3"><div class="w-12 h-12 rounded-full bg-amazon-light/40 flex items-center justify-center"><iconify-icon icon="lucide:user" class="text-white/70 text-lg"></iconify-icon></div><div class="text-left"><span class="block font-heading font-bold text-white text-sm">Ana Beatriz Costa</span><span class="block text-white/50 text-xs font-body">Recife — 2024</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-center gap-3 mt-8 reveal">
+                <button onclick="goToTestimonial(0)" class="testimonial-dot w-3 h-3 rounded-full transition-all duration-300" data-index="0"></button>
+                <button onclick="goToTestimonial(1)" class="testimonial-dot w-3 h-3 rounded-full transition-all duration-300" data-index="1"></button>
+                <button onclick="goToTestimonial(2)" class="testimonial-dot w-3 h-3 rounded-full transition-all duration-300" data-index="2"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="py-20 md:py-28 bg-guarana relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10"><div class="absolute -top-20 -right-20 w-80 h-80 border-2 border-white rounded-full"></div></div>
+        <div class="max-w-[700px] mx-auto px-4 md:px-8 text-center relative z-10 reveal">
+            <iconify-icon icon="lucide:mail" class="text-white/40 text-4xl mb-6 block mx-auto"></iconify-icon>
+            <h2 class="font-heading font-black text-3xl md:text-4xl text-white tracking-tight mb-4">Fique por Dentro</h2>
+            <p class="text-white/70 text-sm font-body leading-relaxed mb-8">Receba novidades sobre eventos e dicas de viagem para Maués.</p>
+            <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+                <input type="email" id="newsletterEmail" placeholder="Seu melhor e-mail" required class="flex-1 px-5 py-3.5 rounded-full bg-white/15 border border-white/25 text-white placeholder-white/40 text-sm font-body outline-none focus:border-white/60 focus:bg-white/20 transition-all">
+                <button type="submit" class="inline-flex items-center justify-center gap-2 bg-white text-guarana font-heading font-bold uppercase tracking-wider text-xs px-7 py-3.5 rounded-full transition-all duration-300 hover:scale-105 hover:bg-areia shadow-lg whitespace-nowrap">
+                    <iconify-icon icon="lucide:send" class="text-sm"></iconify-icon> Inscrever-se
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="siteFooter"></footer>
+
+    <script src="js/nav-data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notícias & Eventos — Maués</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/tailwind.config.js"></script>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="" alt="" id="lightboxImg"></div>
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
+
+    <div class="page-hero">
+        <img src="https://picsum.photos/seed/festival-night-stage-lights/1920/600.jpg" alt="Eventos de Maués" class="page-hero-bg">
+        <div class="absolute inset-0 bg-gradient-to-r from-amazon-dark/95 via-amazon/80 to-amazon/40"></div>
+        <div class="page-hero-content">
+            <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Agenda & Blog</span>
+            <h1 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1] mb-4">Notícias<br>& Eventos</h1>
+            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">Programação oficial, cobertura fotográfica e dicas sazonais para planejar sua visita.</p>
+        </div>
+    </div>
+
+    <!-- FESTA DO GUARANÁ DETALHADA -->
+    <section class="py-20 md:py-28 bg-areia">
+        <div class="max-w-[1200px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-guarana text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Evento Principal</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Festa do Guaraná 2025</h2>
+                <p class="text-gray-500 text-sm font-body mt-3 max-w-lg mx-auto">Programação prevista para novembro/dezembro. Confira a grade completa.</p>
+            </div>
+
+            <!-- Countdown -->
+            <div class="flex justify-center gap-3 mb-12 reveal">
+                <div class="countdown-box text-center"><span class="font-heading font-extrabold text-2xl text-sol block" id="cd-days">00</span><span class="text-white/50 text-[10px] uppercase tracking-widest">Dias</span></div>
+                <div class="countdown-box text-center"><span class="font-heading font-extrabold text-2xl text-sol block" id="cd-hours">00</span><span class="text-white/50 text-[10px] uppercase tracking-widest">Horas</span></div>
+                <div class="countdown-box text-center"><span class="font-heading font-extrabold text-2xl text-sol block" id="cd-mins">00</span><span class="text-white/50 text-[10px] uppercase tracking-widest">Min</span></div>
+                <div class="countdown-box text-center"><span class="font-heading font-extrabold text-2xl text-sol block" id="cd-secs">00</span><span class="text-white/50 text-[10px] uppercase tracking-widest">Seg</span></div>
+            </div>
+
+            <!-- Programação -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="reveal info-card border-l-4 border-l-guarana">
+                    <div class="flex items-center gap-2 mb-2"><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded">Dia 1</span><span class="text-gray-400 text-xs font-body">Novembro</span></div>
+                    <h3 class="font-heading font-bold text-amazon-dark mb-1">Abertura & Encenação do Mito</h3>
+                    <p class="text-gray-500 text-sm font-body">Abertura oficial na Praia da Maresia com encenação teatral do mito de nascimento do guaraná pelo grupo cultural Sateré-Mawé. Queima de fogos.</p>
+                </div>
+                <div class="reveal info-card border-l-4 border-l-sol" style="transition-delay:.05s">
+                    <div class="flex items-center gap-2 mb-2"><span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-2 py-1 rounded">Dia 2</span><span class="text-gray-400 text-xs font-body">Novembro</span></div>
+                    <h3 class="font-heading font-bold text-amazon-dark mb-1">Concurso Rainha do Guaraná</h3>
+                    <p class="text-gray-500 text-sm font-body">Desfile das candidatas na Passarela da Praia. Show com banda regional e apresentação de danças indígenas.</p>
+                </div>
+                <div class="reveal info-card border-l-4 border-l-amazon" style="transition-delay:.1s">
+                    <div class="flex items-center gap-2 mb-2"><span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-2 py-1 rounded">Dia 3</span><span class="text-gray-400 text-xs font-body">Novembro</span></div>
+                    <h3 class="font-heading font-bold text-amazon-dark mb-1">Feira do Guaraná & Gastronomia</h3>
+                    <p class="text-gray-500 text-sm font-body">Stands de produtores rurais, degustação de guaraná batido, licores artesanais e pratos típicos. Oficina de ralação.</p>
+                </div>
+                <div class="reveal info-card border-l-4 border-l-guarana" style="transition-delay:.15s">
+                    <div class="flex items-center gap-2 mb-2"><span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-2 py-1 rounded">Dia 4</span><span class="text-gray-400 text-xs font-body">Dezembro</span></div>
+                    <h3 class="font-heading font-bold text-amazon-dark mb-1">Grande Show & Encerramento</h3>
+                    <p class="text-gray-500 text-sm font-body">Show nacional na Praia da Maresia (artista a confirmar). Coroação da Rainha e encerramento com megashow pirotécnico.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VERÃO DE MAUÉS -->
+    <section class="py-20 md:py-28 bg-white">
+        <div class="max-w-[1200px] mx-auto px-4 md:px-8">
+            <div class="reveal bg-amazon rounded-3xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="relative h-56 lg:h-auto"><img src="https://picsum.photos/seed/summer-beach-stage-amazon/800/500.jpg" alt="Verão de Maués" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-r from-transparent to-amazon/80 hidden lg:block"></div></div>
+                    <div class="p-8 md:p-10 flex flex-col justify-center">
+                        <span class="bg-sol/20 text-sol text-[10px] font-heading font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block w-fit mb-4">Julho / Agosto</span>
+                        <h3 class="font-heading font-black text-2xl md:text-3xl text-white mb-3">Verão de Maués</h3>
+                        <p class="text-white/70 text-sm font-body leading-relaxed mb-4">Festival de 5 dias na Praia da Maresia durante a estiagem. Inclui campeonato de vôlei de areia, jet-ski, shows regionais, quadrilhas juninas fora de época e maratona aquática no rio.</p>
+                        <a href="contato-e-suporte.html" class="inline-flex items-center gap-2 bg-sol hover:bg-sol-light text-amazon-dark font-heading font-bold uppercase tracking-wider text-xs px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 self-start">Saiba Mais <iconify-icon icon="lucide:arrow-right" class="text-sm"></iconify-icon></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COBERTURA FOTOGRÁFICA -->
+    <section class="py-20 md:py-28 bg-areia">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-amazon text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Registros</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Cobertura Fotográfica</h2>
+                <p class="text-gray-500 text-sm font-body mt-3">Edições passadas que marcaram a história cultural de Maués.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal-scale">
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/event-photo-1/800/800.jpg')"><img src="https://picsum.photos/seed/event-photo-1/400/400.jpg" alt="Festa 2023"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/event-photo-2/800/800.jpg')"><img src="https://picsum.photos/seed/event-photo-2/400/400.jpg" alt="Desfile 2023"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/event-photo-3/800/800.jpg')"><img src="https://picsum.photos/seed/event-photo-3/400/400.jpg" alt="Show 2022"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+                <div class="gallery-item aspect-square" onclick="openLightbox('https://picsum.photos/seed/event-photo-4/800/800.jpg')"><img src="https://picsum.photos/seed/event-photo-4/400/400.jpg" alt="Fogos 2022"><iconify-icon icon="lucide:zoom-in" class="gallery-zoom"></iconify-icon></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOG DE VIAGEM -->
+    <section class="py-20 md:py-28 bg-white">
+        <div class="max-w-[1200px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Dicas Sazonais</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Blog de Viagem</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <article class="reveal info-card group cursor-pointer">
+                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/dry-season-beach-tips/600/400.jpg" alt="Estiagem" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>
+                    <span class="text-guarana text-[10px] font-heading font-bold uppercase tracking-widest">Estiagem • Jul 2025</span>
+                    <h3 class="font-heading font-bold text-amazon-dark mt-2 mb-2">5 Dias em Maués na Estiagem: Roteiro Completo</h3>
+                    <p class="text-gray-500 text-sm font-body leading-relaxed">Dia a dia com praias, cachoeiras, pesca e Festa do Guaraná. Inclui valores atualizados e dicas de transporte.</p>
+                </article>
+                <article class="reveal info-card group cursor-pointer" style="transition-delay:.1s">
+                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/boat-travel-amazon-tips/600/400.jpg" alt="Lancha" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>
+                    <span class="text-amazon text-[10px] font-heading font-bold uppercase tracking-widest">Transporte • Jun 2025</span>
+                    <h3 class="font-heading font-bold text-amazon-dark mt-2 mb-2">Tudo sobre a Travessia Manaus–Maués de Lancha</h3>
+                    <p class="text-gray-500 text-sm font-body leading-relaxed">Horários, preços, o que levar, empresas recomendadas e como tornar a viagem parte da experiência.</p>
+                </article>
+                <article class="reveal info-card group cursor-pointer" style="transition-delay:.2s">
+                    <div class="rounded-xl overflow-hidden h-44 mb-4"><img src="https://picsum.photos/seed/responsible-tourism-indigenous/600/400.jpg" alt="Turismo responsável" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>
+                    <span class="text-sol text-[10px] font-heading font-bold uppercase tracking-widest">Ética • Mai 2025</span>
+                    <h3 class="font-heading font-bold text-amazon-dark mt-2 mb-2">Turismo Indígena: Como Visitar com Respeito</h3>
+                    <p class="text-gray-500 text-sm font-body leading-relaxed">Guia completo de conduta, o que pagar, o que não fazer e como sua visita gera impacto positivo.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <footer id="siteFooter"></footer>
+    <script src="js/nav-data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
