@@ -1,4 +1,52 @@
-ho</h3>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesca Esportiva em Maués — Paraíso do Tucunaré</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/tailwind.config.js"></script>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo"><iconify-icon icon="lucide:arrow-up" class="text-lg"></iconify-icon></button>
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="navbar"><div class="max-w-[1400px] mx-auto px-4 md:px-8"><div class="flex items-center justify-between h-20 md:h-24"><a href="index.html" class="flex items-center gap-3 group"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-guarana flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:flower2" class="text-white text-lg md:text-xl"></iconify-icon></div><div class="hidden sm:block"><span class="font-heading font-extrabold text-lg md:text-xl text-white drop-shadow-lg tracking-tight">Maués</span><span class="block text-[10px] md:text-xs text-sol font-heading font-semibold tracking-widest uppercase drop-shadow">Capital do Guaraná</span></div></a><nav class="hidden xl:flex items-center gap-1" id="desktopNav"></nav><div class="flex items-center gap-3"><a href="contato-e-suporte.html" class="hidden md:inline-flex items-center gap-2 bg-guarana hover:bg-guarana-light text-white text-xs font-heading font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-guarana/30"><iconify-icon icon="lucide:map-pin" class="text-sm"></iconify-icon> Planeje sua Viagem</a><button class="xl:hidden w-10 h-10 flex items-center justify-center text-white" onclick="toggleMobileMenu()" aria-label="Menu"><iconify-icon icon="lucide:menu" class="text-2xl" id="menuIcon"></iconify-icon></button></div></div></div></header>
+    <div class="mobile-menu fixed inset-0 z-40 bg-amazon/98 backdrop-blur-xl xl:hidden" id="mobileMenu"><div class="flex flex-col items-center justify-center h-full gap-5 overflow-y-auto py-20" id="mobileNavLinks"></div></div>
+
+    <!-- PAGE HERO -->
+    <div class="page-hero">
+        <img src="https://picsum.photos/seed/fishing-peacock-bass-river/1920/600.jpg" alt="Pesca esportiva" class="page-hero-bg">
+        <div class="absolute inset-0 bg-gradient-to-r from-amazon-dark/95 via-amazon/80 to-amazon/40"></div>
+        <div class="page-hero-content">
+            <span class="inline-block text-sol text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Nicho Esportivo</span>
+            <h1 class="font-heading font-black text-3xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1] mb-4">Paraíso dos<br>Pescadores</h1>
+            <p class="text-white/70 text-base max-w-xl font-body font-light leading-relaxed">Tucunaré-açu, pirarucu, surubim — os rios de Maués são um santuário da pesca esportiva brasileira.</p>
+        </div>
+    </div>
+
+    <!-- CALENDÁRIO -->
+    <section class="py-20 md:py-28 bg-areia">
+        <div class="max-w-[1200px] mx-auto px-4 md:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="inline-block text-amazon text-xs font-heading font-bold uppercase tracking-[0.3em] mb-4">Planejamento</span>
+                <h2 class="font-heading font-black text-3xl md:text-4xl text-amazon-dark tracking-tight">Calendário de Pesca</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="reveal info-card border-t-4 border-t-amazon">
+                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Julho — Outubro</h3>
+                    <span class="bg-sol/10 text-sol text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Melhor Época</span>
+                    <p class="text-gray-500 text-sm font-body leading-relaxed">Estiagem: águas baixas concentram os peixes. Tucunaré-açu mais agressivo. Praias e lagoaçés acessíveis.</p>
+                </div>
+                <div class="reveal info-card border-t-4 border-t-sol" style="transition-delay:.1s">
+                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Novembro — Janeiro</h3>
+                    <span class="bg-amazon/10 text-amazon text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Boa</span>
+                    <p class="text-gray-500 text-sm font-body leading-relaxed">Início das chuvas. Ainda há boas condições. Colheita do guaraná como programa secundário.</p>
+                </div>
+                <div class="reveal info-card border-t-4 border-t-guarana" style="transition-delay:.2s">
+                    <h3 class="font-heading font-bold text-amazon-dark mb-2">Fevereiro — Junho</h3>
                     <span class="bg-guarana/10 text-guarana text-[10px] font-heading font-bold uppercase px-3 py-1 rounded-full inline-block mb-3">Desafiadora</span>
                     <p class="text-gray-500 text-sm font-body leading-relaxed">Cheia dos rios. Peixes dispersos na floresta alagada. Apenas para pescadores muito experientes com guias especializados.</p>
                 </div>
