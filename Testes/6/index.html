@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura — Ecossistema de Sensações Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Space Grotesk', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<style>
+  /* === VARIÁVEIS DE TEMA === */
+  :root {
+    --bg: #08080C;
+    --bg2: #0E0E14;
+    --fg: #F2EDE8;
+    --fg-muted: #7A756F;
+    --accent: #E8A838;
+    --accent2: #38E8C6;
+    --card: rgba(255,255,255,0.035);
+    --card-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.15);
+    --glass: rgba(14,14,20,0.75);
+    --shadow: rgba(0,0,0,0.5);
+    --radius: 16px;
+    --transition: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-theme="light"] {
+    --bg: #F5F0E8;
+    --bg2: #EDE7DD;
+    --fg: #1A1612;
+    --fg-muted: #8A837A;
+    --accent: #C48A20;
+    --accent2: #1AAD8E;
+    --card: rgba(0,0,0,0.04);
+    --card-hover: rgba(0,0,0,0.08);
+    --border: rgba(0,0,0,0.1);
+    --border-hover: rgba(0,0,0,0.2);
+    --glass: rgba(245,240,232,0.8);
+    --shadow: rgba(0,0,0,0.1);
+  }
+  /* Modos de daltonismo */
+  [data-color="protanopia"] { --accent: #0072B2; --accent2: #56B4E9; }
+  [data-color="deuteranopia"] { --accent: #E69F00; --accent2: #F0E442; }
+  [data-color="tritanopia"] { --accent: #CC79A7; --accent2: #009E73; }
+  [data-color="high-contrast"] {
+    --bg: #000; --bg2: #111; --fg: #FFF; --fg-muted: #CCC;
+    --accent: #FFD700; --accent2: #00FF7F; --card: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg); }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    overflow-x: hidden;
+    transition: background var(--transition), color var(--transition);
+  }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif; }
+
+  /* === CURSOR PERSONALIZADO === */
+  .cursor-dot {
+    position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+    background: var(--accent); border-radius: 50%; pointer-events: none;
+    z-index: 10001; transition: width 0.2s, height 0.2s, background 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+    border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none;
+    z-index: 10000; transition: width 0.35s ease, height 0.35s ease, border-color 0.2s, opacity 0.3s;
+    transform: translate(-50%, -50%); opacity: 0.6;
+  }
+  .cursor-dot.magnify { width: 24px; height: 24px; background: rgba(232,168,56,0.2); border: 2px solid var(--accent); }
+  .cursor-ring.magnify { width: 64px; height: 64px; opacity: 0.3; border-color: var(--accent); }
+  .cursor-dot.control { width: 12px; height: 12px; background: var(--accent2); }
+  .cursor-ring.control { width: 52px; height: 52px; border-color: var(--accent2); opacity: 0.5; }
+  .cursor-dot.label-mode::after {
+    content: attr(data-label); position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+    background: var(--glass); backdrop-filter: blur(12px); color: var(--fg); font-size: 11px;
+    padding: 4px 10px; border-radius: 6px; white-space: nowrap; border: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } body { cursor: auto; } }
+  @media (pointer: fine) { body { cursor: none; } a, button, input, [data-cursor] { cursor: none; } }
+
+  /* === CANVAS DO HERO === */
+  #hero-canvas { position: absolute; inset: 0; z-index: 0; }
+
+  /* === NAV ORBITAL === */
+  .orbital-nav {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+    z-index: 9999; width: 340px; height: 340px; transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none;
+  }
+  .orbital-nav.open { transform: translate(-50%, -50%) scale(1); pointer-events: all; }
+  .orbital-bg {
+    position: absolute; inset: -40px; border-radius: 50%;
+    background: var(--glass); backdrop-filter: blur(24px); border: 1px solid var(--border);
+  }
+  .orbital-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 64px; height: 64px; border-radius: 50%; background: var(--accent);
+    display: flex; align-items: center; justify-content: center; z-index: 2;
+    color: var(--bg); font-weight: 800; font-size: 18px; font-family: 'Syne', sans-serif;
+  }
+  .orbital-item {
+    position: absolute; width: 100px; text-align: center;
+    transform: translate(-50%, -50%);
+    opacity: 0; transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .orbital-nav.open .orbital-item { opacity: 1; }
+  .orbital-item a {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--fg); font-size: 12px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .orbital-item a:hover { color: var(--accent); }
+  .orbital-icon {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--card);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .orbital-item a:hover .orbital-icon { background: var(--card-hover); border-color: var(--accent); transform: scale(1.1); }
+  .orbital-ring {
+    position: absolute; top: 50%; left: 50%; border-radius: 50%;
+    border: 1px dashed var(--border); transform: translate(-50%, -50%);
+    animation: orbital-spin 60s linear infinite;
+  }
+  @keyframes orbital-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* === BOTÃO TRIGGER === */
+  .nav-trigger {
+    position: fixed; top: 24px; right: 24px; z-index: 9998;
+    width: 48px; height: 48px; border-radius: 50%; background: var(--glass);
+    backdrop-filter: blur(16px); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg); font-size: 18px; transition: all 0.3s;
+  }
+  .nav-trigger:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
+  .nav-trigger.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* === SEÇÕES === */
+  section { min-height: 100vh; position: relative; padding: 100px 5vw; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px;
+    color: var(--accent); margin-bottom: 16px;
+  }
+  .section-label::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .section-title {
+    font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .section-desc { color: var(--fg-muted); font-size: 1.05rem; max-width: 560px; line-height: 1.7; }
+
+  /* === GLASS CARD === */
+  .glass-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    backdrop-filter: blur(12px); transition: all var(--transition);
+    position: relative; overflow: hidden;
+  }
+  .glass-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), var(--card-hover), transparent 40%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .glass-card:hover::before { opacity: 1; }
+  .glass-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 20px 60px var(--shadow); }
+
+  /* === BENTO GRID === */
+  .bento-grid {
+    display: grid; gap: 16px; width: 100%;
+    grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(180px, auto);
+  }
+  .bento-grid .span-2 { grid-column: span 2; }
+  .bento-grid .span-3 { grid-column: span 3; }
+  .bento-grid .row-2 { grid-row: span 2; }
+  @media (max-width: 900px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .bento-grid .span-3 { grid-column: span 2; } }
+  @media (max-width: 560px) { .bento-grid { grid-template-columns: 1fr; } .bento-grid .span-2, .bento-grid .span-3 { grid-column: span 1; } }
+
+  /* === SLIDER CUSTOM === */
+  .aura-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border); outline: none; }
+  .aura-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); border: 3px solid var(--bg); cursor: none;
+    box-shadow: 0 0 12px rgba(232,168,56,0.4); transition: transform 0.2s;
+  }
+  .aura-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  /* === BOTÃO FÍSICO === */
+  .physics-btn {
+    padding: 14px 32px; border-radius: 12px; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 15px; border: none; position: relative;
+    transition: transform var(--spring, 0.3s cubic-bezier(0.34,1.56,0.64,1)),
+                box-shadow var(--spring, 0.3s cubic-bezier(0.34,1.56,0.64,1));
+    cursor: none; color: var(--bg);
+  }
+
+  /* === ALVO FITTS === */
+  .fitts-target {
+    border-radius: 50%; position: absolute; display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-family: 'Syne'; cursor: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .fitts-target:hover { transform: scale(1.05); }
+
+  /* === HEATMAP CANVAS === */
+  #heatmap-canvas { border-radius: 12px; border: 1px solid var(--border); }
+
+  /* === TOAST === */
+  .toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9997; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .toast {
+    background: var(--glass); backdrop-filter: blur(16px); border: 1px solid var(--border);
+    color: var(--fg); padding: 12px 24px; border-radius: 12px; font-size: 14px;
+    animation: toast-in 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(20px) scale(0.95); } }
+
+  /* === REVEAL ANIMATIONS === */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* === MODO ZEN === */
+  body.zen-mode .section-label, body.zen-mode .section-desc, body.zen-mode .zen-hide,
+  body.zen-mode .nav-trigger span { display: none !important; }
+  body.zen-mode .section-title { font-size: 10px !important; letter-spacing: 4px; text-transform: uppercase; opacity: 0.4; }
+  body.zen-mode .glass-card { outline: 1px dashed var(--border) !important; outline-offset: 4px; }
+  body.zen-mode .physics-btn { font-size: 0 !important; width: 48px !important; height: 48px !important; padding: 0 !important; border-radius: 50% !important; }
+  .zen-badge {
+    position: fixed; bottom: 80px; right: 24px; z-index: 9997;
+    background: var(--accent); color: var(--bg); font-size: 11px; font-weight: 700;
+    padding: 6px 14px; border-radius: 8px; display: none; letter-spacing: 2px; text-transform: uppercase;
+  }
+  body.zen-mode .zen-badge { display: block; }
+
+  /* === PAINEL DE CONTROLES === */
+  .control-panel {
+    position: fixed; left: 20px; bottom: 20px; z-index: 9996;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .ctrl-btn {
+    width: 42px; height: 42px; border-radius: 12px; background: var(--glass);
+    backdrop-filter: blur(12px); border: 1px solid var(--border);
+    color: var(--fg-muted); display: flex; align-items: center; justify-content: center;
+    font-size: 15px; transition: all 0.2s; cursor: none;
+  }
+  .ctrl-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .ctrl-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* === SELECTOR DE ACESSIBILIDADE === */
+  .a11y-dropdown {
+    position: absolute; bottom: 52px; left: 0; width: 220px;
+    background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px; display: none; flex-direction: column; gap: 6px;
+  }
+  .a11y-dropdown.open { display: flex; }
+  .a11y-option {
+    padding: 8px 12px; border-radius: 8px; font-size: 13px; color: var(--fg);
+    background: transparent; border: none; text-align: left; cursor: none;
+    transition: background 0.2s; font-family: 'Space Grotesk', sans-serif;
+  }
+  .a11y-option:hover { background: var(--card-hover); }
+  .a11y-option.active { color: var(--accent); font-weight: 600; }
+
+  /* === SEPARADOR === */
+  .section-divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 5vw;
+  }
+
+  /* === ANIMAÇÃO REDUZIDA === */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* === BARRA DE PROGRESSO DO SCROLL === */
+  .scroll-progress {
+    position: fixed; top: 0; left: 0; height: 2px; background: var(--accent);
+    z-index: 10002; width: 0%; transition: width 0.1s linear;
+  }
+
+  /* Webcam light indicator */
+  .light-indicator {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+    margin-right: 6px; transition: background 0.5s;
+  }
+
+  /* Hero scroll indicator */
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--fg-muted); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    animation: scroll-bounce 2s ease-in-out infinite;
+  }
+  @keyframes scroll-bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+  .glow-orb {
+    position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.15; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- Barra de progresso do scroll -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Cursor personalizado -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Badge do Modo Zen -->
+<div class="zen-badge">Modo Zen Ativo</div>
+
+<!-- Container de toasts -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Botão de navegação orbital -->
+<button class="nav-trigger" id="navTrigger" aria-label="Abrir navegação" data-cursor="control">
+  <i class="fa-solid fa-plus" id="navIcon"></i>
+</button>
+
+<!-- Navegação Orbital -->
+<nav class="orbital-nav" id="orbitalNav" aria-label="Navegação principal">
+  <div class="orbital-bg"></div>
+  <div class="orbital-ring" style="width:300px;height:300px;"></div>
+  <div class="orbital-ring" style="width:220px;height:220px;animation-direction:reverse;animation-duration:45s;"></div>
+  <div class="orbital-center">A</div>
+  <!-- Os itens são posicionados via JS -->
+  <div class="orbital-item" data-index="0" style="top:12%;left:50%;">
+    <a href="#hero" data-cursor="control" data-label="Inicio"><div class="orbital-icon"><i class="fa-solid fa-house"></i></div>Início</a>
+  </div>
+  <div class="orbital-item" data-index="1" style="top:35%;left:90%;">
+    <a href="#lab" data-cursor="control" data-label="Lab de Microinterações"><div class="orbital-icon"><i class="fa-solid fa-flask"></i></div>Lab</a>
+  </div>
+  <div class="orbital-item" data-index="2" style="top:72%;left:85%;">
+    <a href="#ux-playground" data-cursor="control" data-label="UX Playground"><div class="orbital-icon"><i class="fa-solid fa-brain"></i></div>UX</a>
+  </div>
+  <div class="orbital-item" data-index="3" style="top:90%;left:50%;">
+    <a href="#a11y" data-cursor="control" data-label="Acessibilidade Viva"><div class="orbital-icon"><i class="fa-solid fa-universal-access"></i></div>A11y</a>
+  </div>
+  <div class="orbital-item" data-index="4" style="top:72%;left:15%;">
+    <a href="#matrix" data-cursor="control" data-label="Dark/Light Matrix"><div class="orbital-icon"><i class="fa-solid fa-circle-half-stroke"></i></div>Tema</a>
+  </div>
+</nav>
+
+<!-- Painel de Controles Fixo -->
+<div class="control-panel" id="controlPanel">
+  <button class="ctrl-btn" id="zenBtn" data-cursor="control" data-label="Modo Zen" aria-label="Alternar Modo Zen">
+    <i class="fa-solid fa-cube"></i>
+  </button>
+  <button class="ctrl-btn" id="soundBtn" data-cursor="control" data-label="Som" aria-label="Alternar som">
+    <i class="fa-solid fa-volume-high"></i>
+  </button>
+  <div style="position:relative;">
+    <button class="ctrl-btn" id="a11yBtn" data-cursor="control" data-label="Acessibilidade" aria-label="Opções de acessibilidade">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+    <div class="a11y-dropdown" id="a11yDropdown">
+      <button class="a11y-option active" data-color="normal">Visão Padrão</button>
+      <button class="a11y-option" data-color="protanopia">Protanopia</button>
+      <button class="a11y-option" data-color="deuteranopia">Deuteranopia</button>
+      <button class="a11y-option" data-color="tritanopia">Tritanopia</button>
+      <button class="a11y-option" data-color="high-contrast">Alto Contraste</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- HERO -->
+<!-- ============================================ -->
+<section id="hero" style="display:flex;align-items:center;justify-content:center;overflow:hidden;">
+  <canvas id="hero-canvas"></canvas>
+  <div class="glow-orb" style="width:500px;height:500px;background:var(--accent);top:-100px;right:-100px;"></div>
+  <div class="glow-orb" style="width:400px;height:400px;background:var(--accent2);bottom:-80px;left:-80px;"></div>
+  <div style="position:relative;z-index:1;text-align:center;max-width:800px;padding:0 20px;">
+    <div class="section-label reveal" style="justify-content:center;">Ecossistema Interativo</div>
+    <h1 class="reveal reveal-delay-1" style="font-size:clamp(3rem,10vw,7rem);font-weight:800;line-height:0.95;margin-bottom:24px;">
+      <span style="color:var(--accent);">Aura</span>
+    </h1>
+    <p class="reveal reveal-delay-2" style="font-size:clamp(1rem,2.5vw,1.3rem);color:var(--fg-muted);line-height:1.7;max-width:520px;margin:0 auto 40px;">
+      Onde a interface se transforma com base no seu comportamento. Sinta o design, não apenas veja.
+    </p>
+    <div class="reveal reveal-delay-3" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="#lab" class="physics-btn" style="background:var(--accent);" data-cursor="control" data-label="Explorar">
+        Explorar Aura
+      </a>
+      <a href="#ux-playground" class="physics-btn" style="background:var(--card);color:var(--fg);border:1px solid var(--border);" data-cursor="control" data-label="Ver Playground">
+        Playground
+      </a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- LAB DE MICROINTERAÇÕES -->
+<!-- ============================================ -->
+<section id="lab" style="padding-top:120px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label reveal">01 — Laboratório</div>
+    <h2 class="section-title reveal reveal-delay-1">Lab de Microinterações</h2>
+    <p class="section-desc reveal reveal-delay-2 zen-hide">Ajuste a física dos botões em tempo real e sinta como cada parâmetro altera a percepção de qualidade da interface.</p>
+
+    <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+      <!-- Painel de Controle -->
+      <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;gap:20px;">
+        <h3 style="font-size:16px;font-weight:700;">Parâmetros de Física</h3>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:13px;color:var(--fg-muted);">Massa</label>
+            <span id="massVal" style="font-size:13px;color:var(--accent);font-weight:600;">1.0</span>
+          </div>
+          <input type="range" class="aura-slider" id="massSlider" min="0.2" max="3" step="0.1" value="1" data-cursor="control">
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:13px;color:var(--fg-muted);">Fricção</label>
+            <span id="frictionVal" style="font-size:13px;color:var(--accent);font-weight:600;">0.3</span>
+          </div>
+          <input type="range" class="aura-slider" id="frictionSlider" min="0.05" max="0.8" step="0.05" value="0.3" data-cursor="control">
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:13px;color:var(--fg-muted);">Rigidez da Mola</label>
+            <span id="stiffVal" style="font-size:13px;color:var(--accent);font-weight:600;">0.15</span>
+          </div>
+          <input type="range" class="aura-slider" id="stiffSlider" min="0.02" max="0.4" step="0.01" value="0.15" data-cursor="control">
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <label style="font-size:13px;color:var(--fg-muted);">Distorção Máxima</label>
+            <span id="distortVal" style="font-size:13px;color:var(--accent);font-weight:600;">0.20</span>
+          </div>
+          <input type="range" class="aura-slider" id="distortSlider" min="0.05" max="0.5" step="0.05" value="0.2" data-cursor="control">
+        </div>
+        <div style="margin-top:auto;padding:12px;background:var(--card);border-radius:10px;font-size:12px;color:var(--fg-muted);line-height:1.6;">
+          <strong style="color:var(--fg);">Dica:</strong> Clique e segure os botões ao lado. Observe como a massa controla a inércia e a rigidez define a velocidade de retorno.
+        </div>
+      </div>
+
+      <!-- Área de Teste dos Botões -->
+      <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+        <h3 style="font-size:16px;font-weight:700;align-self:flex-start;">Área de Teste</h3>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center;min-height:200px;">
+          <button class="physics-btn" id="physBtn1" style="background:var(--accent);" data-cursor="control" data-label="Primário">
+            Primário
+          </button>
+          <button class="physics-btn" id="physBtn2" style="background:var(--accent2);color:var(--bg);" data-cursor="control" data-label="Secundário">
+            Secundário
+          </button>
+          <button class="physics-btn" id="physBtn3" style="background:var(--fg);color:var(--bg);" data-cursor="control" data-label="Neutro">
+            Neutro
+          </button>
+          <button class="physics-btn" id="physBtn4" style="background:transparent;color:var(--fg);border:2px solid var(--accent);" data-cursor="control" data-label="Outline">
+            Outline
+          </button>
+        </div>
+        <div id="physicsInfo" style="font-size:12px;color:var(--fg-muted);text-align:center;min-height:40px;transition:all 0.3s;"></div>
+      </div>
+
+      <!-- Presets -->
+      <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1px;">Presets</h4>
+        <button class="physics-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="jelly" data-cursor="control" data-label="Gelatina">Gelatina</button>
+        <button class="physics-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="heavy" data-cursor="control" data-label="Pesado">Pesado</button>
+        <button class="physics-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="snappy" data-cursor="control" data-label="Elástico">Elástico</button>
+        <button class="physics-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="slow" data-cursor="control" data-label="Lento">Lento</button>
+      </div>
+
+      <!-- Métricas em tempo real -->
+      <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:8px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1px;">Métricas</h4>
+        <div style="display:flex;justify-content:space-between;font-size:13px;">
+          <span style="color:var(--fg-muted);">FPS</span>
+          <span id="fpsCounter" style="color:var(--accent);font-weight:600;">60</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;">
+          <span style="color:var(--fg-muted);">Cliques</span>
+          <span id="clickCounter" style="color:var(--accent);font-weight:600;">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;">
+          <span style="color:var(--fg-muted);">Easing Atual</span>
+          <span id="easingLabel" style="color:var(--accent2);font-weight:600;font-size:11px;">cubic-bezier(.34,1.56,.64,1)</span>
+        </div>
+        <div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden;margin-top:4px;">
+          <div id="stressBar" style="height:100%;width:0%;background:var(--accent);transition:width 0.3s;border-radius:2px;"></div>
+        </div>
+        <span style="font-size:11px;color:var(--fg-muted);">Carga de física</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- UX PLAYGROUND -->
+<!-- ============================================ -->
+<section id="ux-playground" style="padding-top:120px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label reveal">02 — Psicologia Cognitiva</div>
+    <h2 class="section-title reveal reveal-delay-1">UX Playground</h2>
+    <p class="section-desc reveal reveal-delay-2 zen-hide">Veja a Lei de Fitts e a Lei de Hick em ação. Seus movimentos geram dados reais que se transformam em mapas de calor.</p>
+
+    <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+      <!-- Lei de Fitts -->
+      <div class="glass-card span-2 row-2" style="padding:0;overflow:hidden;">
+        <div style="padding:20px 24px 12px;">
+          <h3 style="font-size:16px;font-weight:700;">Lei de Fitts</h3>
+          <p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Clique nos alvos o mais rápido possível. Alvos menores e distantes exigem mais tempo.</p>
+        </div>
+        <div id="fittsArea" style="position:relative;width:100%;height:280px;background:var(--card);margin:0 16px 16px;border-radius:12px;overflow:hidden;">
+          <!-- Alvos gerados via JS -->
+        </div>
+        <div style="padding:0 24px 20px;display:flex;gap:24px;font-size:13px;">
+          <div><span style="color:var(--fg-muted);">Tempo médio:</span> <span id="fittsAvgTime" style="color:var(--accent);font-weight:600;">—</span></div>
+          <div><span style="color:var(--fg-muted);">Acertos:</span> <span id="fittsHits" style="color:var(--accent2);font-weight:600;">0</span></div>
+          <div><span style="color:var(--fg-muted);">Erros:</span> <span id="fittsMisses" style="color:#E84848;font-weight:600;">0</span></div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="glass-card span-2 row-2" style="padding:20px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Mapa de Calor ao Vivo</h3>
+        <p style="font-size:12px;color:var(--fg-muted);margin-bottom:12px;" class="zen-hide">Mova o mouse sobre esta área para gerar o heatmap em tempo real.</p>
+        <canvas id="heatmap-canvas" width="500" height="220" style="width:100%;height:220px;"></canvas>
+      </div>
+
+      <!-- Lei de Hick -->
+      <div class="glass-card span-3" style="padding:24px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Lei de Hick</h3>
+        <p style="font-size:12px;color:var(--fg-muted);margin-bottom:16px;" class="zen-hide">Mais opções = mais tempo de decisão. Clique na palavra "ALVO" o mais rápido que puder.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+          <label style="font-size:13px;color:var(--fg-muted);">Opções:</label>
+          <input type="range" class="aura-slider" id="hickSlider" min="2" max="24" step="1" value="4" style="max-width:200px;" data-cursor="control">
+          <span id="hickCount" style="font-size:14px;color:var(--accent);font-weight:600;">4</span>
+        </div>
+        <div id="hickGrid" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));">
+          <!-- Gerado via JS -->
+        </div>
+        <div style="margin-top:16px;font-size:13px;">
+          <span style="color:var(--fg-muted);">Tempo médio:</span> <span id="hickAvgTime" style="color:var(--accent);font-weight:600;">—</span>
+        </div>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1px;">Insights</h4>
+        <div id="uxInsight" style="font-size:13px;color:var(--fg);line-height:1.6;">
+          Comece interagindo com os testes ao lado para gerar insights sobre seu comportamento de navegação.
+        </div>
+        <div style="margin-top:auto;">
+          <div style="height:60px;display:flex;align-items:flex-end;gap:3px;" id="miniChart">
+            <!-- Barras geradas via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- ACESSIBILIDADE VIVA -->
+<!-- ============================================ -->
+<section id="a11y" style="padding-top:120px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label reveal">03 — Inclusão</div>
+    <h2 class="section-title reveal reveal-delay-1">Acessibilidade Viva</h2>
+    <p class="section-desc reveal reveal-delay-2 zen-hide">Alterne instantaneamente entre modos de percepção visual sem quebrar o layout. Use o botão <i class="fa-solid fa-eye" style="color:var(--accent);"></i> no canto inferior esquerdo.</p>
+
+    <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+      <div class="glass-card span-2" style="padding:28px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Simulação de Daltonismo</h3>
+        <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Cada tipo de daltonismo afeta a percepção de cores de forma diferente. Observe como as paletas se adaptam para manter a legibilidade.</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div>
+            <div style="width:100%;aspect-ratio:1;border-radius:12px;background:var(--accent);margin-bottom:8px;transition:background 0.5s;"></div>
+            <span style="font-size:11px;color:var(--fg-muted);">Primária</span>
+          </div>
+          <div>
+            <div style="width:100%;aspect-ratio:1;border-radius:12px;background:var(--accent2);margin-bottom:8px;transition:background 0.5s;"></div>
+            <span style="font-size:11px;color:var(--fg-muted);">Secundária</span>
+          </div>
+          <div>
+            <div style="width:100%;aspect-ratio:1;border-radius:12px;background:var(--fg);margin-bottom:8px;transition:background 0.5s;"></div>
+            <span style="font-size:11px;color:var(--fg-muted);">Texto</span>
+          </div>
+          <div>
+            <div style="width:100%;aspect-ratio:1;border-radius:12px;background:var(--bg);border:1px solid var(--border);margin-bottom:8px;transition:background 0.5s;"></div>
+            <span style="font-size:11px;color:var(--fg-muted);">Fundo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card span-2" style="padding:28px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Contraste e Legibilidade</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="padding:16px;border-radius:10px;background:var(--card);" id="contrastDemo1">
+            <p style="font-size:18px;font-weight:700;">Texto Grande — AAA</p>
+            <p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão de contraste: <span id="cr1">—</span></p>
+          </div>
+          <div style="padding:16px;border-radius:10px;background:var(--card);" id="contrastDemo2">
+            <p style="font-size:14px;font-weight:400;">Texto Corpo — AA</p>
+            <p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão de contraste: <span id="cr2">—</span></p>
+          </div>
+          <div style="padding:16px;border-radius:10px;background:var(--card);" id="contrastDemo3">
+            <p style="font-size:11px;font-weight:400;">Texto Pequeno — AA</p>
+            <p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão de contraste: <span id="cr3">—</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card span-2" style="padding:28px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Navegação por Teclado</h3>
+        <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Pressione <kbd style="padding:2px 8px;background:var(--card-hover);border-radius:4px;font-size:12px;border:1px solid var(--border);">Tab</kbd> para navegar entre os elementos interativos. O foco visível garante que todos possam usar a interface.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button style="padding:10px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 1</button>
+          <button style="padding:10px 20px;border-radius:8px;background:var(--accent2);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 2</button>
+          <button style="padding:10px 20px;border-radius:8px;background:var(--card);color:var(--fg);font-weight:600;font-family:'Syne';border:1px solid var(--border);cursor:none;" data-cursor="control">Botão 3</button>
+          <input type="text" placeholder="Campo de texto..." style="padding:10px 16px;border-radius:8px;background:var(--card);color:var(--fg);border:1px solid var(--border);font-family:'Space Grotesk';font-size:14px;outline:none;cursor:none;" data-cursor="control">
+        </div>
+      </div>
+
+      <div class="glass-card span-2" style="padding:28px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Leitor de Tela Visual</h3>
+        <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:16px;" class="zen-hide">Passe o mouse sobre os cards abaixo para ver como um leitor de tela descreveria o conteúdo.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="screenReaderDemos">
+          <!-- Gerado via JS -->
+        </div>
+        <div id="srOutput" style="margin-top:12px;padding:12px;background:var(--card);border-radius:8px;font-size:13px;color:var(--accent);min-height:44px;border-left:3px solid var(--accent);transition:all 0.3s;">
+          Passe o mouse sobre um item acima...
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================ -->
+<!-- DARK/LIGHT MATRIX -->
+<!-- ============================================ -->
+<section id="matrix" style="padding-top:120px;padding-bottom:120px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label reveal">04 — Sistemas de Design</div>
+    <h2 class="section-title reveal reveal-delay-1">Dark / Light Matrix</h2>
+    <p class="section-desc reveal reveal-delay-2 zen-hide">A transição de tema se adapta à iluminação ambiente via webcam ou ao horário do dia, reconfigurando toda a paleta de cores em tempo real.</p>
+
+    <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+      <!-- Controle de Tema -->
+      <div class="glass-card" style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+        <h3 style="font-size:16px;font-weight:700;">Tema Atual</h3>
+        <div id="currentThemeDisplay" style="font-size:28px;font-weight:800;color:var(--accent);font-family:'Syne';">DARK</div>
+        <button class="physics-btn" id="themeToggle" style="background:var(--accent);width:100%;" data-cursor="control" data-label="Alternar tema">
+          Alternar Manualmente
+        </button>
+      </div>
+
+      <!-- Paleta Ativa -->
+      <div class="glass-card" style="padding:24px;display:flex;flex-direction:column;gap:12px;">
+        <h3 style="font-size:16px;font-weight:700;">Paleta Ativa</h3>
+        <div id="paletteDisplay" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Webcam Light Sensor -->
+      <div class="glass-card span-2" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h3 style="font-size:16px;font-weight:700;">Sensor de Luz Ambiental</h3>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="light-indicator" id="lightIndicator" style="background:#555;"></span>
+            <span id="lightStatus" style="font-size:12px;color:var(--fg-muted);">Inativo</span>
+          </div>
+        </div>
+        <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;max-height:200px;">
+          <video id="webcamVideo" style="width:100%;height:100%;object-fit:cover;opacity:0.4;transform:scaleX(-1);" autoplay playsinline muted></video>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" id="webcamPlaceholder">
+            <button id="webcamBtn" class="physics-btn" style="background:var(--accent);font-size:13px;" data-cursor="control" data-label="Ativar câmera">
+              <i class="fa-solid fa-camera" style="margin-right:8px;"></i>Ativar Câmera
+            </button>
+          </div>
+          <canvas id="lightCanvas" style="display:none;"></canvas>
+        </div>
+        <p style="font-size:11px;color:var(--fg-muted);margin-top:8px;" class="zen-hide">A câmera é usada localmente apenas para medir a luminosidade média do ambiente. Nenhum dado é enviado.</p>
+      </div>
+
+      <!-- Transição Preview -->
+      <div class="glass-card span-3" style="padding:24px;">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Preview de Componentes</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+          <div style="padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--border);transition:all 0.5s;">
+            <div style="width:40px;height:4px;border-radius:2px;background:var(--accent);margin-bottom:12px;transition:background 0.5s;"></div>
+            <p style="font-weight:600;font-size:14px;margin-bottom:4px;transition:color 0.5s;">Card Component</p>
+            <p style="font-size:12px;color:var(--fg-muted);transition:color 0.5s;" class="zen-hide">Conteúdo de exemplo com transição suave entre temas.</p>
+          </div>
+          <div style="padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--border);transition:all 0.5s;">
+            <div style="display:flex;gap:6px;margin-bottom:12px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);transition:background 0.5s;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--accent2);transition:background 0.5s;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--fg-muted);transition:background 0.5s;"></div>
+            </div>
+            <p style="font-weight:600;font-size:14px;margin-bottom:4px;transition:color 0.5s;">Status Indicators</p>
+            <p style="font-size:12px;color:var(--fg-muted);transition:color 0.5s;" class="zen-hide">Sinais visuais adaptados ao contexto.</p>
+          </div>
+          <div style="padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--border);transition:all 0.5s;">
+            <div style="height:6px;border-radius:3px;background:var(--border);margin-bottom:8px;overflow:hidden;transition:background 0.5s;">
+              <div style="width:65%;height:100%;border-radius:3px;background:var(--accent);transition:background 0.5s;"></div>
+            </div>
+            <p style="font-weight:600;font-size:14px;margin-bottom:4px;transition:color 0.5s;">Progress Bar</p>
+            <p style="font-size:12px;color:var(--fg-muted);transition:color 0.5s;" class="zen-hide">65% concluído com cores adaptáveis.</p>
+          </div>
+          <div style="padding:16px;border-radius:12px;background:var(--accent);transition:all 0.5s;">
+            <p style="font-weight:700;font-size:14px;color:var(--bg);margin-bottom:4px;transition:color 0.5s;">CTA Destaque</p>
+            <p style="font-size:12px;color:var(--bg);opacity:0.7;transition:color 0.5s;" class="zen-hide">Botão de ação com inversão automática.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="padding:40px 5vw;border-top:1px solid var(--border);text-align:center;">
+  <p style="font-size:13px;color:var(--fg-muted);">Aura — Ecossistema Interativo das Sensações Digital</p>
+  <p style="font-size:11px;color:var(--fg-muted);opacity:0.5;margin-top:4px;">Construído com princípios de design adaptativo e acessibilidade</p>
+</footer>
+
+<!-- ============================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================ -->
+<script>
+// =============================================
+// SISTEMA DE ÁUDIO (Web Audio API)
+// =============================================
+const AudioSystem = {
+  ctx: null,
+  enabled: true,
+  init() {
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  },
+  ensure() {
+    if (!this.ctx) this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  // Som de clique suave
+  click() {
+    if (!this.enabled) return;
+    this.ensure();
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, t);
+    osc.frequency.exponentialRampToValueAtTime(400, t + 0.08);
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + 0.1);
+  },
+  // Som de hover
+  hover() {
+    if (!this.enabled) return;
+    this.ensure();
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, t);
+    osc.frequency.exponentialRampToValueAtTime(1400, t + 0.04);
+    gain.gain.setValueAtTime(0.03, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + 0.05);
+  },
+  // Som de acerto
+  hit() {
+    if (!this.enabled) return;
+    this.ensure();
+    const t = this.ctx.currentTime;
+    [600, 800, 1000].forEach((f, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, t + i * 0.06);
+      gain.gain.setValueAtTime(0.06, t + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.06 + 0.15);
+      osc.connect(gain).connect(this.ctx.destination);
+      osc.start(t + i * 0.06); osc.stop(t + i * 0.06 + 0.15);
+    });
+  },
+  // Som de erro
+  miss() {
+    if (!this.enabled) return;
+    this.ensure();
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, t);
+    osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + 0.2);
+  },
+  // Som de transição de seção
+  transition() {
+    if (!this.enabled) return;
+    this.ensure();
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, t);
+    osc.frequency.exponentialRampToValueAtTime(600, t + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(500, t + 0.4);
+    gain.gain.setValueAtTime(0.05, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + 0.5);
+  },
+  toggle() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
+};
+
+// =============================================
+// CURSOR INTELIGENTE
+// =============================================
+const cursorDot = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorDot.style.left = mouseX + 'px';
+  cursorDot.style.top = mouseY + 'px';
+});
+
+// Suavização do anel
+function animateCursorRing() {
+  ringX += (mouseX - ringX) * 0.15;
+  ringY += (mouseY - ringY) * 0.15;
+  cursorRing.style.left = ringX + 'px';
+  cursorRing.style.top = ringY + 'px';
+  requestAnimationFrame(animateCursorRing);
+}
+animateCursorRing();
+
+// Tipos de cursor
+document.addEventListener('mouseover', (e) => {
+  const el = e.target.closest('[data-cursor]');
+  cursorDot.classList.remove('magnify', 'control', 'label-mode');
+  cursorRing.classList.remove('magnify', 'control');
+  if (el) {
+    const type = el.dataset.cursor;
+    if (type === 'magnify') { cursorDot.classList.add('magnify'); cursorRing.classList.add('magnify'); }
+    else if (type === 'control') { cursorDot.classList.add('control'); cursorRing.classList.add('control'); }
+    if (el.dataset.label) {
+      cursorDot.classList.add('label-mode');
+      cursorDot.setAttribute('data-label', el.dataset.label);
+      AudioSystem.hover();
+    }
+  }
+});
+document.addEventListener('mouseout', (e) => {
+  if (!e.relatedTarget || !e.relatedTarget.closest('[data-cursor]')) {
+    cursorDot.classList.remove('magnify', 'control', 'label-mode');
+    cursorRing.classList.remove('magnify', 'control');
+  }
+});
+
+// =============================================
+// NAVEGAÇÃO ORBITAL
+// =============================================
+const navTrigger = document.getElementById('navTrigger');
+const orbitalNav = document.getElementById('orbitalNav');
+const navIcon = document.getElementById('navIcon');
+let navOpen = false;
+
+navTrigger.addEventListener('click', () => {
+  navOpen = !navOpen;
+  orbitalNav.classList.toggle('open', navOpen);
+  navTrigger.classList.toggle('active', navOpen);
+  navIcon.className = navOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-plus';
+  AudioSystem.click();
+});
+
+// Fechar ao clicar em um link
+orbitalNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    navOpen = false;
+    orbitalNav.classList.remove('open');
+    navTrigger.classList.remove('active');
+    navIcon.className = 'fa-solid fa-plus';
+    AudioSystem.transition();
+  });
+});
+
+// Fechar ao clicar fora
+document.addEventListener('click', (e) => {
+  if (navOpen && !orbitalNav.contains(e.target) && !navTrigger.contains(e.target)) {
+    navOpen = false;
+    orbitalNav.classList.remove('open');
+    navTrigger.classList.remove('active');
+    navIcon.className = 'fa-solid fa-plus';
+  }
+});
+
+// =============================================
+// HERO — CANVAS DE PARTÍCULAS 3D
+// =============================================
+const heroCanvas = document.getElementById('hero-canvas');
+const hCtx = heroCanvas.getContext('2d');
+let particles = [];
+const PARTICLE_COUNT = 180;
+let heroMouseX = 0, heroMouseY = 0;
+
+function resizeHeroCanvas() {
+  const section = document.getElementById('hero');
+  heroCanvas.width = section.offsetWidth;
+  heroCanvas.height = section.offsetHeight;
+}
+resizeHeroCanvas();
+window.addEventListener('resize', resizeHeroCanvas);
+
+// Criar partículas
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push({
+    x: Math.random() * heroCanvas.width,
+    y: Math.random() * heroCanvas.height,
+    z: Math.random() * 600 - 300,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    vz: (Math.random() - 0.5) * 0.5,
+    size: Math.random() * 2 + 0.5,
+    color: Math.random() > 0.7 ? '#E8A838' : (Math.random() > 0.5 ? '#38E8C6' : '#F2EDE8')
+  });
+}
+
+document.getElementById('hero').addEventListener('mousemove', (e) => {
+  const rect = heroCanvas.getBoundingClientRect();
+  heroMouseX = e.clientX - rect.left - heroCanvas.width / 2;
+  heroMouseY = e.clientY - rect.top - heroCanvas.height / 2;
+});
+
+function animateHero() {
+  hCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+  const cx = heroCanvas.width / 2;
+  const cy = heroCanvas.height / 2;
+  const focalLength = 400;
+
+  // Atualizar e desenhar partículas
+  particles.forEach(p => {
+    // Movimento
+    p.x += p.vx;
+    p.y += p.vy;
+    p.z += p.vz;
+
+    // Repulsão do mouse
+    const dx = p.x - heroMouseX;
+    const dy = p.y - heroMouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 150 && dist > 0) {
+      const force = (150 - dist) / 150 * 0.8;
+      p.vx += (dx / dist) * force * 0.1;
+      p.vy += (dy / dist) * force * 0.1;
+    }
+
+    // Damping
+    p.vx *= 0.995;
+    p.vy *= 0.995;
+
+    // Limites
+    if (p.x < -300) p.x = 300;
+    if (p.x > 300) p.x = -300;
+    if (p.y < -300) p.y = 300;
+    if (p.y > 300) p.y = -300;
+    if (p.z < -400) p.z = 400;
+    if (p.z > 400) p.z = -400;
+
+    // Projeção perspectiva
+    const scale = focalLength / (focalLength + p.z);
+    const sx = cx + p.x * scale;
+    const sy = cy + p.y * scale;
+    const size = Math.max(0.5, p.size * scale);
+    const alpha = Math.max(0.1, Math.min(1, scale));
+
+    hCtx.beginPath();
+    hCtx.arc(sx, sy, size, 0, Math.PI * 2);
+    hCtx.fillStyle = p.color;
+    hCtx.globalAlpha = alpha;
+    hCtx.fill();
+  });
+
+  // Conexões
+  hCtx.globalAlpha = 1;
+  for (let i = 0; i < particles.length; i++) {
+    const pi = particles[i];
+    const si = focalLength / (focalLength + pi.z);
+    const sxi = cx + pi.x * si;
+    const syi = cy + pi.y * si;
+    for (let j = i + 1; j < particles.length; j++) {
+      const pj = particles[j];
+      const sj = focalLength / (focalLength + pj.z);
+      const sxj = cx + pj.x * sj;
+      const syj = cy + pj.y * sj;
+      const d = Math.hypot(sxi - sxj, syi - syj);
+      if (d < 80) {
+        const lineAlpha = (1 - d / 80) * 0.15 * Math.min(si, sj);
+        hCtx.beginPath();
+        hCtx.moveTo(sxi, syi);
+        hCtx.lineTo(sxj, syj);
+        hCtx.strokeStyle = `rgba(232,168,56,${lineAlpha})`;
+        hCtx.lineWidth = 0.5;
+        hCtx.stroke();
+      }
+    }
+  }
+  hCtx.globalAlpha = 1;
+  requestAnimationFrame(animateHero);
+}
+animateHero();
+
+// =============================================
+// SCROLL REVEAL (IntersectionObserver)
+// =============================================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Barra de progresso
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('scrollProgress').style.width = scrolled + '%';
+});
+
+// =============================================
+// LAB DE MICROINTERAÇÕES — Física de Botões
+// =============================================
+let physMass = 1.0, physFriction = 0.3, physStiff = 0.15, physDistort = 0.2;
+let clickCount = 0;
+let lastFrameTime = performance.now(), frameCount = 0, currentFps = 60;
+
+// Atualizar sliders
+const massSlider = document.getElementById('massSlider');
+const frictionSlider = document.getElementById('frictionSlider');
+const stiffSlider = document.getElementById('stiffSlider');
+const distortSlider = document.getElementById('distortSlider');
+
+function updatePhysicsParams() {
+  physMass = parseFloat(massSlider.value);
+  physFriction = parseFloat(frictionSlider.value);
+  physStiff = parseFloat(stiffSlider.value);
+  physDistort = parseFloat(distortSlider.value);
+  document.getElementById('massVal').textContent = physMass.toFixed(1);
+  document.getElementById('frictionVal').textContent = physFriction.toFixed(2);
+  document.getElementById('stiffVal').textContent = physStiff.toFixed(2);
+  document.getElementById('distortVal').textContent = physDistort.toFixed(2);
+
+  // Calcular e exibir easing aproximado
+  const b = 1 - physFriction;
+  const c = physStiff;
+  document.getElementById('easingLabel').textContent =
+    `cubic-bezier(${(b*0.5).toFixed(2)},${(1+c).toFixed(2)},${(b*0.7).toFixed(2)},1)`;
+
+  // Atualizar variável de spring nos botões
+  const springTime = (physMass / physStiff) * 0.3 + 0.1;
+  document.querySelectorAll('.physics-btn').forEach(btn => {
+    btn.style.setProperty('--spring', `${springTime.toFixed(2)}s cubic-bezier(${(1-physFriction*0.6).toFixed(2)},${(0.8+physStiff*2).toFixed(2)},${(1-physFriction*0.8).toFixed(2)},1)`);
+  });
+}
+
+[massSlider, frictionSlider, stiffSlider, distortSlider].forEach(s => {
+  s.addEventListener('input', updatePhysicsParams);
+});
+updatePhysicsParams();
+
+// Comportamento de física nos botões
+const physBtns = [document.getElementById('physBtn1'), document.getElementById('physBtn2'), document.getElementById('physBtn3'), document.getElementById('physBtn4')];
+
+physBtns.forEach(btn => {
+  let isPressed = false;
+  let pressStartTime = 0;
+
+  btn.addEventListener('mousedown', (e) => {
+    isPressed = true;
+    pressStartTime = performance.now();
+    const dist = Math.min(physDistort, 0.5);
+    const scaleVal = 1 - dist;
+    btn.style.transform = `scale(${scaleVal}) skewX(${dist * 3}deg)`;
+    btn.style.boxShadow = `0 4px 0 rgba(0,0,0,0.3)`;
+    document.getElementById('physicsInfo').textContent = `Comprimindo... Massa: ${physMass.toFixed(1)} | Distorção: ${(dist*100).toFixed(0)}%`;
+    document.getElementById('stressBar').style.width = Math.min(100, (dist / 0.5) * 100) + '%';
+  });
+
+  btn.addEventListener('mouseup', () => {
+    if (!isPressed) return;
+    isPressed = false;
+    const holdTime = performance.now() - pressStartTime;
+    btn.style.transform = 'scale(1) skewX(0deg)';
+    btn.style.boxShadow = 'none';
+    clickCount++;
+    document.getElementById('clickCounter').textContent = clickCount;
+    document.getElementById('physicsInfo').textContent = `Retorno em ${(physMass / physStiff * 100).toFixed(0)}ms | Segurou: ${holdTime.toFixed(0)}ms`;
+    document.getElementById('stressBar').style.width = '0%';
+    AudioSystem.click();
+  });
+
+  btn.addEventListener('mouseleave', () => {
+    if (isPressed) {
+      isPressed = false;
+      btn.style.transform = 'scale(1) skewX(0deg)';
+      btn.style.boxShadow = 'none';
+      document.getElementById('stressBar').style.width = '0%';
+    }
+  });
+});
+
+// Presets
+const presets = {
+  jelly: { mass: 0.5, friction: 0.15, stiff: 0.3, distort: 0.4 },
+  heavy: { mass: 2.8, friction: 0.6, stiff: 0.05, distort: 0.1 },
+  snappy: { mass: 0.3, friction: 0.1, stiff: 0.4, distort: 0.15 },
+  slow: { mass: 2.5, friction: 0.7, stiff: 0.04, distort: 0.05 }
+};
+
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const p = presets[btn.dataset.preset];
+    massSlider.value = p.mass;
+    frictionSlider.value = p.friction;
+    stiffSlider.value = p.stiff;
+    distortSlider.value = p.distort;
+    updatePhysicsParams();
+    AudioSystem.click();
+    showToast(`Preset "${btn.textContent.trim()}" aplicado`);
+  });
+});
+
+// FPS Counter
+function updateFps() {
+  frameCount++;
+  const now = performance.now();
+  if (now - lastFrameTime >= 1000) {
+    currentFps = frameCount;
+    frameCount = 0;
+    lastFrameTime = now;
+    document.getElementById('fpsCounter').textContent = currentFps;
+  }
+  requestAnimationFrame(updateFps);
+}
+updateFps();
+
+// =============================================
+// UX PLAYGROUND — Lei de Fitts
+// =============================================
+const fittsArea = document.getElementById('fittsArea');
+let fittsHits = 0, fittsMisses = 0, fittsTimes = [];
+let fittsTargetStart = 0;
+let uxTimingData = [];
+
+function createFittsTarget() {
+  fittsArea.innerHTML = '';
+  // Tamanho aleatório entre 30 e 80px
+  const size = Math.floor(Math.random() * 50) + 30;
+  const areaW = fittsArea.offsetWidth - size;
+  const areaH = fittsArea.offsetHeight - size;
+  const x = Math.floor(Math.random() * Math.max(1, areaW));
+  const y = Math.floor(Math.random() * Math.max(1, areaH));
+
+  const target = document.createElement('div');
+  target.className = 'fitts-target';
+  target.style.width = size + 'px';
+  target.style.height = size + 'px';
+  target.style.left = x + 'px';
+  target.style.top = y + 'px';
+  target.style.background = `radial-gradient(circle, var(--accent), #C47A18)`;
+  target.style.color = '#08080C';
+  target.style.fontSize = Math.max(10, size * 0.25) + 'px';
+  target.style.boxShadow = `0 0 ${size/2}px rgba(232,168,56,0.3)`;
+  target.textContent = size + 'px';
+  target.setAttribute('data-cursor', 'control');
+  target.setAttribute('data-label', `Alvo ${size}px`);
+
+  target.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const time = performance.now() - fittsTargetStart;
+    fittsHits++;
+    fittsTimes.push(time);
+    uxTimingData.push({ type: 'fitts', time, size, timestamp: Date.now() });
+    document.getElementById('fittsHits').textContent = fittsHits;
+    document.getElementById('fittsAvgTime').textContent = (fittsTimes.reduce((a,b)=>a+b,0) / fittsTimes.length).toFixed(0) + 'ms';
+    updateUxInsights();
+    AudioSystem.hit();
+    updateMiniChart();
+    setTimeout(createFittsTarget, 200);
+  });
+
+  fittsArea.appendChild(target);
+  fittsTargetStart = performance.now();
+}
+
+fittsArea.addEventListener('click', (e) => {
+  if (e.target === fittsArea) {
+    fittsMisses++;
+    document.getElementById('fittsMisses').textContent = fittsMisses;
+    AudioSystem.miss();
+  }
+});
+
+createFittsTarget();
+
+// =============================================
+// UX PLAYGROUND — Mapa de Calor
+// =============================================
+const heatCanvas = document.getElementById('heatmap-canvas');
+const heatCtx = heatCanvas.getContext('2d');
+let heatData = [];
+
+function resizeHeatmap() {
+  const rect = heatCanvas.getBoundingClientRect();
+  heatCanvas.width = rect.width * window.devicePixelRatio;
+  heatCanvas.height = rect.height * window.devicePixelRatio;
+  heatCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+}
+resizeHeatmap();
+window.addEventListener('resize', resizeHeatmap);
+
+heatCanvas.addEventListener('mousemove', (e) => {
+  const rect = heatCanvas.getBoundingClientRect();
+  heatData.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, intensity: 0.3 });
+  if (heatData.length > 2000) heatData = heatData.slice(-1500);
+  drawHeatmap();
+});
+
+function drawHeatmap() {
+  const w = heatCanvas.width / window.devicePixelRatio;
+  const h = heatCanvas.height / window.devicePixelRatio;
+  heatCtx.clearRect(0, 0, w, h);
+
+  // Fundo
+  const isDark = document.documentElement.dataset.theme !== 'light';
+  heatCtx.fillStyle = isDark ? '#0E0E14' : '#EDE7DD';
+  heatCtx.fillRect(0, 0, w, h);
+
+  // Desenhar pontos de calor
+  heatData.forEach(p => {
+    const gradient = heatCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 20);
+    gradient.addColorStop(0, `rgba(232,168,56,${p.intensity})`);
+    gradient.addColorStop(0.5, `rgba(232,80,56,${p.intensity * 0.5})`);
+    gradient.addColorStop(1, 'rgba(232,80,56,0)');
+    heatCtx.fillStyle = gradient;
+    heatCtx.fillRect(p.x - 20, p.y - 20, 40, 40);
+  });
+
+  // Decaimento
+  heatData.forEach(p => { p.intensity *= 0.998; });
+  heatData = heatData.filter(p => p.intensity > 0.01);
+}
+
+// =============================================
+// UX PLAYGROUND — Lei de Hick
+// =============================================
+const hickSlider = document.getElementById('hickSlider');
+const hickGrid = document.getElementById('hickGrid');
+let hickTimes = [];
+let hickTargetStart = 0;
+
+function createHickGrid() {
+  const count = parseInt(hickSlider.value);
+  document.getElementById('hickCount').textContent = count;
+  hickGrid.innerHTML = '';
+
+  // Escolher posição aleatória para o alvo
+  const targetIndex = Math.floor(Math.random() * count);
+
+  for (let i = 0; i < count; i++) {
+    const item = document.createElement('button');
+    item.style.cssText = `
+      padding: 10px 8px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); color: var(--fg); font-family: 'Space Grotesk';
+      font-size: 13px; font-weight: 500; cursor: none; transition: all 0.2s;
+      text-align: center;
+    `;
+    item.setAttribute('data-cursor', 'control');
+
+    if (i === targetIndex) {
+      item.textContent = 'ALVO';
+      item.style.background = 'var(--accent)';
+      item.style.color = 'var(--bg)';
+      item.style.fontWeight = '700';
+      item.style.borderColor = 'var(--accent)';
+      item.addEventListener('click', () => {
+        const time = performance.now() - hickTargetStart;
+        hickTimes.push(time);
+        uxTimingData.push({ type: 'hick', time, options: count, timestamp: Date.now() });
+        document.getElementById('hickAvgTime').textContent = (hickTimes.reduce((a,b)=>a+b,0) / hickTimes.length).toFixed(0) + 'ms';
+        updateUxInsights();
+        AudioSystem.hit();
+        updateMiniChart();
+        setTimeout(createHickGrid, 300);
+      });
+    } else {
+      // Textos distratores
+      const distractors = ['Menu', 'Link', 'Info', 'Sobre', 'Mais', 'Ver', 'Abrir', 'Fechar', 'Editar', 'Salvar', 'Cancelar', 'OK', 'Sim', 'Não', 'Voltar', 'Enviar', 'Buscar', 'Filtro', 'Tag', 'Reset', 'Nova', 'Anterior', 'Próximo', 'Compartilhar'];
+      item.textContent = distractors[i % distractors.length];
+      item.addEventListener('click', () => {
+        AudioSystem.miss();
+        // Flash vermelho
+        item.style.background = 'rgba(232,72,72,0.3)';
+        item.style.borderColor = '#E84848';
+        setTimeout(() => {
+          item.style.background = 'var(--card)';
+          item.style.borderColor = 'var(--border)';
+        }, 300);
+      });
+    }
+
+    hickGrid.appendChild(item);
+  }
+  hickTargetStart = performance.now();
+}
+
+hickSlider.addEventListener('input', createHickGrid);
+createHickGrid();
+
+// Insights dinâmicos
+function updateUxInsights() {
+  const el = document.getElementById('uxInsight');
+  if (uxTimingData.length < 3) {
+    el.textContent = `Continue interagindo... ${uxTimingData.length}/3 dados mínimos para insights.`;
+    return;
+  }
+
+  const fittsData = uxTimingData.filter(d => d.type === 'fitts');
+  const hickData = uxTimingData.filter(d => d.type === 'hick');
+
+  let insights = [];
+
+  if (fittsData.length >= 2) {
+    const smallTargets = fittsData.filter(d => d.size < 45);
+    const bigTargets = fittsData.filter(d => d.size >= 45);
+    if (smallTargets.length > 0 && bigTargets.length > 0) {
+      const avgSmall = smallTargets.reduce((a,d)=>a+d.time,0) / smallTargets.length;
+      const avgBig = bigTargets.reduce((a,d)=>a+d.time,0) / bigTargets.length;
+      if (avgSmall > avgBig * 1.2) {
+        insights.push(`Alvos menores levam ${((avgSmall/avgBig-1)*100).toFixed(0)}% mais tempo — confirme a Lei de Fitts.`);
+      } else {
+        insights.push(`Seu tempo é consistente independente do tamanho — precisão acima da média.`);
+      }
+    }
+  }
+
+  if (hickData.length >= 2) {
+    const fewOpts = hickData.filter(d => d.options <= 6);
+    const manyOpts = hickData.filter(d => d.options > 6);
+    if (fewOpts.length > 0 && manyOpts.length > 0) {
+      const avgFew = fewOpts.reduce((a,d)=>a+d.time,0) / fewOpts.length;
+      const avgMany = manyOpts.reduce((a,d)=>a+d.time,0) / manyOpts.length;
+      if (avgMany > avgFew * 1.15) {
+        insights.push(`Com mais opções, seu tempo de decisão cresce ${((avgMany/avgFew-1)*100).toFixed(0)}% — Lei de Hick confirmada.`);
+      }
+    }
+  }
+
+  if (insights.length === 0) {
+    insights.push('Dados coletados não mostram diferença significativa ainda. Continue testando!');
+  }
+
+  el.innerHTML = insights.map(t => `<p style="margin-bottom:6px;">${t}</p>`).join('');
+}
+
+// Mini gráfico de barras
+function updateMiniChart() {
+  const container = document.getElementById('miniChart');
+  const recent = uxTimingData.slice(-10);
+  if (recent.length === 0) return;
+  const maxTime = Math.max(...recent.map(d => d.time), 100);
+  container.innerHTML = recent.map(d => {
+    const h = Math.max(4, (d.time / maxTime) * 56);
+    const color = d.type === 'fitts' ? 'var(--accent)' : 'var(--accent2)';
+    return `<div style="flex:1;height:${h}px;background:${color};border-radius:2px 2px 0 0;transition:height 0.3s;" title="${d.type}: ${d.time.toFixed(0)}ms"></div>`;
+  }).join('');
+}
+
+// =============================================
+// ACESSIBILIDADE VIVA
+// =============================================
+// Alternador de modo de cor
+const a11yBtn = document.getElementById('a11yBtn');
+const a11yDropdown = document.getElementById('a11yDropdown');
+
+a11yBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  a11yDropdown.classList.toggle('open');
+  AudioSystem.click();
+});
+
+document.addEventListener('click', (e) => {
+  if (!a11yDropdown.contains(e.target) && e.target !== a11yBtn) {
+    a11yDropdown.classList.remove('open');
+  }
+});
+
+document.querySelectorAll('.a11y-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.a11y-option').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    const mode = opt.dataset.color;
+    if (mode === 'normal') {
+      document.documentElement.removeAttribute('data-color');
+    } else {
+      document.documentElement.dataset.color = mode;
+    }
+    a11yDropdown.classList.remove('open');
+    updateContrastRatios();
+    AudioSystem.click();
+    showToast(`Modo de visão: ${opt.textContent}`);
+  });
+});
+
+// Cálculo de razão de contraste
+function getLuminance(r, g, b) {
+  const [rs, gs, bs] = [r, g, b].map(c => {
+    c /= 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+function getContrastRatio(l1, l2) {
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  return [parseInt(hex.substr(0,2),16), parseInt(hex.substr(2,2),16), parseInt(hex.substr(4,2),16)];
+}
+
+function getComputedColor(prop) {
+  const temp = document.createElement('div');
+  temp.style.color = prop;
+  document.body.appendChild(temp);
+  const color = getComputedStyle(temp).color;
+  document.body.removeChild(temp);
+  const match = color.match(/\d+/g);
+  return match ? match.map(Number) : [0,0,0];
+}
+
+function updateContrastRatios() {
+  const fgRgb = getComputedColor('var(--fg)');
+  const bgRgb = getComputedColor('var(--bg)');
+  const fgLum = getLuminance(...fgRgb);
+  const bgLum = getLuminance(...bgRgb);
+  const ratio = getContrastRatio(fgLum, bgLum);
+
+  document.getElementById('cr1').textContent = ratio.toFixed(2) + ':1 ' + (ratio >= 4.5 ? '✓' : '✗');
+  document.getElementById('cr2').textContent = ratio.toFixed(2) + ':1 ' + (ratio >= 4.5 ? '✓' : '✗');
+  document.getElementById('cr3').textContent = ratio.toFixed(2) + ':1 ' + (ratio >= 3 ? '✓' : '✗');
+}
+setTimeout(updateContrastRatios, 500);
+
+// Observar mudanças de tema para atualizar contraste
+const themeObserver = new MutationObserver(updateContrastRatios);
+themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-color'] });
+
+// Leitor de tela visual
+const srDemos = [
+  { icon: 'fa-image', title: 'Imagem do Produto', desc: 'Imagem: "Cadeira ergonômica modelo A200 em ambiente de escritório moderno com iluminação natural"' },
+  { icon: 'fa-cart-shopping', title: 'Adicionar ao Carrinho', desc: 'Botão: "Adicionar ao Carrinho" — preço: R$ 1.299,00 — em estoque' },
+  { icon: 'fa-star', title: 'Avaliação 4.7/5', desc: 'Avaliação: 4.7 de 5 estrelas baseada em 238 avaliações de clientes' },
+  { icon: 'fa-arrow-right', title: 'Navegar para Checkout', desc: 'Link: "Ir para checkout" — abre formulário de pagamento em nova etapa' },
+];
+
+const srContainer = document.getElementById('screenReaderDemos');
+srDemos.forEach(item => {
+  const el = document.createElement('div');
+  el.style.cssText = 'padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:all 0.2s;cursor:none;';
+  el.setAttribute('data-cursor', 'label-mode');
+  el.setAttribute('data-label', item.title);
+  el.innerHTML = `<i class="fa-solid ${item.icon}" style="color:var(--accent);width:20px;text-align:center;"></i><span style="font-size:13px;font-weight:500;">${item.title}</span>`;
+  el.addEventListener('mouseenter', () => {
+    el.style.borderColor = 'var(--accent)';
+    el.style.background = 'var(--card-hover)';
+    document.getElementById('srOutput').textContent = item.desc;
+    AudioSystem.hover();
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.borderColor = 'var(--border)';
+    el.style.background = 'var(--card)';
+    document.getElementById('srOutput').textContent = 'Passe o mouse sobre um item acima...';
+  });
+  srContainer.appendChild(el);
+});
+
+// =============================================
+// DARK/LIGHT MATRIX
+// =============================================
+const themeToggle = document.getElementById('themeToggle');
+const currentThemeDisplay = document.getElementById('currentThemeDisplay');
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  currentThemeDisplay.textContent = theme.toUpperCase();
+  updatePaletteDisplay();
+  updateContrastRatios();
+}
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.dataset.theme;
+  setTheme(current === 'dark' ? 'light' : 'dark');
+  AudioSystem.click();
+  showToast(`Tema alterado para ${document.documentElement.dataset.theme}`);
+});
+
+function updatePaletteDisplay() {
+  const style = getComputedStyle(document.documentElement);
+  const colors = ['--bg', '--bg2', '--fg', '--fg-muted', '--accent', '--accent2', '--card', '--border'];
+  const container = document.getElementById('paletteDisplay');
+  container.innerHTML = colors.map(c => {
+    const val = style.getPropertyValue(c).trim();
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:100%;aspect-ratio:1;border-radius:8px;background:${val};border:1px solid var(--border);transition:background 0.5s;"></div>
+      <span style="font-size:9px;color:var(--fg-muted);text-align:center;">${c.replace('--','')}</span>
+    </div>`;
+  }).join('');
+}
+updatePaletteDisplay();
+
+// Auto-tema por horário
+function checkTimeTheme() {
+  const hour = new Date().getHours();
+  const isDay = hour >= 6 && hour < 18;
+  if (!window._manualTheme) {
+    setTheme(isDay ? 'light' : 'dark');
+  }
+}
+checkTimeTheme();
+
+// Webcam — Sensor de luz
+const webcamVideo = document.getElementById('webcamVideo');
+const webcamBtn = document.getElementById('webcamBtn');
+const webcamPlaceholder = document.getElementById('webcamPlaceholder');
+const lightIndicator = document.getElementById('lightIndicator');
+const lightStatus = document.getElementById('lightStatus');
+const lightCanvas = document.getElementById('lightCanvas');
+let webcamStream = null;
+let lightCheckInterval = null;
+
+webcamBtn.addEventListener('click', async () => {
+  try {
+    webcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 320, height: 240 } });
+    webcamVideo.srcObject = webcamStream;
+    webcamPlaceholder.style.display = 'none';
+    lightStatus.textContent = 'Ativo';
+    lightIndicator.style.background = '#38E8C6';
+    showToast('Sensor de luz ativado');
+
+    // Analisar luminosidade periodicamente
+    const lCtx = lightCanvas.getContext('2d', { willReadFrequently: true });
+    lightCanvas.width = 32;
+    lightCanvas.height = 24;
+
+    lightCheckInterval = setInterval(() => {
+      if (webcamVideo.readyState < 2) return;
+      lCtx.drawImage(webcamVideo, 0, 0, 32, 24);
+      const data = lCtx.getImageData(0, 0, 32, 24).data;
+      let totalBrightness = 0;
+      const pixelCount = data.length / 4;
+      for (let i = 0; i < data.length; i += 4) {
+        totalBrightness += (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+      }
+      const avgBrightness = totalBrightness / pixelCount; // 0-255
+
+      // Atualizar indicador
+      const hue = avgBrightness > 128 ? '48,100%,57%' : '168,80%,57%';
+      lightIndicator.style.background = `hsl(${hue})`;
+
+      if (avgBrightness > 140) {
+        lightStatus.textContent = 'Ambiente Claro';
+        if (document.documentElement.dataset.theme !== 'light') {
+          window._manualTheme = false;
+          setTheme('light');
+        }
+      } else if (avgBrightness < 80) {
+        lightStatus.textContent = 'Ambiente Escuro';
+        if (document.documentElement.dataset.theme !== 'dark') {
+          window._manualTheme = false;
+          setTheme('dark');
+        }
+      } else {
+        lightStatus.textContent = 'Ambiente Médio';
+      }
+    }, 2000);
+
+  } catch (err) {
+    showToast('Câmera não disponível ou permissão negada');
+    lightStatus.textContent = 'Erro';
+    lightIndicator.style.background = '#E84848';
+  }
+});
+
+// Marcar tema manual
+themeToggle.addEventListener('click', () => { window._manualTheme = true; }, true);
+
+// =============================================
+// MODO ZEN
+// =============================================
+const zenBtn = document.getElementById('zenBtn');
+let zenMode = false;
+
+zenBtn.addEventListener('click', () => {
+  zenMode = !zenMode;
+  document.body.classList.toggle('zen-mode', zenMode);
+  zenBtn.classList.toggle('active', zenMode);
+  AudioSystem.click();
+  showToast(zenMode ? 'Modo Zen ativado — apenas estrutura' : 'Modo Zen desativado');
+});
+
+// =============================================
+// BOTÃO DE SOM
+// =============================================
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.addEventListener('click', () => {
+  const enabled = AudioSystem.toggle();
+  soundBtn.classList.toggle('active', !enabled);
+  soundBtn.innerHTML = enabled
+    ? '<i class="fa-solid fa-volume-high"></i>'
+    : '<i class="fa-solid fa-volume-xmark"></i>';
+  showToast(enabled ? 'Som ativado' : 'Som desativado');
+});
+
+// =============================================
+// GLASS CARD — Efeito de luz que segue o mouse
+// =============================================
+document.querySelectorAll('.glass-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mx', x + '%');
+    card.style.setProperty('--my', y + '%');
+  });
+});
+
+// =============================================
+// TOAST SYSTEM
+// =============================================
+function showToast(message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// =============================================
+// FOCO VISÍVEL PARA ACESSIBILIDADE
+// =============================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') document.body.classList.add('keyboard-nav');
+});
+document.addEventListener('mousedown', () => {
+  document.body.classList.remove('keyboard-nav');
+});
+
+// Adicionar estilo de foco via JS
+const focusStyle = document.createElement('style');
+focusStyle.textContent = `
+  .keyboard-nav *:focus {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 3px !important;
+  }
+  *:focus { outline: none; }
+`;
+document.head.appendChild(focusStyle);
+
+// =============================================
+// INICIALIZAÇÃO
+// =============================================
+// Tocar áudio na primeira interação para desbloquear o AudioContext
+document.addEventListener('click', () => {
+  AudioSystem.ensure();
+}, { once: true });
+
+// Log de boas-vindas no console
+console.log('%c✦ Aura — Ecossistema Interativo das Sensações Digital', 'color: #E8A838; font-size: 16px; font-weight: bold; font-family: Syne, sans-serif;');
+console.log('%cExplore as seções, ajuste a física dos botões, teste as leis de UX e alterne os modos de acessibilidade.', 'color: #7A756F; font-size: 12px; font-family: Space Grotesk, sans-serif;');
+</script>
+</body>
+</html>
