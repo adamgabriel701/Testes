@@ -1,0 +1,273 @@
+/* ========================================
+   SCROLLYTELLING — Narrativa Cinematográfica
+   ======================================== */
+
+#scrollytelling {
+  position: relative;
+  min-height: 500vh;
+  overflow: hidden;
+}
+
+#scrollyCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- Painel de Navegação Lateral --- */
+.scrolly-nav {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.scrolly-nav-track {
+  width: 2px;
+  height: 120px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.scrolly-nav-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: height 0.3s ease, background 0.5s ease;
+}
+
+.chapter-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  padding: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: none;
+  position: relative;
+}
+
+.chapter-dot.active {
+  transform: scale(1.5);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.chapter-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--fg);
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.chapter-dot:hover::after { opacity: 1; }
+
+.scrolly-chapter-label {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  z-index: 100;
+  transition: color 0.5s ease;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* --- Capítulos --- */
+.scrolly-chapters-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 5vw;
+}
+
+.scrolly-chapter {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.chapter-number {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 800;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--fg);
+  opacity: 0.25;
+  margin-bottom: 16px;
+  user-select: none;
+}
+
+.chapter-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+
+.chapter-text {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.8;
+  color: var(--fg-muted);
+  max-width: 520px;
+}
+
+/* --- Elementos visuais de cada capítulo --- */
+
+/* Capítulo 1: Grid Lines */
+.grid-lines {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 300px;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 30px 30px;
+  border-radius: 16px;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+/* Capítulo 2: Wave */
+.wave-container {
+  position: absolute;
+  right: 0;
+  bottom: 10%;
+  width: 400px;
+  height: 80px;
+  opacity: 0.6;
+}
+
+.wave-container svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Capítulo 3: Depth Layers */
+.depth-layers {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  height: 280px;
+}
+
+.depth-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.depth-layer:nth-child(1) { inset: 0; opacity: 0.3; }
+.depth-layer:nth-child(2) { inset: 20px; opacity: 0.5; }
+.depth-layer:nth-child(3) { inset: 40px; opacity: 0.7; }
+.depth-layer:nth-child(4) { inset: 60px; opacity: 0.9; }
+
+.depth-layer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Capítulo 4: Synthesis */
+.synthesis-shapes {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  height: 200px;
+}
+
+.synth-shape {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  transition: border-color 0.5s;
+}
+
+.synth-shape:nth-child(1) {
+  width: 100%; height: 100%; border-radius: 50%;
+  top: 0; left: 0;
+  animation: synth-rotate 20s linear infinite;
+}
+
+.synth-shape:nth-child(2) {
+  width: 70%; height: 70%; border-radius: 8px;
+  top: 15%; left: 15%;
+  animation: synth-rotate 15s linear infinite reverse;
+}
+
+.synth-shape:nth-child(3) {
+  width: 40%; height: 40%;
+  top: 30%; left: 30%;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  background: var(--accent);
+  opacity: 0.2;
+  animation: synth-rotate 10s linear infinite;
+}
+
+@keyframes synth-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Responsivo --- */
+@media (max-width: 768px) {
+  .scrolly-nav { right: 12px; gap: 12px; }
+  .scrolly-nav-track { height: 80px; }
+  .grid-lines, .wave-container, .depth-layers, .synthesis-shapes {
+    display: none;
+  }
+  .chapter-number { font-size: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .synth-shape { animation: none !important; }
+}
