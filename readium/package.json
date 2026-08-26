@@ -1,0 +1,8 @@
+{
+  "name": "readium-engine",
+  "version": "1.0.0",
+  "description": "Motor de Scrollytelling para múltiplos formatos",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

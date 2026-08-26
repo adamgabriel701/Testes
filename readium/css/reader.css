@@ -1,0 +1,160 @@
+/* ========================================
+   VARIÁVEIS E RESET
+   ======================================== */
+:root {
+  --bg-mist: #1a1c20; --bg-storm: #12141a; --bg-calm: #181b1e;
+  --bg-night: #0a0c10; --bg-dawn: #1e1a18;
+  --text: #d4cfc6; --text-dim: #6b665e; --accent: #c8a45c;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Space Grotesk', sans-serif;
+  --mono: 'Courier New', monospace;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scrollbar-width: thin; scrollbar-color: rgba(200,164,92,0.3) transparent; }
+body {
+  font-family: var(--serif); background: var(--bg-mist); color: var(--text);
+  overflow-x: hidden; line-height: 1; -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(200,164,92,0.3); color: #fff; }
+
+/* ========================================
+   ESTADO DE CARREGAMENTO
+   ======================================== */
+#loader {
+  position: fixed; inset: 0; background: var(--bg-night); z-index: 9999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-text { font-family: var(--sans); font-size: 12px; letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase; }
+.loader-bar { width: 120px; height: 1px; background: var(--text-dim); margin-top: 16px; position: relative; overflow: hidden; }
+.loader-bar::after { content: ''; position: absolute; left: -40%; width: 40%; height: 100%; background: var(--accent); animation: loading 1s infinite ease-in-out; }
+@keyframes loading { 0% { left: -40%; } 100% { left: 100%; } }
+
+/* ========================================
+   TELA INICIAL (BIBLIOTECA)
+   ======================================== */
+#library {
+  min-height: 100vh; padding: 60px 5vw; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.lib-title {
+  font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 300; margin-bottom: 12px; text-align: center;
+}
+.lib-subtitle {
+  font-family: var(--sans); font-size: 13px; color: var(--text-dim);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 60px; text-align: center;
+}
+.lib-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; width: 100%; max-width: 1000px;
+}
+.lib-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; overflow: hidden; cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s;
+  display: flex; flex-direction: column;
+}
+.lib-card:hover { transform: translateY(-6px); border-color: rgba(200,164,92,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.lib-card-img {
+  width: 100%; height: 180px; background-size: cover; background-position: center;
+  position: relative;
+}
+.lib-card-img::after {
+  content: attr(data-type); position: absolute; top: 12px; right: 12px;
+  font-family: var(--sans); font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--accent);
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  padding: 4px 10px; border-radius: 4px;
+}
+.lib-card-placeholder {
+  width: 100%; height: 180px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(200,164,92,0.1), rgba(200,164,92,0.02));
+  font-size: 3rem; color: var(--text-dim); opacity: 0.5;
+}
+.lib-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.lib-card-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+.lib-card-author { font-family: var(--sans); font-size: 12px; color: var(--text-dim); margin-top: auto; }
+
+/* ========================================
+   CANVAS DE ATMOSFERA
+   ======================================== */
+#atmosCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+/* ========================================
+   LEITOR (ÁREA DE CONTEÚDO)
+   ======================================== */
+#reader { display: none; position: relative; z-index: 1; }
+#reader.active { display: block; }
+
+.reading-progress { position: fixed; top: 0; left: 0; width: 100%; height: 2px; z-index: 100; background: rgba(255,255,255,0.04); }
+.reading-progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.15s linear; }
+
+.btn-back {
+  position: fixed; top: 24px; left: 24px; z-index: 100;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text); padding: 8px 16px; border-radius: 8px; font-family: var(--sans);
+  font-size: 12px; letter-spacing: 1px; cursor: pointer; transition: all 0.2s;
+}
+.btn-back:hover { background: rgba(200,164,92,0.2); border-color: var(--accent); color: var(--accent); }
+
+/* ========================================
+   LAYOUTS POR TIPO DE CONTEÚDO
+   ======================================== */
+
+/* --- LIVRO --- */
+.layout-livro .reader-header { text-align: center; padding: 120px 5vw 60px; max-width: 620px; margin: 0 auto; }
+.layout-livro .reader-header h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 600; margin-bottom: 12px; }
+.layout-livro .reader-header p { font-family: var(--sans); font-size: 13px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+.layout-livro .chapter-block { max-width: 620px; margin: 0 auto; padding: 0 5vw 100px; }
+.layout-livro .chapter-title { text-align: center; font-size: 2rem; font-weight: 300; color: var(--accent); opacity: 0.6; margin-bottom: 40px; }
+.layout-livro .prose p { font-size: clamp(1.05rem, 2vw, 1.2rem); line-height: 1.9; text-align: justify; margin-bottom: 28px; hyphens: auto; }
+.layout-livro .prose hr { border: none; height: 1px; background: var(--accent); width: 60px; margin: 60px auto; opacity: 0.3; }
+
+/* --- REPORTAGEM --- */
+.layout-reportagem .hero-media { width: 100%; height: 70vh; position: relative; overflow: hidden; margin-top: -60px; }
+.layout-reportagem .hero-media video, .layout-reportagem .hero-media img { width: 100%; height: 100%; object-fit: cover; }
+.layout-reportagem .hero-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-dawn) 5%, transparent 50%); }
+.layout-reportagem .content-grid { display: grid; grid-template-columns: 1fr 380px; gap: 60px; max-width: 1100px; margin: -100px auto 0; padding: 0 5vw 100px; position: relative; z-index: 2; }
+.layout-reportagem .main-text h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; margin-bottom: 30px; line-height: 1.2; }
+.layout-reportagem .main-text p { font-size: 1.1rem; line-height: 1.85; margin-bottom: 24px; color: var(--text); }
+.layout-reportagem .main-text img { width: 100%; border-radius: 8px; margin: 40px 0; }
+.layout-reportagem .sidebar { border-left: 1px solid rgba(255,255,255,0.08); padding-left: 30px; }
+.layout-reportagem .sidebar h3 { font-family: var(--sans); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+.layout-reportagem .pull-quote { font-size: 1.4rem; font-style: italic; line-height: 1.6; border-left: 2px solid var(--accent); padding-left: 20px; margin-bottom: 40px; color: var(--text); }
+@media (max-width: 900px) { .layout-reportagem .content-grid { grid-template-columns: 1fr; } .layout-reportagem .sidebar { border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 30px; } }
+
+/* --- REVISTA --- */
+.layout-revista .mag-header { min-height: 80vh; display: flex; align-items: flex-end; padding: 0 5vw 80px; background-size: cover; background-position: center; position: relative; }
+.layout-revista .mag-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-calm) 10%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.6)); }
+.layout-revista .mag-header-content { position: relative; z-index: 2; max-width: 700px; }
+.layout-revista .mag-header-content h1 { font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 800; line-height: 0.95; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -1px; }
+.layout-revista .mag-body { max-width: 800px; margin: 0 auto; padding: 60px 5vw 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.layout-revista .mag-col p { font-size: 1rem; line-height: 1.8; margin-bottom: 20px; }
+.layout-revista .mag-col:first-child p:first-child::first-letter { font-size: 4rem; float: left; line-height: 0.8; margin-right: 8px; margin-top: 4px; color: var(--accent); font-weight: 700; }
+.layout-revista .mag-drop-img { grid-column: 1 / -1; width: 100%; height: 300px; object-fit: cover; border-radius: 4px; margin: 20px 0; }
+@media (max-width: 768px) { .layout-revista .mag-body { grid-template-columns: 1fr; } }
+
+/* --- CRÔNICA (TXT) --- */
+.layout-cronica .cronica-wrapper { max-width: 620px; margin: 0 auto; padding: 150px 5vw 100px; }
+.layout-cronica .cronica-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 600; margin-bottom: 40px; line-height: 1.2; }
+.layout-cronica .cronica-text { font-family: var(--mono); font-size: 0.95rem; line-height: 2; color: var(--text); white-space: pre-wrap; word-wrap: break-word; border-left: 1px solid var(--text-dim); padding-left: 24px; }
+
+/* ========================================
+   WORD REVEAL (Scrollytelling genérico)
+   ======================================== */
+.word-reveal .word { display: inline-block; opacity: 0.08; filter: blur(4px); transform: translateY(6px); transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease; }
+.word-reveal .word.revealed { opacity: 1; filter: blur(0); transform: translateY(0); }
+.word-reveal .word.space { width: 0.3em; }
+
+/* ========================================
+   RESPONSIVO E ACESSIBILIDADE
+   ======================================== */
+@media (max-width: 640px) {
+  .lib-grid { grid-template-columns: 1fr; }
+  .layout-reportagem .hero-media { height: 50vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-reveal .word { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
+  .lib-card { transition: none !important; }
+}

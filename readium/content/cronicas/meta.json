@@ -1,0 +1,9 @@
+{
+  "type": "cronica",
+  "title": "Crônicas de Bairro",
+  "author": "Observador Urbano",
+  "atmosphere": "night",
+  "chapters": [
+    { "file": "texto.txt", "title": "O Café da Manhã" }
+  ]
+}

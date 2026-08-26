@@ -1,0 +1,14 @@
+{
+  "type": "reportagem",
+  "title": "A Vida nas Alturas: Construtores de Arranha-céus",
+  "author": "Jornalismo Investigativo",
+  "atmosphere": "dawn",
+  "heroMedia": {
+    "type": "video",
+    "src": "hero.mp4",
+    "poster": "imagem-01.jpg"
+  },
+  "chapters": [
+    { "file": "texto.md", "title": "O Relato" }
+  ]
+}

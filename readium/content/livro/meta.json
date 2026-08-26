@@ -1,0 +1,10 @@
+{
+  "type": "livro",
+  "title": "O Farol do Fim do Mundo",
+  "author": "Autor Exemplo",
+  "atmosphere": "mist",
+  "cover": "capa.jpg",
+  "chapters": [
+    { "file": "capitulo-01.md", "title": "A Chegada" }
+  ]
+}

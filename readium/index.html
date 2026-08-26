@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Readium — Motor de Leitura Imersiva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+
+  <canvas id="atmosCanvas"></canvas>
+
+  <!-- Loader -->
+  <div id="loader" class="hidden">
+    <span class="loader-text">Carregando</span>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- Biblioteca -->
+  <div id="library">
+    <h1 class="lib-title">Readium</h1>
+    <p class="lib-subtitle">Motor de leitura imersiva</p>
+    <div class="lib-grid" id="libGrid">
+      <!-- Cards gerados via JS -->
+    </div>
+  </div>
+
+  <!-- Área do Leitor (injeta dinamicamente) -->
+  <div id="reader"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/engine.js"></script>
+</body>
+</html>

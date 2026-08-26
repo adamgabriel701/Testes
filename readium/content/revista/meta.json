@@ -1,0 +1,9 @@
+{
+  "type": "revista",
+  "title": "Design Emergente: A Nova Fronteira",
+  "author": "Revista Digital",
+  "atmosphere": "calm",
+  "chapters": [
+    { "file": "artigo.md", "title": "Matéria de Capa" }
+  ]
+}

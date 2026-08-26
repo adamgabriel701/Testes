@@ -1,0 +1,351 @@
+/* ========================================
+   VARIÁVEIS
+   ======================================== */
+:root {
+  --bg-mist: #1a1c20;
+  --bg-storm: #12141a;
+  --bg-calm: #181b1e;
+  --bg-night: #0a0c10;
+  --bg-dawn: #1e1a18;
+  --text: #d4cfc6;
+  --text-dim: #6b665e;
+  --text-accent: #c8a45c;
+  --serif: 'Cormorant Garamond', 'Georgia', serif;
+  --sans: 'Space Grotesk', sans-serif;
+}
+
+/* ========================================
+   RESET E BASE
+   ======================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: auto; /* GSAP controla o scroll */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,164,92,0.3) transparent;
+}
+
+body {
+  font-family: var(--serif);
+  background: var(--bg-mist);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(200,164,92,0.3);
+  color: #fff;
+}
+
+/* ========================================
+   CANVAS DE ATMOSFERA
+   ======================================== */
+#atmosCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========================================
+   BARRA DE PROGRESSO DE LEITURA
+   ======================================== */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 100;
+  background: rgba(255,255,255,0.04);
+}
+.reading-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--text-accent);
+  transition: width 0.15s linear;
+}
+
+/* ========================================
+   INDICADOR DE CAPÍTULO
+   ======================================== */
+.chapter-indicator {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.chapter-indicator.visible { opacity: 1; }
+.indicator-line {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, transparent, var(--text-accent));
+}
+.indicator-label {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+/* ========================================
+   SEÇÕES / PÁGINAS DO LIVRO
+   ======================================== */
+.book-section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 5vw;
+}
+
+/* Fundo de cada seção */
+.book-section[data-atmos="mist"]   { background: var(--bg-mist); }
+.book-section[data-atmos="storm"]  { background: var(--bg-storm); }
+.book-section[data-atmos="calm"]   { background: var(--bg-calm); }
+.book-section[data-atmos="night"]  { background: var(--bg-night); }
+.book-section[data-atmos="dawn"]   { background: var(--bg-dawn); }
+
+/* Transição suave entre fundos */
+.book-section {
+  transition: background 1.2s ease;
+}
+
+/* ========================================
+   CONTEÚDO DA PÁGINA
+   ======================================== */
+.page-content {
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ========================================
+   EPIGRAFE
+   ======================================== */
+.epigraph {
+  text-align: center;
+  margin-bottom: 80px;
+  padding: 0 20px;
+}
+.epigraph-mark {
+  font-size: 2.5rem;
+  color: var(--text-accent);
+  line-height: 1;
+  opacity: 0.5;
+}
+.epigraph-text {
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  line-height: 1.8;
+  color: var(--text);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   CABEÇALHO DO CAPÍTULO
+   ======================================== */
+.chapter-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.chapter-num {
+  display: block;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 300;
+  color: var(--text-accent);
+  opacity: 0.4;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.chapter-title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.chapter-rule {
+  width: 60px;
+  height: 1px;
+  background: var(--text-accent);
+  margin: 0 auto;
+  opacity: 0.5;
+}
+
+/* ========================================
+   PROSA — BLOCOS DE TEXTO
+   ======================================== */
+.prose-block {
+  margin-bottom: 32px;
+}
+.prose-block p {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.9;
+  color: var(--text);
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* Bloco final com mais destaque */
+.final-lines p {
+  text-align: center;
+  font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+  font-style: italic;
+  color: var(--text-accent);
+  line-height: 2;
+}
+.final-lines .prose-block { text-align: center; }
+
+/* ========================================
+   ENTRADAS DE DIÁRIO
+   ======================================== */
+.diary-entry {
+  margin: 36px 0;
+  padding: 24px 28px;
+  border-left: 2px solid var(--text-accent);
+  background: rgba(200,164,92,0.03);
+  border-radius: 0 4px 4px 0;
+}
+.diary-date {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+.diary-text {
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
+  line-height: 1.85;
+  color: var(--text);
+}
+.diary-final {
+  border-left-color: #8b3a3a;
+  background: rgba(139,58,58,0.05);
+}
+.diary-final .diary-text {
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  color: #c47070;
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   MARCA DE FIM DE CAPÍTULO
+   ======================================== */
+.chapter-end-mark {
+  text-align: center;
+  margin-top: 60px;
+}
+.ornament {
+  font-size: 1.5rem;
+  color: var(--text-accent);
+  opacity: 0.25;
+}
+
+/* ========================================
+   EPÍLOGO
+   ======================================== */
+.epilogue-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.epilogue-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+/* ========================================
+   FIM DO LIVRO
+   ======================================== */
+.book-end {
+  text-align: center;
+  margin-top: 80px;
+  padding-top: 40px;
+}
+.end-rule {
+  width: 40px;
+  height: 1px;
+  background: var(--text-dim);
+  margin: 0 auto 20px;
+  opacity: 0.4;
+}
+.end-text {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* ========================================
+   WORD REVEAL — Estado inicial
+   ======================================== */
+.word-reveal .word {
+  display: inline-block;
+  opacity: 0.08;
+  filter: blur(4px);
+  transform: translateY(6px);
+  transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
+}
+.word-reveal .word.revealed {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* Pulos de linha entre palavras */
+.word-reveal .word.space {
+  width: 0.3em;
+}
+
+/* ========================================
+   RESPONSIVO
+   ======================================== */
+@media (max-width: 640px) {
+  .book-section { padding: 60px 24px; }
+  .diary-entry { padding: 18px 20px; }
+  .chapter-indicator { bottom: 24px; }
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .word-reveal .word {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .book-section { transition: none !important; }
+}

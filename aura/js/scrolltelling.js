@@ -220,7 +220,7 @@ gsap.timeline({
 })
 .from('#chapter-3 .chapter-number', { y: -40, opacity: 0, duration: 0.7, ease: 'power3.out' })
 .from('#chapter-3 .chapter-title', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2 }, '<')
-.from('#chapter-3 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'progressHorizontal` 0.3 }, '<')
+.from('#chapter-3 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 }, '<')
 .from('#chapter-3 .depth-layers', { opacity: 0, scale: 0.9, duration: 1, ease: 'power3.out', delay: 0.4 }, '<')
 .to(scrollyShapes[3], { opacity: 0.9, size: 200, rotation: -Math.PI * 0.2, duration: 1.2, ease: 'power2.out' }, 0)
 .to(scrollyShapes[4], { opacity: 0.6, size: 90, rotation: Math.PI, duration: 1, ease: 'power2.out' }, 0.2)
