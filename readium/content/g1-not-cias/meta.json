@@ -1,9 +1,12 @@
 {
   "type": "noticias",
-  "title": "G1: Todas as Notícias",
+  "title": "G1: Notícias",
   "author": "G1 / Globo",
   "atmosphere": "dawn",
   "chapters": [
-    { "file": "texto.md", "title": "Feed de Notícias" }
+    {
+      "file": "texto.md",
+      "title": "Feed de Notícias"
+    }
   ]
 }

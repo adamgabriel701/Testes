@@ -70,7 +70,7 @@ function createLibCard(meta, container) {
 }
 
 function getTypeIcon(type) {
-  const icons = { livro: '📖', reportagem: '🎬', revista: '📰', cronica: '✍️' };
+  const icons = { livro: '📖', reportagem: '🎬', revista: '📰', cronica: '✍️', noticias: '📱' };
   return icons[type] || '📄';
 }
 

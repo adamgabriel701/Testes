@@ -281,12 +281,12 @@ async function main() {
 
   // Cria o meta.json
   const meta = {
-    type: "reportagem",
+    type: "noticias",
     title: "G1: " + categoryName,
     author: "G1 / Globo",
     atmosphere: "dawn",
     chapters: [
-      { "file": "texto.md", "title": "Últimas " + items.length + " notícias" }
+      { "file": "texto.md", "title": "Feed de Notícias" }
     ]
   };
 
