@@ -101,29 +101,54 @@ function parseG1RSS(xml) {
   return items;
 }
 
-// Converte o HTML do G1 em Markdown limpo
+// Converte o HTML do G1 em Markdown limpo (Versão 2 - Filtro pesado)
 function g1HtmlToMarkdown(html) {
   if (!html) return '';
   
   let text = html;
 
-  // Remove scripts e estilos
+  // === FASE 1: Remoção brutal de elementos do G1 ===
   text = text.replace(/<script[\s\S]*?<\/script>/gi, '');
   text = text.replace(/<style[\s\S]*?<\/style>/gi, '');
   text = text.replace(/<svg[\s\S]*?<\/svg>/gi, '');
   
-  // Remove divs específicas do G1 que não agregam ao texto
-  text = text.replace(/<div[^>]*class=["'][^"']*widget[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*related[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*share[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*breadcrumb[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*header[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*footer[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*newsletter[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
-  text = text.replace(/<div[^>]*class=["'][^"']*ad[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
+  // Remove divs específicas do G1 que poluem o texto
+  const g1Blacklist = [
+    'widget', 'related', 'share-', 'breadcrumb', 'header-', 'footer-',
+    'newsletter', 'ad-', 'banner', 'propaganda', ' recomendada',
+    'mais-lidas', 'mais-vistas', 'veja-mais', 'leia-tambem',
+    'saiba-mais', 'outros-modais', 'assistir', 'video-vitrine',
+    'whatsapp', 'telegram', 'twitter', 'facebook', 'link',
+    'embed-', 'gallery', 'multimedia', 'infografico'
+  ];
+  g1Blacklist.forEach(term => {
+    const regex = new RegExp('<div[^>]*class=["\'][^"\']*' + term + '[^"\']*["\'][^>]*>[\\s\\S]*?<\\/div>', 'gi');
+    text = text.replace(regex, '');
+  });
+  
+  // Remove botões e links de "clique aqui", "participe", "siga", "receba"
+  text = text.replace(/<a[^>]*class=["'][^"\']*(whatsapp|follow|share|cta|participe|siga|receba|clique)[^"\']*["'][^>]*>[\s\S]*?<\/a>/gi, '');
+  text = text.replace(/<p[^>]*>[\s\S]*?(whatsapp|participe do canal|siga o canal|receba as not|clique aqui)[\s\S]*?<\/p>/gi, '');
+  
+  // Remove legendas de fotos soltas (geralmente são ruído entre parágrafos)
+  text = text.replace(/<p[^>]*class=["'][^"\']*foto-legenda[^"\']*["'][^>]*>[\s\S]*?<\/p>/gi, '');
+  text = text.replace(/<p[^>]*class=["'][^"\']*media-caption[^"\']*["'][^>]*>[\s\S]*?<\/p>/gi, '');
+  text = text.replace(/<p[^>]*class=["'][^"\']*subtitle[^"\']*["'][^>]*>[\s\S]*?<\/p>/gi, '');
+  
+  // Remove parágrafos que são apenas links "VEJA TAMBÉM" ou "VÍDEOS"
+  text = text.replace(/<p[^>]*>[\s\S]*?(VEJA TAMBÉM|VÍDEOS:|Leia mais notícias|Veja mais notícias|Veja vídeos|Veja o plantão|Saiba como fazer)[\s\S]*?<\/p>/gi, '');
+  text = text.replace(/<p[^>]*>[\s\S]*?(Agora no g1)[\s\S]*?<\/p>/gi, '');
+  
+  // Remove iframes (videos embedados que viram texto feio)
+  text = text.replace(/<iframe[\s\S]*?<\/iframe>/gi, '');
+  
+  // Remove aside inteiras
   text = text.replace(/<aside[\s\S]*?<\/aside>/gi, '');
   
-  // Formata blocos estruturais
+  // Remove figcaption
+  text = text.replace(/<figcaption[\s\S]*?<\/figcaption>/gi, '');
+
+  // === FASE 2: Formatação ===
   text = text.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, '\n# $1\n');
   text = text.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, '\n## $1\n');
   text = text.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, '\n### $1\n');
@@ -137,14 +162,15 @@ function g1HtmlToMarkdown(html) {
   text = text.replace(/<br\s*\/?>/gi, '\n');
   text = text.replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)');
   
-  // Imagens: extrai src e alt
+  // Imagens
   text = text.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '\n![$2]($1)\n');
   text = text.replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, '\n![]($1)\n');
   
   // Remove todas as tags HTML restantes
   text = text.replace(/<[^>]+>/g, '');
   
-  // Limpa entidades HTML
+  // === FASE 3: Limpeza de texto ===
+  // Entidades HTML
   text = text.replace(/&nbsp;/g, ' ');
   text = text.replace(/&amp;/g, '&');
   text = text.replace(/&lt;/g, '<');
@@ -160,11 +186,26 @@ function g1HtmlToMarkdown(html) {
   text = text.replace(/&rdquo;/g, '"');
   text = text.replace(/&rsquo;/g, "'");
   
-  // Limpa espaços e quebras de linha excessivas
+  // Espaçamento
   text = text.replace(/[ \t]+/g, ' ');
   text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
   
-  return text.trim();
+  // Remove linhas que sobraram vazias ou com lixo textual comum do G1
+  const linhas = text.split('\n');
+  const lixeiraG1 = [
+    /^\s*$/,  // Vazia
+    /^\s*Reprodução\/.*$/i,
+    /^\s*Divulgação$/i,
+    /^\s*Prefeitura de.*$/i,
+    /^\s*Polícia Militar\/Divulgação$/i,
+    /^\s*g1$/i,
+  ];
+  
+  const linhasLimpas = linhas.filter(linha => {
+    return !lixeiraG1.some(regex => regex.test(linha));
+  });
+  
+  return linhasLimpas.join('\n').trim();
 }
 
 // Formata data do RSS para formato legível

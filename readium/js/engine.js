@@ -147,6 +147,9 @@ function renderReader(meta, chapters) {
   `;
 
   switch (meta.type) {
+    case 'noticias':            // <--- ADICIONE ESTAS 3 LINHAS
+      html += renderNoticias(meta, chapters);
+      break;
     case 'livro':
       html += renderLivro(meta, chapters);
       break;
@@ -160,10 +163,64 @@ function renderReader(meta, chapters) {
       html += renderCronica(meta, chapters);
       break;
     default:
-      html += renderLivro(meta, chapters); // Fallback
+      html += renderLivro(meta, chapters);
   }
 
   reader.innerHTML = html;
+}
+
+function renderNoticias(meta, chapters) {
+  let html = `<div class="layout-noticias">`;
+  
+  // Cabeçalho
+  html += `<div class="reader-header news-header"><h1>${meta.title}</h1><p>${meta.author}</p></div>`;
+  
+  // Feed de notícias
+  html += `<div class="news-feed">`;
+  
+  chapters.forEach(ch => {
+    // O fetcher-g1 separa cada notícia com ---
+    const artigos = ch.html.split(/^---$/m);
+    
+    artigos.forEach(artigo => {
+      artigo = artigo.trim();
+      if (artigo.length < 50) return; // Ignora blocos vazios
+      
+      // Extrai o título (primeira linha ##)
+      let titulo = '';
+      let resto = artigo;
+      const tituloMatch = artigo.match(/^## (.*)$/m);
+      if (tituloMatch) {
+        titulo = tituloMatch[1];
+        resto = artigo.replace(/^## .*$/m, '');
+      }
+      
+      // Extrai data e categoria (linhas em *itálico* ou **negrito** no topo)
+      let metaText = '';
+      resto = resto.replace(/^\*([^*]+)\*$/m, (match, text) => {
+        if (!metaText) metaText = text;
+        return '';
+      });
+      resto = resto.replace(/^\*\*([^*]+)\*\*$/m, (match, text) => {
+        if (!metaText || metaText.length < 20) metaText = text;
+        return '';
+      });
+      
+      // Limpa o resto do texto
+      resto = resto.trim();
+      
+      if (titulo) {
+        html += `<article class="news-article">`;
+        html += `<h2>${titulo}</h2>`;
+        if (metaText) html += `<div class="news-meta"><span>${metaText}</span></div>`;
+        if (resto) html += `<div class="word-reveal">${resto}</div>`;
+        html += `</article>`;
+      }
+    });
+  });
+  
+  html += `</div></div>`;
+  return html;
 }
 
 function renderLivro(meta, chapters) {

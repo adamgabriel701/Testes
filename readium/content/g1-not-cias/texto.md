@@ -43,9 +43,7 @@ Segundo a prefeitura, o resgate mobilizou equipes da Defesa Civil, do Corpo de B
 O animal não conseguiu sair sozinho e apresentava sinais de cansaço e agitação, o que aumentava o risco de afogamento.
 Apesar da complexidade do resgate, o bovino foi retirado da piscina em segurança e sem ferimentos graves.
 Vaca é resgatada após cair em piscina em Campo Limpo Paulista (SP)
-Prefeitura de Campo Limpo Paulista
 Vaca cai em piscina e é resgatada em Campo Limpo Paulista (SP)
-Prefeitura de Campo Limpo Paulista
 Veja mais notícias da região no g1 Sorocaba e Jundiaí
 VÍDEOS: assista às reportagens da TV TEM
 
@@ -103,7 +101,6 @@ Leia mais notícias em g1 Norte e Noroeste.
 **G1**
 
 Animal recebeu uma última continência e foi sepultado no canil onde trabalhou
-Reprodução/Força Tática Cães
 O cão policial K9 Raio, da raça pitbull, recebeu uma última homenagem de policiais militares após morrer em Gurupi, no sul do Tocantins. Durante os anos em que atuou no Canil da Força Tática do 4º Batalhão da Polícia Militar (BPM), o animal trabalhou na apreensão de drogas e armas, buscas em áreas de mata e captura de suspeitos.
 Segundo o policial militar Bruno Xavier, Raio ajudou a apreender mais de 3 mil quilos de drogas durante o período em que esteve em atividade.
 Após ser aposentado, o cão foi adotado pelo policial rodoviário federal João Eudes Duarte Neves, com quem viveu os últimos cinco anos. O animal estava debilitado devido a problemas de saúde.
@@ -122,7 +119,6 @@ João Eudes contou que conheceu Raio durante operações realizadas em parceria 
 "Naturalmente, a afinidade acabou fluindo entre esse cachorro e eu. Mesmo eu não sendo operador dele e nem policial militar, como a gente sempre estava junto, tivemos muitas ocorrências positivas", contou.
 O policial rodoviário federal disse que decidiu adotar Raio quando a Polícia Militar definiu que era hora de aposentá-lo. "Quando a Polícia Militar resolveu que tinha chegado o momento dele se aposentar, eu tive a oportunidade de adotá-lo. Ele então foi morar comigo nos últimos cinco anos", afirmou.
 Pitbull atuou no Canil da Força Tática do 4º BPM, em Gurupi
-Polícia Militar/Divulgação
 Vida longe do trabalho
 Segundo o tutor, Raio viveu os últimos anos como um cão de casa e convivia com os filhos da família. "Um cão extremamente dócil, que gostava muito de brincar com as crianças lá de casa", lembrou João Eudes.
 O policial contou que Raio enfrentava problemas de saúde quando foi adotado e passou por tratamentos durante a aposentadoria. Com o agravamento do quadro, o animal deixou de se alimentar e sentia dores.
@@ -251,7 +247,6 @@ Veja o plantão de últimas notícias do g1 Espírito Santo
 **G1**
 
 Consulta ao 4º lote do Imposto de Renda está liberada. 
-g1
 Ao menos 1.685 contribuintes do Amapá vão receber a restituição do Imposto de Renda no 4º lote, que será pago na segunda-feira (31). De acordo com a Receita Federal, o valor destinado ao estado é de R$ 4.404.548,60. 
 Este ano, 126.019 declarações foram entregues no Estado. Desse total, 8.694 foram enviadas fora do prazo.
 ✅ Clique aqui para seguir o canal do g1 AP no WhatsApp
