@@ -57,6 +57,10 @@ header { backdrop-filter: blur(16px); background: rgba(var(--accent-rgb), 0.02);
 .btn-secondary { background: transparent; color: var(--fg); border: 1px solid var(--border-strong); padding: 13px 22px; border-radius: 4px; font-family: 'JetBrains Mono'; font-size: 12px; text-transform: uppercase; text-decoration: none; display: inline-flex; gap: 10px; transition: all 0.3s; }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
+/* Inputs */
+.input-field { background: var(--bg); border: 1px solid var(--border-strong); color: var(--fg); padding: 12px 16px; font-family: 'JetBrains Mono'; font-size: 13px; border-radius: 4px; outline: none; transition: all 0.3s; width: 100%; }
+.input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+
 /* Janela do Terminal */
 .terminal-window { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.5); position: relative; }
 .terminal-window::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px); pointer-events: none; opacity: 0.3; z-index: 10; }
@@ -97,6 +101,19 @@ header { backdrop-filter: blur(16px); background: rgba(var(--accent-rgb), 0.02);
 .section-title { font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
 .section-title span { font-style: italic; font-weight: 400; }
 
+/* Snippet Window */
+.code-window { background: var(--bg-elev-2); border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.5); }
+.code-header { background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+.copy-btn { background: transparent; border: 1px solid var(--border-strong); color: var(--muted); padding: 4px 10px; font-size: 11px; font-family: 'JetBrains Mono'; border-radius: 3px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.copy-btn.copied { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+pre code.hljs { padding: 16px !important; display: block; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; background: transparent !important; }
+
+/* Setup Grid */
+.setup-item { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 4px; transition: all 0.3s; text-align: center; }
+.setup-item:hover { border-color: var(--accent); transform: translateY(-4px); }
+.setup-item i { font-size: 24px; color: var(--accent); margin-bottom: 12px; display: block; }
+
 /* Temas */
 .theme-toggle { display: inline-flex; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px; gap: 2px; }
 .theme-btn { width: 32px; height: 32px; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.3s; font-size: 12px; }
@@ -106,6 +123,11 @@ header { backdrop-filter: blur(16px); background: rgba(var(--accent-rgb), 0.02);
 .marquee-wrap { overflow: hidden; white-space: nowrap; border-color: var(--border); background: var(--bg-elev); }
 .marquee { display: inline-flex; animation: scroll 40s linear infinite; gap: 60px; padding-right: 60px; }
 @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* Back to Top */
+.back-to-top { position: fixed; bottom: 20px; right: 20px; width: 40px; height: 40px; background: var(--accent); color: var(--bg); border: none; border-radius: 4px; cursor: pointer; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 99; box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.4); }
+.back-to-top.show { opacity: 1; pointer-events: auto; }
+.back-to-top:hover { transform: translateY(-4px); }
 
 .reveal { opacity: 0; transform: translateY(30px); transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1); }
 .reveal.visible { opacity: 1; transform: translateY(0); }

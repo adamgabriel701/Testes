@@ -6,6 +6,8 @@
   <title id="pageTitle">/dev/log — Blog</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -104,9 +106,35 @@
           <div class="font-mono text-xs uppercase tracking-widest mb-4 accent">// notas recentes</div>
           <h2 class="text-5xl md:text-7xl section-title">Últimas <span>publicações</span></h2>
         </div>
-        <a href="#archive" class="btn-secondary">ver todos <i class="fas fa-arrow-right text-xs"></i></a>
+        <div class="relative">
+          <input type="text" id="searchInput" placeholder="buscar artigos..." class="input-field pl-10">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-xs muted"></i>
+        </div>
       </div>
       <div id="postsGrid" class="grid md:grid-cols-3 gap-6"></div>
+      <div id="noResults" class="hidden text-center font-mono muted mt-12">Nenhum artigo encontrado.</div>
+    </div>
+  </section>
+
+  <!-- Snippets de Código -->
+  <section class="py-24 md:py-32 px-6" id="snippets" style="background: var(--bg-elev);">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16 reveal">
+        <div class="font-mono text-xs uppercase tracking-widest mb-4 accent">// trechos de código</div>
+        <h2 class="text-5xl md:text-7xl section-title">Snippets <span>úteis</span></h2>
+      </div>
+      <div id="snippetsGrid" class="grid md:grid-cols-2 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- Setup / Stack -->
+  <section class="py-24 md:py-32 px-6" id="setup">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-16 reveal">
+        <div class="font-mono text-xs uppercase tracking-widest mb-4 accent">// ferramentas</div>
+        <h2 class="text-5xl md:text-7xl section-title">Meu <span>setup</span></h2>
+      </div>
+      <div id="setupGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 reveal"></div>
     </div>
   </section>
 
@@ -130,6 +158,9 @@
       </div>
     </div>
   </footer>
+
+  <!-- Botão Voltar ao Topo -->
+  <button id="backToTop" class="back-to-top" title="Voltar ao topo"><i class="fas fa-arrow-up"></i></button>
 
   <!-- Dados e Scripts -->
   <script src="data/site.js"></script>

@@ -9,11 +9,11 @@ let historyIndex = -1;
 
 // Inicialização do Terminal
 function bootTerminal() {
-  print('<span class="success">[ OK ]</span> iniciando retro shell v1.0...');
+  print('<span class="success">[ OK ]</span> iniciando retro shell v2.0...');
   print('<span class="success">[ OK ]</span> montando <span class="info">/posts</span> <span class="dim">(' + BLOG_DATA.posts.length + ' entradas)</span>');
   print('<span class="success">[ OK ]</span> montando <span class="info">/projects</span> <span class="dim">(' + BLOG_DATA.projects.length + ' entradas)</span>');
   print('&nbsp;');
-  print('<span class="dim">Digite `ajuda` para ver os comandos. Tente `ls` ou `cat LEIA-ME.md`.</span>');
+  print('<span class="dim">Digite `ajuda` para ver os comandos. Tente `neofetch` ou `ls`.</span>');
   print('&nbsp;');
 }
 
@@ -22,6 +22,8 @@ function print(html, cls = '') {
   div.className = 'line' + (cls ? ' ' + cls : '');
   div.innerHTML = html;
   output.appendChild(div);
+  // Destacar blocos de código recém adicionados
+  div.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
   output.scrollTop = output.scrollHeight;
 }
 
@@ -33,10 +35,11 @@ const commands = {
     print('<span class="info">Comandos disponíveis:</span>');
     print('  <span class="accent">ls</span>          lista arquivos e diretórios');
     print('  <span class="accent">cat</span>         mostra conteúdo do arquivo (ex: cat LEIA-ME.md)');
-    print('  <span class="accent">limpar</span>      limpa a tela');
-    print('  <span class="accent">quem</span>        exibe informações do autor');
     print('  <span class="accent">projetos</span>    lista projetos paralelos');
-    print('  <span class="accent">help</span>       alias para ajuda');
+    print('  <span class="accent">social</span>      exite links redes sociais');
+    print('  <span class="accent">neofetch</span>    exibe informações do sistema');
+    print('  <span class="accent">tema</span>        altera o tema visual (ex: tema cyber)');
+    print('  <span class="accent">limpar</span>      limpa a tela');
   },
   help: () => commands.ajuda(),
   ls: () => {
@@ -66,6 +69,38 @@ const commands = {
       print(`<span class="accent">${p.name}</span> <span class="dim">[${p.lang}]</span> - ${p.desc}`);
     });
   },
+  social: () => {
+    SITE_CONFIG.socials.forEach(s => {
+      print(`<span class="info">${s.icon}</span> <span class="dim">-></span> ${s.url}`);
+    });
+  },
+  neofetch: () => {
+    const ascii = `
+   ___          <span class="info">usuario</span>@<span class="info">blog</span>
+  /   \\         --------
+ |  ◆  |        <span class="accent">OS</span>: /dev/log v2.0
+ |     |        <span class="accent">Shell</span>: retro.sh 1.4
+  \\___/         <span class="accent">Posts</span>: ${BLOG_DATA.posts.length}
+   |||          <span class="accent">Projetos</span>: ${BLOG_DATA.projects.length}
+                <span class="accent">Tema</span>: ${document.documentElement.getAttribute('data-theme')}
+`;
+    print(`<pre style="color: var(--fg)">${ascii}</pre>`);
+  },
+  tema: (args) => {
+    if (!args[0]) {
+      print('<span class="dim">Temas disponíveis: dark, light, cyber</span>');
+      return;
+    }
+    const theme = args[0];
+    if (['dark', 'light', 'cyber'].includes(theme)) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('devlog-theme', theme);
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === theme));
+      print(`<span class="success">Tema alterado para: ${theme}</span>`);
+    } else {
+      print('<span class="error">Tema inválido. Use: dark, light, cyber</span>');
+    }
+  },
   quem: () => {
     print(`<span class="info">${SITE_CONFIG.author}</span> - <span class="dim">${SITE_CONFIG.role}</span>`);
   },
@@ -81,6 +116,7 @@ function getCandidates(word) {
   const files = ['posts/', 'projects/', 'LEIA-ME.md', '.sobre', '.contato'];
   const cmds = Object.keys(commands);
   if (word.startsWith('cat ')) return [];
+  if (word.startsWith('tema ')) return ['dark', 'light', 'cyber'];
   return [...cmds, ...files].filter(c => c.toLowerCase().startsWith(word.toLowerCase()));
 }
 

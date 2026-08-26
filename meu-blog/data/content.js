@@ -12,7 +12,7 @@ window.BLOG_DATA = {
 
 O JavaScript vai deixar você somar \`[]\` com \`{}\` e agradecer por isso.
 
-\`\`\`js
+\`\`\`javascript
 [] + {}; // "[object Object]"
 {} + []; // 0
 \`\`\`
@@ -26,7 +26,7 @@ Este é um guia de campo para armadilhas. Tome cuidado por aí.`
       date: "28.10.24",
       tags: ["Compiladores"],
       readTime: "14 min",
-      excerpt: "Pule o regex. Pule o gerador. Duzentas linhas de switch e você entenderá algo novo sobre toda linguagem que já usou.",
+      excerpt: "Pule o regex. Pule o gerador. Duzentas linhas de switch e você entenderá algo novo.",
       content: `# Um Lexer, À Mão, Num Domingo à Tarde
 
 Pule o regex. Pule o gerador.
@@ -55,6 +55,72 @@ Duzentas linhas de switch e você entenderá algo novo sobre cada linguagem que 
 Tipos de resultado, canais de erro e a paz curiosa de deixar as coisas falharem alto no desenvolvimento.
 
 > Deixe falhar. Deixe falhar alto.`
+    },
+    {
+      id: "04",
+      slug: "rust-para-humanos",
+      title: "Rust para Humanos: Por que eu mudei de lado",
+      date: "01.10.24",
+      tags: ["Rust"],
+      readTime: "11 min",
+      excerpt: "O compilador de Rust é como um professor rigoroso. No começo você odeia, depois percebe que aprendeu.",
+      content: `# Rust para Humanos
+
+O compilador de Rust é como um professor rigoroso.
+
+> Se compila, provavelmente está certo.`
+    }
+  ],
+  snippets: [
+    {
+      title: "Hook useTypewriter",
+      lang: "typescript",
+      code: `import { useState, useEffect } from 'react';
+
+export function useTypewriter(words: string[], speed = 80, pause = 1800) {
+  const [text, setText] = useState('');
+  const [i, setI] = useState(0);
+  const [del, setDel] = useState(false);
+
+  useEffect(() => {
+    const word = words[i % words.length];
+    const delay = del ? speed / 2 : speed;
+
+    const t = setTimeout(() => {
+      setText(del ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1));
+    }, delay);
+
+    if (!del && text === word) {
+      const p = setTimeout(() => setDel(true), pause);
+      return () => { clearTimeout(t); clearTimeout(p); };
+    }
+    if (del && text === '') {
+      setDel(false);
+      setI(i + 1);
+    }
+    return () => clearTimeout(t);
+  }, [text, del, i, words, speed, pause]);
+
+  return text;
+}`
+    },
+    {
+      title: "Debounce em JS Puro",
+      lang: "javascript",
+      code: `function debounce(fn, delay = 300) {
+  let timeoutId;
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+
+// Uso
+const buscar = debounce((query) => {
+  console.log('Buscando por:', query);
+}, 500);`
     }
   ],
   projects: [
@@ -79,5 +145,5 @@ bem-vindo ao /dev/log — um blog de desenvolvedor que pensa que é um terminal.
 
 digite \`ajuda\` para ver o que você pode fazer.
 digite \`ls\` para olhar ao redor.
-digite \`cat posts/conversoes-implicitas.md\` para ler um post.`
+digite \`neofetch\` para ver informações do sistema.`
 };

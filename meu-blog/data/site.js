@@ -4,6 +4,7 @@ window.SITE_CONFIG = {
   role: "Engenheiro de Software",
   nav: [
     { label: "noticias", url: "#notes" },
+    { label: "snippets", url: "#snippets" },
     { label: "arquivo", url: "#archive" },
     { label: "terminal", url: "#terminal" }
   ],
@@ -23,7 +24,16 @@ window.SITE_CONFIG = {
     { value: "2d", label: "desde o último commit" },
     { value: "∞", label: "xícaras de café" }
   ],
-  marquee: ["JavaScript", "TypeScript", "Rust", "Go", "WebAssembly", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Linux", "NeoVim"],
+  setup: [
+    { icon: "fab fa-react", name: "React" },
+    { icon: "fab fa-rust", name: "Rust" },
+    { icon: "fab fa-node-js", name: "Node.js" },
+    { icon: "fas fa-database", name: "PostgreSQL" },
+    { icon: "fab fa-docker", name: "Docker" },
+    { icon: "fab fa-aws", name: "AWS" },
+    { icon: "fas fa-keyboard", name: "NeoVim" },
+    { icon: "fab fa-linux", name: "Arch Linux" }
+  ],
   socials: [
     { icon: "fab fa-github", url: "https://github.com" },
     { icon: "fab fa-x-twitter", url: "https://twitter.com" },
