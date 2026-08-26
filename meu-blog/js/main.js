@@ -145,7 +145,14 @@ function openPost(slug) {
   term.innerHTML += `<div class="line success">--- abrindo ${post.slug}.md ---</div>`;
   term.innerHTML += `<div class="line">${html}</div>`;
   term.scrollTop = term.scrollHeight;
-  document.getElementById('terminal').scrollIntoView({ behavior: 'smooth' });
+  
+  // Rola até o terminal e empurra para baixo da navbar
+  setTimeout(() => {
+    document.getElementById('terminal').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }, 100);
 }
 
 // Efeito de Máquina de Escrever

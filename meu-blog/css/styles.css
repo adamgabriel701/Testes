@@ -139,3 +139,14 @@ pre code.hljs { padding: 16px !important; display: block; overflow-x: auto; font
   .subtitle { min-height: auto; }
   .description { min-height: auto; }
 }
+
+/* Corrige o offset do terminal para não ficar embaixo da navbar */
+#terminal {
+  scroll-margin-top: 100px;
+  margin-top: 40px;
+}
+
+/* Garante que as seções de posts e arquivo também rollem corretamente ao clicar */
+#notes, #snippets, #setup, #archive {
+  scroll-margin-top: 80px;
+}
