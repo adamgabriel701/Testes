@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">/dev/log — Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Navegação -->
+  <header class="fixed top-0 left-0 right-0 z-50">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#hero" class="font-mono font-bold text-lg flex items-center">
+        <span class="accent">/</span>dev<span class="muted">/</span>log<span class="logo-cursor"></span>
+      </a>
+      
+      <div id="navLinks" class="hidden md:flex items-center gap-9 font-mono text-sm"></div>
+      
+      <div class="flex items-center gap-3">
+        <div class="theme-toggle" role="group">
+          <button class="theme-btn active" data-theme="dark" title="Escuro"><i class="fas fa-moon"></i></button>
+          <button class="theme-btn" data-theme="light" title="Claro"><i class="fas fa-sun"></i></button>
+          <button class="theme-btn" data-theme="cyber" title="Cyber"><i class="fas fa-terminal"></i></button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero / Topo -->
+  <section class="relative min-h-screen flex items-center overflow-hidden bg-grid pt-24 pb-20" id="hero">
+    <div class="float-dot" style="width: 500px; height: 500px; top: 5%; left: -150px;"></div>
+    <div class="float-dot secondary" style="width: 600px; height: 600px; bottom: -200px; right: -200px; animation-delay: -5s;"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-6 w-full z-10 flex flex-col lg:flex-row gap-12 items-center">
+      <div class="flex-1 max-w-2xl">
+        <div class="flex items-center gap-3 mb-8 font-mono text-xs flex-wrap muted">
+          <span class="tag">Edição 042</span>
+          <span>·</span>
+          <span id="currentDate"></span>
+          <span>·</span>
+          <span class="flex items-center gap-2"><span class="stat-dot"></span> online</span>
+        </div>
+        
+        <h1 class="font-mono font-bold mb-8 hero-title">
+          <span class="muted">$</span> <span id="typewriter" class="cursor"></span>
+        </h1>
+        
+        <p id="heroSubtitle" class="text-xl md:text-2xl mb-5 subtitle"></p>
+        <p id="heroDescription" class="text-base md:text-lg mb-12 max-w-2xl muted"></p>
+        
+        <div class="flex flex-wrap gap-4 mb-20">
+          <a href="#notes" class="btn-primary">ler últimas <i class="fas fa-arrow-right text-xs"></i></a>
+          <a href="#terminal" class="btn-secondary"><i class="fas fa-terminal text-xs"></i> abrir terminal</a>
+        </div>
+        
+        <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl"></div>
+      </div>
+
+      <!-- Janela do Terminal -->
+      <div class="flex-1 w-full max-w-xl" id="terminal">
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="flex gap-1.5">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            </div>
+            <span class="font-mono text-xs muted">usuario@blog: ~</span>
+          </div>
+          <div class="terminal-body">
+            <div id="terminalOutput" class="output" aria-live="polite"></div>
+            <div class="prompt-line">
+              <span class="prompt" id="promptText">usuario@blog<span class="path">:~</span>$</span>
+              <div class="input-area">
+                <div class="input-display">
+                  <span id="typedText"></span><span class="block-cursor"></span><span class="ghost-text" id="ghostText"></span>
+                </div>
+                <input type="text" id="cmdInput" autocomplete="off" spellcheck="false" autofocus />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="py-5 border-y marquee-wrap">
+    <div id="marqueeContent" class="marquee font-mono text-sm uppercase tracking-widest muted"></div>
+  </div>
+
+  <!-- Notícias Recentes -->
+  <section class="py-24 md:py-32 px-6" id="notes">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-end justify-between mb-16 flex-wrap gap-6 reveal">
+        <div>
+          <div class="font-mono text-xs uppercase tracking-widest mb-4 accent">// notas recentes</div>
+          <h2 class="text-5xl md:text-7xl section-title">Últimas <span>publicações</span></h2>
+        </div>
+        <a href="#archive" class="btn-secondary">ver todos <i class="fas fa-arrow-right text-xs"></i></a>
+      </div>
+      <div id="postsGrid" class="grid md:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- Arquivo -->
+  <section class="py-24 md:py-32 px-6" id="archive">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-16 reveal">
+        <div class="font-mono text-xs uppercase tracking-widest mb-4 accent">// o arquivo</div>
+        <h2 class="text-5xl md:text-7xl section-title">Postagens <span>anteriores</span></h2>
+      </div>
+      <div id="archiveList" class="reveal"></div>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="py-12 px-6 border-t">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+        <div class="font-mono text-sm muted">© <span id="year"></span> <span id="footerName"></span> · feito com cuidado</div>
+        <div id="socialLinks" class="flex items-center gap-5"></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dados e Scripts -->
+  <script src="data/site.js"></script>
+  <script src="data/content.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/terminal.js"></script>
+</body>
+</html>

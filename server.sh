@@ -5,12 +5,14 @@ lsof -t -i:8000 | xargs kill -9 2>/dev/null
 lsof -t -i:8001 | xargs kill -9 2>/dev/null
 lsof -t -i:8002 | xargs kill -9 2>/dev/null
 lsof -t -i:8003 | xargs kill -9 2>/dev/null
+lsof -t -i:8004 | xargs kill -9 2>/dev/null
 
 echo "Escolha qual projeto rodar:"
 echo "1) Maués          (Porta 8000)"
 echo "2) Aura           (Porta 8001)"
 echo "3) Readium        (Porta 8002)"
 echo "4) Vortex         (Porta 8003)"
+echo "5) Blog           (Porta 8004)"
 read -p "Digite a opção: " opt
 
 case $opt in
@@ -33,6 +35,11 @@ case $opt in
     echo "🟣 Iniciando Readium na porta 8003..."
     cd vortex
     npm start
+    ;;
+  5)
+    echo "🟣 Iniciando Blog na porta 8004..."
+    cd meu-blog
+    python3 -m http.server 8004 2>&1 | grep -v "code 400" | grep -v "favicon.ico"
     ;;
   *)
     echo "Opção inválida."
