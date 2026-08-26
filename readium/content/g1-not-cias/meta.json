@@ -1,0 +1,12 @@
+{
+  "type": "reportagem",
+  "title": "G1: Notícias",
+  "author": "G1 / Globo",
+  "atmosphere": "dawn",
+  "chapters": [
+    {
+      "file": "texto.md",
+      "title": "Últimas 10 notícias"
+    }
+  ]
+}

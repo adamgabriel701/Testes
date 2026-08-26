@@ -24,8 +24,8 @@ case $opt in
     ;;
   3)
     echo "🟣 Iniciando Readium na porta 8002..."
-    cd livro
-    python3 -m http.server 8002 2>&1 | grep -v "code 400" | grep -v "favicon.ico"
+    cd readium
+    npm start
     ;;
   *)
     echo "Opção inválida."

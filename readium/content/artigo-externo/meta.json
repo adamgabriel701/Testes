@@ -1,0 +1,9 @@
+{
+  "type": "reportagem",
+  "title": "Título do Artigo Original",
+  "author": "Autor Original",
+  "atmosphere": "calm",
+  "chapters": [
+    { "file": "texto.md", "title": "Matéria" }
+  ]
+}
