@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura — Ecossistema de Sensações Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Barra de progresso -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Cursor personalizado -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Badge Zen -->
+  <div class="zen-badge">Modo Zen Ativo</div>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Trigger da Nav Orbital -->
+  <button class="nav-trigger" id="navTrigger" aria-label="Abrir navegação" data-cursor="control">
+    <i class="fa-solid fa-plus" id="navIcon"></i>
+  </button>
+
+  <!-- Navegação Orbital -->
+  <nav class="orbital-nav" id="orbitalNav" aria-label="Navegação principal">
+    <div class="orbital-bg"></div>
+    <div class="orbital-ring" style="width:300px;height:300px;"></div>
+    <div class="orbital-ring" style="width:220px;height:220px;animation-direction:reverse;animation-duration:45s;"></div>
+    <div class="orbital-center">A</div>
+    <div class="orbital-item" style="top:12%;left:50%;"><a href="#hero" data-cursor="control" data-label="Início"><div class="orbital-icon"><i class="fa-solid fa-house"></i></div>Início</a></div>
+    <div class="orbital-item" style="top:35%;left:90%;"><a href="#lab" data-cursor="control" data-label="Microinterações"><div class="orbital-icon"><i class="fa-solid fa-flask"></i></div>Lab</a></div>
+    <div class="orbital-item" style="top:72%;left:85%;"><a href="#ux-playground" data-cursor="control" data-label="UX Playground"><div class="orbital-icon"><i class="fa-solid fa-brain"></i></div>UX</a></div>
+    <div class="orbital-item" style="top:90%;left:50%;"><a href="#a11y" data-cursor="control" data-label="Acessibilidade"><div class="orbital-icon"><i class="fa-solid fa-universal-access"></i></div>A11y</a></div>
+    <div class="orbital-item" style="top:72%;left:15%;"><a href="#matrix" data-cursor="control" data-label="Temas"><div class="orbital-icon"><i class="fa-solid fa-circle-half-stroke"></i></div>Tema</a></div>
+  </nav>
+
+  <!-- Painel de Controles Fixo -->
+  <div class="control-panel" id="controlPanel">
+    <button class="ctrl-btn" id="zenBtn" data-cursor="control" data-label="Modo Zen" aria-label="Alternar Modo Zen"><i class="fa-solid fa-cube"></i></button>
+    <button class="ctrl-btn" id="soundBtn" data-cursor="control" data-label="Som" aria-label="Alternar som"><i class="fa-solid fa-volume-high"></i></button>
+    <div style="position:relative;">
+      <button class="ctrl-btn" id="a11yBtn" data-cursor="control" data-label="Acessibilidade" aria-label="Opções de acessibilidade"><i class="fa-solid fa-eye"></i></button>
+      <div class="a11y-dropdown" id="a11yDropdown">
+        <button class="a11y-option active" data-color="normal">Visão Padrão</button>
+        <button class="a11y-option" data-color="protanopia">Protanopia</button>
+        <button class="a11y-option" data-color="deuteranopia">Deuteranopia</button>
+        <button class="a11y-option" data-color="tritanopia">Tritanopia</button>
+        <button class="a11y-option" data-color="high-contrast">Alto Contraste</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HERO ==================== -->
+  <section id="hero" class="hero-section">
+    <canvas id="hero-canvas"></canvas>
+    <div class="glow-orb" style="width:500px;height:500px;background:var(--accent);top:-100px;right:-100px;"></div>
+    <div class="glow-orb" style="width:400px;height:400px;background:var(--accent2);bottom:-80px;left:-80px;"></div>
+    <div class="hero-content">
+      <div class="section-label reveal" style="justify-content:center;">Ecossistema Interativo</div>
+      <h1 class="reveal reveal-delay-1 hero-title"><span style="color:var(--accent);">Aura</span></h1>
+      <p class="reveal reveal-delay-2 hero-desc">Onde a interface se transforma com base no seu comportamento. Sinta o design, não apenas veja.</p>
+      <div class="reveal reveal-delay-3 hero-actions">
+        <a href="#lab" class="physics-btn" style="background:var(--accent);" data-cursor="control" data-label="Explorar">Explorar Aura</a>
+        <a href="#ux-playground" class="physics-btn" style="background:var(--card);color:var(--fg);border:1px solid var(--border);" data-cursor="control" data-label="Playground">Playground</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ==================== LAB ==================== -->
+  <section id="lab" class="section-standard">
+    <div class="section-inner">
+      <div class="section-label reveal">01 — Laboratório</div>
+      <h2 class="section-title reveal reveal-delay-1">Lab de Microinterações</h2>
+      <p class="section-desc reveal reveal-delay-2 zen-hide">Ajuste a física dos botões em tempo real e sinta como cada parâmetro altera a percepção de qualidade da interface.</p>
+      <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+        <!-- Painel de Controle -->
+        <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;gap:20px;">
+          <h3 style="font-size:16px;font-weight:700;">Parâmetros de Física</h3>
+          <div class="slider-group"><div class="slider-header"><label>Massa</label><span id="massVal" class="slider-value">1.0</span></div><input type="range" class="aura-slider" id="massSlider" min="0.2" max="3" step="0.1" value="1" data-cursor="control"></div>
+          <div class="slider-group"><div class="slider-header"><label>Fricção</label><span id="frictionVal" class="slider-value">0.30</span></div><input type="range" class="aura-slider" id="frictionSlider" min="0.05" max="0.8" step="0.05" value="0.3" data-cursor="control"></div>
+          <div class="slider-group"><div class="slider-header"><label>Rigidez da Mola</label><span id="stiffVal" class="slider-value">0.15</span></div><input type="range" class="aura-slider" id="stiffSlider" min="0.02" max="0.4" step="0.01" value="0.15" data-cursor="control"></div>
+          <div class="slider-group"><div class="slider-header"><label>Distorção Máxima</label><span id="distortVal" class="slider-value">0.20</span></div><input type="range" class="aura-slider" id="distortSlider" min="0.05" max="0.5" step="0.05" value="0.2" data-cursor="control"></div>
+          <div style="margin-top:auto;padding:12px;background:var(--card);border-radius:10px;font-size:12px;color:var(--fg-muted);line-height:1.6;">
+            <strong style="color:var(--fg);">Dica:</strong> Clique e segure os botões ao lado. Observe como a massa controla a inércia e a rigidez define a velocidade de retorno.
+          </div>
+        </div>
+        <!-- Área de Teste -->
+        <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+          <h3 style="font-size:16px;font-weight:700;align-self:flex-start;">Área de Teste</h3>
+          <div class="physics-buttons-area">
+            <button class="physics-btn" id="physBtn1" style="background:var(--accent);" data-cursor="control" data-label="Primário">Primário</button>
+            <button class="physics-btn" id="physBtn2" style="background:var(--accent2);color:var(--bg);" data-cursor="control" data-label="Secundário">Secundário</button>
+            <button class="physics-btn" id="physBtn3" style="background:var(--fg);color:var(--bg);" data-cursor="control" data-label="Neutro">Neutro</button>
+            <button class="physics-btn" id="physBtn4" style="background:transparent;color:var(--fg);border:2px solid var(--accent);" data-cursor="control" data-label="Outline">Outline</button>
+          </div>
+          <div id="physicsInfo" class="physics-info-text"></div>
+        </div>
+        <!-- Presets -->
+        <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+          <h4 class="card-subtitle">Presets</h4>
+          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="jelly" data-cursor="control" data-label="Gelatina">Gelatina</button>
+          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="heavy" data-cursor="control" data-label="Pesado">Pesado</button>
+          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="snappy" data-cursor="control" data-label="Elástico">Elástico</button>
+          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="slow" data-cursor="control" data-label="Lento">Lento</button>
+        </div>
+        <!-- Métricas -->
+        <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:8px;">
+          <h4 class="card-subtitle">Métricas</h4>
+          <div class="metric-row"><span class="metric-label">FPS</span><span id="fpsCounter" class="metric-value">60</span></div>
+          <div class="metric-row"><span class="metric-label">Cliques</span><span id="clickCounter" class="metric-value">0</span></div>
+          <div class="metric-row"><span class="metric-label">Easing Atual</span><span id="easingLabel" class="metric-value metric-small">cubic-bezier(.34,1.56,.64,1)</span></div>
+          <div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden;margin-top:4px;"><div id="stressBar" class="stress-bar"></div></div>
+          <span style="font-size:11px;color:var(--fg-muted);">Carga de física</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ==================== UX PLAYGROUND ==================== -->
+  <section id="ux-playground" class="section-standard">
+    <div class="section-inner">
+      <div class="section-label reveal">02 — Psicologia Cognitiva</div>
+      <h2 class="section-title reveal reveal-delay-1">UX Playground</h2>
+      <p class="section-desc reveal reveal-delay-2 zen-hide">Veja a Lei de Fitts e a Lei de Hick em ação. Seus movimentos geram dados reais que se transformam em mapas de calor.</p>
+      <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+        <!-- Fitts -->
+        <div class="glass-card span-2 row-2" style="padding:0;overflow:hidden;">
+          <div style="padding:20px 24px 12px;"><h3 style="font-size:16px;font-weight:700;">Lei de Fitts</h3><p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Clique nos alvos o mais rápido possível.</p></div>
+          <div id="fittsArea" class="fitts-area"></div>
+          <div style="padding:0 24px 20px;display:flex;gap:24px;font-size:13px;">
+            <div><span style="color:var(--fg-muted);">Tempo médio:</span> <span id="fittsAvgTime" style="color:var(--accent);font-weight:600;">—</span></div>
+            <div><span style="color:var(--fg-muted);">Acertos:</span> <span id="fittsHits" style="color:var(--accent2);font-weight:600;">0</span></div>
+            <div><span style="color:var(--fg-muted);">Erros:</span> <span id="fittsMisses" style="color:#E84848;font-weight:600;">0</span></div>
+          </div>
+        </div>
+        <!-- Heatmap -->
+        <div class="glass-card span-2 row-2" style="padding:20px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Mapa de Calor ao Vivo</h3>
+          <p style="font-size:12px;color:var(--fg-muted);margin-bottom:12px;" class="zen-hide">Mova o mouse sobre esta área para gerar o heatmap.</p>
+          <canvas id="heatmap-canvas" class="heatmap-canvas" width="500" height="220"></canvas>
+        </div>
+        <!-- Hick -->
+        <div class="glass-card span-3" style="padding:24px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Lei de Hick</h3>
+          <p style="font-size:12px;color:var(--fg-muted);margin-bottom:16px;" class="zen-hide">Mais opções = mais tempo de decisão. Clique em "ALVO".</p>
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+            <label style="font-size:13px;color:var(--fg-muted);">Opções:</label>
+            <input type="range" class="aura-slider" id="hickSlider" min="2" max="24" step="1" value="4" style="max-width:200px;" data-cursor="control">
+            <span id="hickCount" style="font-size:14px;color:var(--accent);font-weight:600;">4</span>
+          </div>
+          <div id="hickGrid" class="hick-grid"></div>
+          <div style="margin-top:16px;font-size:13px;"><span style="color:var(--fg-muted);">Tempo médio:</span> <span id="hickAvgTime" style="color:var(--accent);font-weight:600;">—</span></div>
+        </div>
+        <!-- Insights -->
+        <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <h4 class="card-subtitle">Insights</h4>
+          <div id="uxInsight" style="font-size:13px;color:var(--fg);line-height:1.6;">Comece interagindo com os testes ao lado para gerar insights sobre seu comportamento.</div>
+          <div style="margin-top:auto;"><div style="height:60px;display:flex;align-items:flex-end;gap:3px;" id="miniChart"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ==================== ACESSIBILIDADE ==================== -->
+  <section id="a11y" class="section-standard">
+    <div class="section-inner">
+      <div class="section-label reveal">03 — Inclusão</div>
+      <h2 class="section-title reveal reveal-delay-1">Acessibilidade Viva</h2>
+      <p class="section-desc reveal reveal-delay-2 zen-hide">Alterne instantaneamente entre modos de percepção visual sem quebrar o layout.</p>
+      <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+        <div class="glass-card span-2" style="padding:28px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Simulação de Daltonismo</h3>
+          <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Observe como as paletas se adaptam para manter a legibilidade.</p>
+          <div class="color-swatches">
+            <div><div class="swatch" style="background:var(--accent);"></div><span>Primária</span></div>
+            <div><div class="swatch" style="background:var(--accent2);"></div><span>Secundária</span></div>
+            <div><div class="swatch" style="background:var(--fg);"></div><span>Texto</span></div>
+            <div><div class="swatch" style="background:var(--bg);border:1px solid var(--border);"></div><span>Fundo</span></div>
+          </div>
+        </div>
+        <div class="glass-card span-2" style="padding:28px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Contraste e Legibilidade</h3>
+          <div class="contrast-stack">
+            <div class="contrast-demo" id="contrastDemo1"><p class="contrast-text-lg">Texto Grande — AAA</p><p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão: <span id="cr1">—</span></p></div>
+            <div class="contrast-demo" id="contrastDemo2"><p class="contrast-text-md">Texto Corpo — AA</p><p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão: <span id="cr2">—</span></p></div>
+            <div class="contrast-demo" id="contrastDemo3"><p class="contrast-text-sm">Texto Pequeno — AA</p><p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Razão: <span id="cr3">—</span></p></div>
+          </div>
+        </div>
+        <div class="glass-card span-2" style="padding:28px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Navegação por Teclado</h3>
+          <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Pressione <kbd style="padding:2px 8px;background:var(--card-hover);border-radius:4px;font-size:12px;border:1px solid var(--border);">Tab</kbd> para navegar.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button style="padding:10px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 1</button>
+            <button style="padding:10px 20px;border-radius:8px;background:var(--accent2);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 2</button>
+            <button style="padding:10px 20px;border-radius:8px;background:var(--card);color:var(--fg);font-weight:600;font-family:'Syne';border:1px solid var(--border);cursor:none;" data-cursor="control">Botão 3</button>
+            <input type="text" placeholder="Campo de texto..." style="padding:10px 16px;border-radius:8px;background:var(--card);color:var(--fg);border:1px solid var(--border);font-family:'Space Grotesk';font-size:14px;outline:none;cursor:none;" data-cursor="control">
+          </div>
+        </div>
+        <div class="glass-card span-2" style="padding:28px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Leitor de Tela Visual</h3>
+          <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:16px;" class="zen-hide">Passe o mouse sobre os cards abaixo para ver a descrição.</p>
+          <div id="srDemos" class="sr-demos-list"></div>
+          <div id="srOutput" class="sr-output">Passe o mouse sobre um item acima...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ==================== DARK/LIGHT MATRIX ==================== -->
+  <section id="matrix" class="section-standard" style="padding-bottom:120px;">
+    <div class="section-inner">
+      <div class="section-label reveal">04 — Sistemas de Design</div>
+      <h2 class="section-title reveal reveal-delay-1">Dark / Light Matrix</h2>
+      <p class="section-desc reveal reveal-delay-2 zen-hide">A transição de tema se adapta à iluminação ambiente via webcam ou ao horário do dia.</p>
+      <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
+        <div class="glass-card" style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+          <h3 style="font-size:16px;font-weight:700;">Tema Atual</h3>
+          <div id="currentThemeDisplay" style="font-size:28px;font-weight:800;color:var(--accent);font-family:'Syne';">DARK</div>
+          <button class="physics-btn" id="themeToggle" style="background:var(--accent);width:100%;" data-cursor="control" data-label="Alternar tema">Alternar Manualmente</button>
+        </div>
+        <div class="glass-card" style="padding:24px;display:flex;flex-direction:column;gap:12px;">
+          <h3 style="font-size:16px;font-weight:700;">Paleta Ativa</h3>
+          <div id="paletteDisplay" class="palette-grid"></div>
+        </div>
+        <div class="glass-card span-2" style="padding:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="font-size:16px;font-weight:700;">Sensor de Luz Ambiental</h3>
+            <div style="display:flex;align-items:center;gap:8px;"><span class="light-indicator" id="lightIndicator" style="background:#555;"></span><span id="lightStatus" style="font-size:12px;color:var(--fg-muted);">Inativo</span></div>
+          </div>
+          <div class="webcam-container">
+            <video id="webcamVideo" class="webcam-video" autoplay playsinline muted></video>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;" id="webcamPlaceholder">
+              <button id="webcamBtn" class="physics-btn" style="background:var(--accent);font-size:13px;" data-cursor="control" data-label="Ativar câmera"><i class="fa-solid fa-camera" style="margin-right:8px;"></i>Ativar Câmera</button>
+            </div>
+            <canvas id="lightCanvas" style="display:none;"></canvas>
+          </div>
+          <p style="font-size:11px;color:var(--fg-muted);margin-top:8px;" class="zen-hide">A câmera é usada localmente apenas para medir luminosidade. Nenhum dado é enviado.</p>
+        </div>
+        <div class="glass-card span-3" style="padding:24px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Preview de Componentes</h3>
+          <div class="components-preview">
+            <div class="preview-card"><div class="preview-accent-bar"></div><p class="preview-title">Card Component</p><p class="preview-desc zen-hide">Conteúdo com transição suave entre temas.</p></div>
+            <div class="preview-card"><div class="preview-dots"><span style="background:var(--accent);"></span><span style="background:var(--accent2);"></span><span style="background:var(--fg-muted);"></span></div><p class="preview-title">Status Indicators</p><p class="preview-desc zen-hide">Sinais visuais adaptados ao contexto.</p></div>
+            <div class="preview-card"><div class="preview-progress"><div class="preview-progress-bar"></div></div><p class="preview-title">Progress Bar</p><p class="preview-desc zen-hide">65% concluído com cores adaptáveis.</p></div>
+            <div class="preview-card preview-card-cta"><p class="preview-title" style="color:var(--bg);">CTA Destaque</p><p class="preview-desc zen-hide" style="color:var(--bg);opacity:0.7;">Ação com inversão automática.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p style="font-size:13px;color:var(--fg-muted);">Aura — Ecossistema Interativo das Sensações Digital</p>
+    <p style="font-size:11px;color:var(--fg-muted);opacity:0.5;margin-top:4px;">Construído com princípios de design adaptativo e acessibilidade</p>
+  </footer>
+
+  <!-- Scripts modulares -->
+  <script src="js/audio.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/hero-canvas.js"></script>
+  <script src="js/micro-lab.js"></script>
+  <script src="js/ux-playground.js"></script>
+  <script src="js/accessibility.js"></script>
+  <script src="js/theme-matrix.js"></script>
+  <script src="js/core.js"></script>
+</body>
+</html>
