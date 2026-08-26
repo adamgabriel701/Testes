@@ -68,7 +68,84 @@ Tipos de resultado, canais de erro e a paz curiosa de deixar as coisas falharem 
 
 O compilador de Rust é como um professor rigoroso.
 
+\`\`\`rust
+fn main() {
+    let x = 5;
+    println!("O valor é: {}", x);
+}
+\`\`\`
+
 > Se compila, provavelmente está certo.`
+    },
+    {
+      id: "05",
+      slug: "docker-na-veia",
+      title: "Docker na Veia: Containers sem complicação",
+      date: "20.09.24",
+      tags: ["DevOps"],
+      readTime: "9 min",
+      excerpt: "Parou de funcionar na minha máquina? Então vamos colocar a sua máquina dentro de um container.",
+      content: `# Docker na Veia
+
+Parou de funcionar na minha máquina? Então vamos colocar a sua máquina dentro de um container.
+
+\`\`\`dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY . .
+RUN npm install
+CMD ["npm", "start"]
+\`\`\`
+
+Simples assim.`
+    },
+    {
+      id: "06",
+      slug: "postgres-magia",
+      title: "PostgreSQL: A Magia que Você Ignorava",
+      date: "15.09.24",
+      tags: ["Banco de Dados"],
+      readTime: "12 min",
+      excerpt: "JSONB, Arrays e CTEs. Como parar de tratar o Postgres como um mero armazenador de tabelas.",
+      content: `# PostgreSQL: A Magia que Você Ignorava
+
+JSONB, Arrays e CTEs.
+
+\`\`\`sql
+SELECT * FROM users WHERE preferences @> '{"theme": "dark"}';
+\`\`\`
+
+Como parar de tratar o Postgres como um mero armazenador de tabelas.`
+    },
+    {
+      id: "07",
+      slug: "css-cancer",
+      title: "Curando o Câncer de CSS em Projetos Legados",
+      date: "02.09.24",
+      tags: ["CSS", "Frontend"],
+      readTime: "7 min",
+      excerpt: "Era uma vez \`!important\` em todo canto. Eis a jornada de como refatorei o CSS sem quebrar o app.",
+      content: `# Curando o Câncer de CSS
+
+Era uma vez \`!important\` em todo canto.
+
+> Dica de ouro: Especificidade mata importância.`
+    },
+    {
+      id: "08",
+      slug: "mentes-programadoras",
+      title: "O Programador Zen e a Arte de Escrever Menos",
+      date: "18.08.24",
+      tags: ["Carreira"],
+      readTime: "5 min",
+      excerpt: "Por que o melhor código é aquele que você apagou antes de dar commit.",
+      content: `# O Programador Zen
+
+Por que o melhor código é aquele que você apagou antes de dar commit.
+
+\`\`\`bash
+git commit --allow-empty -m "Refatoração filosófica"
+\`\`\``
     }
   ],
   snippets: [
@@ -121,6 +198,37 @@ export function useTypewriter(words: string[], speed = 80, pause = 1800) {
 const buscar = debounce((query) => {
   console.log('Buscando por:', query);
 }, 500);`
+    },
+    {
+      title: "Rust: Option e unwrap_or",
+      lang: "rust",
+      code: `fn pegar_usuario(id: u32) -> Option<String> {
+    if id == 1 {
+        Some(String::from("Adam"))
+    } else {
+        None
+    }
+}
+
+fn main() {
+    let nome = pegar_usuario(2).unwrap_or_else(|| String::from("Visitante"));
+    println!("Olá, {}", nome); // Olá, Visitante
+}`
+    },
+    {
+      title: "Docker: Limpar Tudo",
+      lang: "bash",
+      code: `# Remove todos os contêineres parados
+docker container prune -f
+
+# Remove todas as imagens não utilizadas
+docker image prune -a -f
+
+# Limpa volumes não usados (CUIDADO!)
+docker volume prune -f
+
+# O comando definitivo para recuperar espaço em disco
+docker system prune -a --volumes -f`
     }
   ],
   projects: [
@@ -131,14 +239,14 @@ const buscar = debounce((query) => {
 
 Sou um engenheiro de software que escreve na internet ocasionalmente.
 
-> Me contate em ola@devlog.exemplo — ou digite \`mail ola@devlog.exemplo\` no terminal abaixo.`,
+> Me contate em adamgabriel289@gmail.com — ou digite \`mail adamgabriel289@gmail.com\` no terminal abaixo.`,
   contact: `# contato
 
-- email:    ola@devlog.exemplo
-- github:   github.com/exemplo
-- pgp:      0xDEADBEEFCAFEBABE
+- email:    adamgabriel289@gmail.com
+- github:   github.com/adamgabriel1
+- twitter:  twitter.com
 
-Ou apenas digite \`mail ola@devlog.exemplo\` e escreva-me neste terminal.`,
+Ou apenas digite \`mail adamgabriel289@gmail.com\` e escreva-me neste terminal.`,
   readme: `# LEIA-ME.md
 
 bem-vindo ao /dev/log — um blog de desenvolvedor que pensa que é um terminal.

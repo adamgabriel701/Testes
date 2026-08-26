@@ -11,7 +11,7 @@ let historyIndex = -1;
 function bootTerminal() {
   print('<span class="success">[ OK ]</span> iniciando retro shell v2.0...');
   print('<span class="success">[ OK ]</span> montando <span class="info">/posts</span> <span class="dim">(' + BLOG_DATA.posts.length + ' entradas)</span>');
-  print('<span class="success">[ OK ]</span> montando <span class="info">/projects</span> <span class="dim">(' + BLOG_DATA.projects.length + ' entradas)</span>');
+  print('<span class="success">[ OK ]</span> montando <span class="info">/snippets</span> <span class="dim">(' + BLOG_DATA.snippets.length + ' entradas)</span>');
   print('&nbsp;');
   print('<span class="dim">Digite `ajuda` para ver os comandos. Tente `neofetch` ou `ls`.</span>');
   print('&nbsp;');
@@ -36,14 +36,15 @@ const commands = {
     print('  <span class="accent">ls</span>          lista arquivos e diretórios');
     print('  <span class="accent">cat</span>         mostra conteúdo do arquivo (ex: cat LEIA-ME.md)');
     print('  <span class="accent">projetos</span>    lista projetos paralelos');
-    print('  <span class="accent">social</span>      exite links redes sociais');
+    print('  <span class="accent">setup</span>       exibe ferramentas que uso');
+    print('  <span class="accent">redes</span>       exite links redes sociais');
     print('  <span class="accent">neofetch</span>    exibe informações do sistema');
     print('  <span class="accent">tema</span>        altera o tema visual (ex: tema cyber)');
     print('  <span class="accent">limpar</span>      limpa a tela');
   },
   help: () => commands.ajuda(),
   ls: () => {
-    print('<span class="info">posts/</span>    <span class="info">projects/</span>    LEIA-ME.md    .sobre    .contato');
+    print('<span class="info">posts/</span>    <span class="info">snippets/</span>    <span class="info">projects/</span>    LEIA-ME.md    .sobre    .contato');
   },
   cat: (args) => {
     if (!args[0]) { print('<span class="error">cat: faltando operando de arquivo</span>'); return; }
@@ -69,7 +70,12 @@ const commands = {
       print(`<span class="accent">${p.name}</span> <span class="dim">[${p.lang}]</span> - ${p.desc}`);
     });
   },
-  social: () => {
+  setup: () => {
+    SITE_CONFIG.setup.forEach(t => {
+      print(`<span class="info">${t.name}</span> <span class="dim">[${t.icon}]</span>`);
+    });
+  },
+  redes: () => {
     SITE_CONFIG.socials.forEach(s => {
       print(`<span class="info">${s.icon}</span> <span class="dim">-></span> ${s.url}`);
     });
@@ -113,7 +119,7 @@ const commands = {
 
 // Autocompletar
 function getCandidates(word) {
-  const files = ['posts/', 'projects/', 'LEIA-ME.md', '.sobre', '.contato'];
+  const files = ['posts/', 'snippets/', 'projects/', 'LEIA-ME.md', '.sobre', '.contato'];
   const cmds = Object.keys(commands);
   if (word.startsWith('cat ')) return [];
   if (word.startsWith('tema ')) return ['dark', 'light', 'cyber'];
