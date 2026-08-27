@@ -15,7 +15,6 @@ Este repositório é dividido em 5 áreas principais, garantindo isolamento e es
 ├── tests/              # Laboratório de experimentos e rascunhos
 ```
 
-```markdown
 ## 🚀 Tecnologias Utilizadas
 
 Este ecossistema utiliza **6 linguagens de programação** diferentes, cada uma resolvida o problema onde ela é mais forte:
