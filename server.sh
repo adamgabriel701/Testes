@@ -19,12 +19,12 @@ case $opt in
   1)
     echo "🟢 Iniciando Maués na porta 8000..."
     cd guarana
-    python3 -m http.server 8000 2>&1 | grep -v "code 400" | grep -v "favicon.ico"
+    python3 -m http.server 8000
     ;;
   2)
     echo "🟣 Iniciando Aura na porta 8001..."
     cd aura
-    python3 -m http.server 8001 2>&1 | grep -v "code 400" | grep -v "favicon.ico"
+    python3 -m http.server 8001
     ;;
   3)
     echo "🟣 Iniciando Readium na porta 8002..."
@@ -39,7 +39,7 @@ case $opt in
   5)
     echo "🟣 Iniciando Blog na porta 8004..."
     cd meu-blog
-    python3 -m http.server 8004 2>&1 | grep -v "code 400" | grep -v "favicon.ico"
+    python3 -m http.server 8004
     ;;
   *)
     echo "Opção inválida."

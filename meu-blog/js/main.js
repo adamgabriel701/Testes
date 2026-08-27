@@ -140,12 +140,21 @@ BLOG_DATA.posts.forEach(post => {
 function openPost(slug) {
   const post = BLOG_DATA.posts.find(p => p.slug === slug);
   if (!post) return;
+  
   const html = marked.parse(post.content);
   const term = document.getElementById('terminalOutput');
   term.innerHTML += `<div class="line success">--- abrindo ${post.slug}.md ---</div>`;
   term.innerHTML += `<div class="line">${html}</div>`;
   term.scrollTop = term.scrollHeight;
-  document.getElementById('terminal').scrollIntoView({ behavior: 'smooth' });
+  
+  // Rola a página manualmente parando exatamente no topo do terminal
+  const terminalElement = document.getElementById('terminal');
+  const topPos = terminalElement.getBoundingClientRect().top + window.scrollY - 90; // -90 compensa a navbar fixa
+  
+  window.scrollTo({
+    top: topPos,
+    behavior: 'smooth'
+  });
 }
 
 // Efeito de Máquina de Escrever
