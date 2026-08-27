@@ -102,8 +102,23 @@ func pushChanges() {
     fmt.Printf("📝 Commitando com mensagem: '%s'...\n", msg)
     exec.Command("git", "commit", "-m", msg).Run()
     
+    // NOVA LÓGICA: Sincroniza com o repositório remoto antes de empurrar
+    fmt.Println("🔄 Sincronizando com o repositório remoto (pull)...")
+    
+    // Configura para sempre fazer merge automaticamente, evitando o erro que você teve
+    exec.Command("git", "config", "pull.rebase", "false").Run()
+    
+    // Puxa as alterações
+    pullCmd := exec.Command("git", "pull", "origin", "main")
+    pullCmd.Stdout = os.Stdout
+    pullCmd.Stderr = os.Stderr
+    pullCmd.Run()
+    
     fmt.Println("🚀 Enviando para o repositório...")
-    exec.Command("git", "push", "origin", "main").Run()
+    pushCmd := exec.Command("git", "push", "origin", "main")
+    pushCmd.Stdout = os.Stdout
+    pushCmd.Stderr = os.Stderr
+    pushCmd.Run()
     
     fmt.Println("✅ Concluído!")
 }

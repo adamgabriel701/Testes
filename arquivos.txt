@@ -74,10 +74,14 @@
 │   ├── data
 │   │   ├── content.js
 │   │   └── site.js
+│   ├── gerador.js
 │   ├── index.html
-│   └── js
-│       ├── main.js
-│       └── terminal.js
+│   ├── js
+│   │   ├── main.js
+│   │   └── terminal.js
+│   └── posts_externos
+│       ├── meu_post.md
+│       └── script.py
 ├── readium
 │   ├── content
 │   │   ├── artigo-externo
@@ -1418,4 +1422,4 @@
                 ├── wasm_particles.d
                 └── wasm_particles.wasm
 
-269 directories, 1150 files
+270 directories, 1153 files
