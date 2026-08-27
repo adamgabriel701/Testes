@@ -47,9 +47,15 @@ function drawScrollyFrame() {
   const h = scrollyContainer.offsetHeight;
   sCtx.clearRect(0, 0, w, h);
 
+  // Pega as cores dinamicamente do CSS (suporta light e dark)
+  const style = getComputedStyle(document.documentElement);
+  const bg1 = style.getPropertyValue('--bg').trim();
+  const bg2 = style.getPropertyValue('--bg2').trim();
+
+  // Fundo sutil com gradiente
   const bgGrad = sCtx.createLinearGradient(0, 0, 0, h);
-  bgGrad.addColorStop(0, 'rgba(6,6,8,0.8)');
-  bgGrad.addColorStop(1, 'rgba(14,14,20,0.9)');
+  bgGrad.addColorStop(0, bg1 || 'rgba(6,6,8,0.8)');
+  bgGrad.addColorStop(1, bg2 || 'rgba(14,14,20,0.9)');
   sCtx.fillStyle = bgGrad;
   sCtx.fillRect(0, 0, w, h);
 
@@ -117,42 +123,42 @@ drawScrollyFrame();
 
 // --- TIMELINES ---
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-0', start: 'top center', end: 'bottom center', onEnter: () => setChapter(0), onEnterBack: () => setChapter(0) }})
-.from('#chapter-0 .chapter-number', { x: -60, opacity: 0, duration: 0.8, ease: 'power3.out' })
-.from('#chapter-0 .chapter-title', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2 }, '<')
-.from('#chapter-0 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4 }, '<')
+.from('#chapter-0 .chapter-number', { x: -60, opacity: 0, duration: 0.8, ease: 'power3.out', clearProps: "all" })
+.from('#chapter-0 .chapter-title', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2, clearProps: "all" }, '<')
+.from('#chapter-0 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4, clearProps: "all" }, '<')
 .to(scrollyShapes[0], { opacity: 0.6, rotation: Math.PI * 0.25, duration: 1, ease: 'power2.out' }, 0)
 .to(scrollyShapes[4], { opacity: 0.3, rotation: Math.PI * 0.5, duration: 1.2, ease: 'power2.out' }, 0.2);
 
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-1', start: 'top center', end: 'bottom center', onEnter: () => setChapter(1), onEnterBack: () => setChapter(1) }})
-.from('#chapter-1 .chapter-number', { scale: 0, opacity: 0, duration: 0.6, ease: 'back.out(2)' })
-.from('#chapter-1 .chapter-title', { y: 50, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 }, '<')
-.from('#chapter-1 .chapter-text', { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }, '<')
-.from('#chapter-1 .grid-lines', { scaleY: 0, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4 }, '<')
+.from('#chapter-1 .chapter-number', { scale: 0, opacity: 0, duration: 0.6, ease: 'back.out(2)', clearProps: "all" })
+.from('#chapter-1 .chapter-title', { y: 50, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.15, clearProps: "all" }, '<')
+.from('#chapter-1 .chapter-text', { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.3, clearProps: "all" }, '<')
+.from('#chapter-1 .grid-lines', { scaleY: 0, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4, clearProps: "all" }, '<')
 .to(scrollyShapes[1], { opacity: 0.7, rotation: -Math.PI * 0.3, size: 130, duration: 1, ease: 'power2.out' }, 0)
 .to(scrollyShapes[3], { opacity: 0.5, rotation: Math.PI * 0.4, duration: 1.2, ease: 'power2.out' }, 0.3);
 
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-2', start: 'top center', end: 'bottom center', onEnter: () => setChapter(2), onEnterBack: () => setChapter(2) }})
-.from('#chapter-2 .chapter-number', { x: 60, opacity: 0, duration: 0.7, ease: 'power3.out' })
-.from('#chapter-2 .chapter-title', { y: 40, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 }, '<')
-.from('#chapter-2 .chapter-text', { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }, '<')
-.from('#chapter-2 .wave-container', { scaleX: 0, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 0.4 }, '<')
+.from('#chapter-2 .chapter-number', { x: 60, opacity: 0, duration: 0.7, ease: 'power3.out', clearProps: "all" })
+.from('#chapter-2 .chapter-title', { y: 40, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.15, clearProps: "all" }, '<')
+.from('#chapter-2 .chapter-text', { y: 30, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.3, clearProps: "all" }, '<')
+.from('#chapter-2 .wave-container', { scaleX: 0, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 0.4, clearProps: "all" }, '<')
 .to(scrollyShapes[2], { opacity: 0.8, rotation: Math.PI * 0.25, size: 100, duration: 1, ease: 'power2.out' }, 0)
 .to(scrollyShapes[0], { opacity: 0.2, size: 60, duration: 0.8, ease: 'power2.out' }, 0);
 
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-3', start: 'top center', end: 'bottom center', onEnter: () => setChapter(3), onEnterBack: () => setChapter(3) }})
-.from('#chapter-3 .chapter-number', { y: -40, opacity: 0, duration: 0.7, ease: 'power3.out' })
-.from('#chapter-3 .chapter-title', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2 }, '<')
-.from('#chapter-3 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.3 }, '<')
-.from('#chapter-3 .depth-layers', { opacity: 0, scale: 0.9, duration: 1, ease: 'power3.out', delay: 0.4 }, '<')
+.from('#chapter-3 .chapter-number', { y: -40, opacity: 0, duration: 0.7, ease: 'power3.out', clearProps: "all" })
+.from('#chapter-3 .chapter-title', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2, clearProps: "all" }, '<')
+.from('#chapter-3 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.3, clearProps: "all" }, '<')
+.from('#chapter-3 .depth-layers', { opacity: 0, scale: 0.9, duration: 1, ease: 'power3.out', delay: 0.4, clearProps: "all" }, '<')
 .to(scrollyShapes[3], { opacity: 0.9, size: 200, rotation: -Math.PI * 0.2, duration: 1.2, ease: 'power2.out' }, 0)
 .to(scrollyShapes[4], { opacity: 0.6, size: 90, rotation: Math.PI, duration: 1, ease: 'power2.out' }, 0.2)
 .to(scrollyShapes[1], { opacity: 0.3, size: 60, duration: 0.8 }, 0);
 
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-4', start: 'top center', end: 'bottom center', onEnter: () => setChapter(4), onEnterBack: () => setChapter(4) }})
-.from('#chapter-4 .chapter-number', { scale: 0, opacity: 0, duration: 0.6, ease: 'back.out(2.5)' })
-.from('#chapter-4 .chapter-title', { y: 40, opacity: 0, scale: 0.9, duration: 0.9, ease: 'power3.out', delay: 0.2 }, '<')
-.from('#chapter-4 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4 }, '<')
-.from('#chapter-4 .synthesis-shapes', { opacity: 0, scale: 0.8, rotation: -0.1, duration: 1, ease: 'power3.out', delay: 0.5 }, '<')
+.from('#chapter-4 .chapter-number', { scale: 0, opacity: 0, duration: 0.6, ease: 'back.out(2.5)', clearProps: "all" })
+.from('#chapter-4 .chapter-title', { y: 40, opacity: 0, scale: 0.9, duration: 0.9, ease: 'power3.out', delay: 0.2, clearProps: "all" }, '<')
+.from('#chapter-4 .chapter-text', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.4, clearProps: "all" }, '<')
+.from('#chapter-4 .synthesis-shapes', { opacity: 0, scale: 0.8, rotation: -0.1, duration: 1, ease: 'power3.out', delay: 0.5, clearProps: "all" }, '<')
 .to(scrollyShapes, { opacity: 0.8, size: 70, x: 0.5, y: 0.5, rotation: Math.PI * 0.15, duration: 1.5, ease: 'power3.inOut', stagger: 0.1 }, 0.3);
 
 ScrollTrigger.create({

@@ -9,6 +9,11 @@ function setTheme(theme) {
   window.updatePaletteDisplay?.();
   window.updateContrastRatios?.();
   gsap.fromTo('#currentThemeDisplay', {opacity: 0, y: 10}, {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'});
+  
+  // AVISA O GSAP QUE O LAYOUT PODE TER MUDADO
+  if (window.ScrollTrigger) {
+    setTimeout(() => ScrollTrigger.refresh(), 300);
+  }
 }
 
 document.getElementById('themeToggle').addEventListener('click', () => {
