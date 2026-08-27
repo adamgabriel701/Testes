@@ -1,0 +1,13 @@
+{
+  "type": "livro",
+  "title": "g1 - O portal de notícias da Globo",
+  "author": "Importado via IA",
+  "atmosphere": "mist",
+  "reading_time": "13 min",
+  "chapters": [
+    {
+      "file": "texto.md",
+      "title": "g1 - O portal de notícias da Globo"
+    }
+  ]
+}
