@@ -1,7 +1,7 @@
 /* =============================================
    HERO CANVAS — Campo de partículas 3D (Wasm Worker)
    ============================================= */
-import init, { ParticleSystem } from '../../wasm-particles/pkg/wasm_particles.js';
+import init, { ParticleSystem } from '../../../packages/wasm-particles/pkg/wasm_particles.js';
 
 const heroCanvas = document.getElementById('hero-canvas');
 const hCtx = heroCanvas.getContext('2d');

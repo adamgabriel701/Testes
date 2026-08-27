@@ -74,21 +74,21 @@ func serveMenu() {
 
     switch opt {
     case "1":
-        runServer("guarana", "python3 -m http.server 8000")
+        runServer("apps/guarana", "python3 -m http.server 8000")
     case "2":
-        runServer("aura", "python3 -m http.server 8001")
+        runServer("apps/aura", "python3 -m http.server 8001")
     case "3":
-        runServer("readium", "npm start")
+        runServer("apps/readium", "npm start")
     case "4":
-        runServer("vortex", "npm start")
+        runServer("apps/vortex", "npm start")
     case "5":
-        runServer("meu-blog", "python3 -m http.server 8004")
+        runServer("apps/meu-blog", "python3 -m http.server 8004")
     case "6":
         runServer("services/nexus-gateway", "go run main.go")
     case "7":
         runServer("services/readium-ai", "uvicorn main:app --reload --port 8005")
     case "8":
-        runServer("cms-engine", "php -S localhost:8006")
+        runServer("services/cms-engine", "php -S localhost:8006")
     case "9":
         runServer("services/live-hub", "npm start")
     case "10":
@@ -160,10 +160,7 @@ func installDeps() {
 
 func buildWasm() {
     fmt.Println("🦀 Compilando Rust para WebAssembly...")
-    dir := "wasm-particles"
-    if _, err := os.Stat(dir); os.IsNotExist(err) {
-        dir = "apps/aura/pkg/wasm-particles"
-    }
+    dir := "packages/wasm-particles" // Caminho atualizado
 
     cmd := exec.Command("wasm-pack", "build", "--target", "web")
     cmd.Dir = dir

@@ -13,46 +13,47 @@ import (
 
 // Mapeamento de todos os serviços do ecossistema
 var services = map[string]ServiceConfig{
-	"guarana": {
-		Port: "8000", Path: "guarana",
-		StartCmd: []string{"python3", "-m", "http.server", "8000"}, Dir: "../../guarana",
-		HealthURL: "http://localhost:8000",
-	},
-	"aura": {
-		Port: "8001", Path: "aura",
-		StartCmd: []string{"python3", "-m", "http.server", "8001"}, Dir: "../../aura",
-		HealthURL: "http://localhost:8001",
-	},
-	"readium": {
-		Port: "8002", Path: "readium",
-		StartCmd: []string{"npm", "start"}, Dir: "../../readium",
-		HealthURL: "http://localhost:8002",
-	},
-	"vortex": {
-		Port: "8003", Path: "vortex",
-		StartCmd: []string{"npm", "start"}, Dir: "../../vortex",
-		HealthURL: "http://localhost:8003",
-	},
-	"meu-blog": {
-		Port: "8004", Path: "blog",
-		StartCmd: []string{"python3", "-m", "http.server", "8004"}, Dir: "../../meu-blog",
-		HealthURL: "http://localhost:8004",
-	},
-	"readium-ai": {
-		Port: "8005", Path: "readium-ai",
-		StartCmd: []string{"uvicorn", "main:app", "--port", "8005"}, Dir: "../../services/readium-ai",
-		HealthURL: "http://localhost:8005",
-	},
-	"cms-engine": {
-		Port: "8006", Path: "cms-engine",
-		StartCmd: []string{"php", "-S", "localhost:8006"}, Dir: "../../cms-engine",
-		HealthURL: "http://localhost:8006",
-	},
-	"live-hub": {
-		Port: "8007", Path: "live-hub",
-		StartCmd: []string{"npm", "start"}, Dir: "../../services/live-hub",
-		HealthURL: "http://localhost:8007",
-	},
+    "guarana": {
+        Port: "8000", Path: "guarana",
+        StartCmd: []string{"python3", "-m", "http.server", "8000"}, Dir: "../../apps/guarana", // Atualizado
+        HealthURL: "http://localhost:8000",
+    },
+    "aura": {
+        Port: "8001", Path: "aura",
+        StartCmd: []string{"python3", "-m", "http.server", "8001"}, Dir: "../../apps/aura", // Atualizado
+        HealthURL: "http://localhost:8001",
+    },
+    "readium": {
+        Port: "8002", Path: "readium",
+        StartCmd: []string{"npm", "start"}, Dir: "../../apps/readium", // Atualizado
+        HealthURL: "http://localhost:8002",
+    },
+    "vortex": {
+        Port: "8003", Path: "vortex",
+        StartCmd: []string{"npm", "start"}, Dir: "../../apps/vortex", // Atualizado
+        HealthURL: "http://localhost:8003",
+    },
+    "meu-blog": {
+        Port: "8004", Path: "blog",
+        StartCmd: []string{"python3", "-m", "http.server", "8004"}, Dir: "../../apps/meu-blog", // Atualizado
+        HealthURL: "http://localhost:8004",
+    },
+    // Os serviços que já estão na pasta services/ não mudam o caminho relativo!
+    "readium-ai": {
+        Port: "8005", Path: "readium-ai",
+        StartCmd: []string{"uvicorn", "main:app", "--port", "8005"}, Dir: "../../services/readium-ai",
+        HealthURL: "http://localhost:8005",
+    },
+    "cms-engine": {
+        Port: "8006", Path: "cms-engine",
+        StartCmd: []string{"php", "-S", "localhost:8006"}, Dir: "../../services/cms-engine",
+        HealthURL: "http://localhost:8006",
+    },
+    "live-hub": {
+        Port: "8007", Path: "live-hub",
+        StartCmd: []string{"npm", "start"}, Dir: "../../services/live-hub",
+        HealthURL: "http://localhost:8007",
+    },
 }
 
 type ServiceConfig struct {

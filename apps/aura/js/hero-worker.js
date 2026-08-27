@@ -1,5 +1,5 @@
 // aura/js/hero-worker.js
-import init, { ParticleSystem } from '../../wasm-particles/pkg/wasm_particles.js';
+import init, { ParticleSystem } from '../../../packages/wasm-particles/pkg/wasm_particles.js';
 
 let wasmSystem;
 let isInitialized = false;
