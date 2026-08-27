@@ -15,6 +15,7 @@ Este repositório é dividido em 5 áreas principais, garantindo isolamento e es
 ├── tests/              # Laboratório de experimentos e rascunhos
 ```
 
+```markdown
 ## 🚀 Tecnologias Utilizadas
 
 Este ecossistema utiliza **6 linguagens de programação** diferentes, cada uma resolvida o problema onde ela é mais forte:
@@ -25,7 +26,7 @@ Este ecossistema utiliza **6 linguagens de programação** diferentes, cada uma 
 | **Go** | `services/nexus-gateway`, `tools/dev-cli` | Proxy reverso, Orquestração de containers, CLIs ultrarrápidas |
 | **Python** | `services/readium-ai`, `services/geo-aggregator` | Web Scraping, NLP (Processamento de Linguagem Natural), APIs em FastAPI |
 | **PHP** | `services/cms-engine` | CMS Headless com SQLite para gestão de conteúdo dinâmico |
-| **Rust** | `packages/wasm-particles`, `tools/ssg-cli` | WebAssembly para física de partículas a 60fps e gerador de sites estáticos |
+| **Rust** | `packages/wasm-particles`, `packages/wasm-tts`, `tools/ssg-cli` | Física de partículas Wasm, Processamento de Text-to-Speech, e gerador de sites estáticos |
 
 ## 📂 Módulos Principais
 
@@ -42,6 +43,10 @@ Este ecossistema utiliza **6 linguagens de programação** diferentes, cada uma 
 * **CMS Engine (PHP):** Headless CMS com painel admin para gerenciar eventos e hospedagens, servindo JSON puro para o frontend.
 * **Live Hub (Node.js):** Servidor Socket.io para atualizações de interface em tempo real (Server-Sent Events).
 
+### 📦 Packages (Módulos Compartilhados)
+* **Wasm Particles (Rust):** Motor de física computacional compilado para WebAssembly, alimentando os gráficos do projeto *Aura*.
+* **Wasm TTS (Rust):** Processador de texto que limpa Markdown e divide frases para alimentar a API nativa de Text-to-Speech do navegador no projeto *Readium*.
+
 ### 🛠️ Tools (Automação)
 * **Dev CLI (`monoman` em Go):** O coração do desenvolvimento. Substitui scripts Bash. Comandos: `monoman serve`, `monoman push`, `monoman tree`, `monoman status`.
 * **Load Tester (Go):** Ferramenta de stress test para simular tráfego concorrente nas APIs.
@@ -52,6 +57,10 @@ Este ecossistema utiliza **6 linguagens de programação** diferentes, cada uma 
 Toda a gestão do monorepo é feita via CLI. Primeiro, compile o gerenciador:
 
 ```bash
+# Alternativa direta para instalar o monoman no PATH do sistema
+go install ./tools/dev-cli/...
+
+# Ou, se preferir compilar e mover manualmente:
 cd tools/dev-cli
 go build -o monoman
 sudo mv monoman /usr/local/bin/
@@ -80,6 +89,3 @@ monoman tree
 1. **Isolamento de Performance:** O cálculo de física do projeto *Aura* não roda em JS, mas em Rust compilado para WebAssembly via Web Workers, mantendo a thread principal livre a 60 FPS.
 2. **Desacoplamento:** O frontend (Guaraná) não sabe que o PHP existe. Ele apenas consome um JSON. Se amanhã o PHP for trocado por Go, o frontend não muda.
 3. **DX (Developer Experience):** Zero configuração manual. O `nexus-gateway` sobe e gerencia os processos PHP, Python e Node automaticamente.
-
----
-Construído com foco em arquitetura limpa, performance e experimentação técnica.
