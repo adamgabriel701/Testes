@@ -1,4 +1,4 @@
-const CACHE_NAME = 'maues-turismo-v1';
+const CACHE_NAME = 'maues-turismo-v2';
 const ASSETS = [
   'index.html',
   'guarana.html',
@@ -45,14 +45,26 @@ self.addEventListener('activate', e => {
 
 // Fetch — Network first, fallback to cache
 self.addEventListener('fetch', e => {
-  // Ignora requisições externas (CDN, picsum, etc.)
+  // Ignora requisições externas e rotas de proxy do Gateway
   if (!e.request.url.startsWith(self.location.origin)) return;
+  
+  // Ignora requisições que não sejam GET (ex: POST do Socket.io)
+  if (e.request.method !== 'GET') return;
+
+  // Só faz cache de arquivos estáticos conhecidos
+  const url = new URL(e.request.url);
+  const isValidExtension = /\.(html|css|js|json|png|jpg|jpeg|svg|webp|ico)$/.test(url.pathname);
+  
+  if (!isValidExtension) return;
 
   e.respondWith(
     fetch(e.request)
       .then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        // Só faz cache se a resposta for válida (status 200)
+        if (response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        }
         return response;
       })
       .catch(() => caches.match(e.request))

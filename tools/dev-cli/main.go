@@ -2,11 +2,15 @@ package main
 
 import (
     "bufio"
+    "encoding/json"
     "fmt"
+    "io"
+    "net/http"
     "os"
     "os/exec"
     "path/filepath"
     "strings"
+    "time"
 )
 
 func main() {
@@ -25,7 +29,9 @@ func main() {
     case "deps":
         installDeps()
     case "wasm":
-        buildWasm() // Novo comando para compilar o Rust
+        buildWasm()
+    case "status": // NOVO COMANDO
+        checkStatus()
     default:
         showHelp()
     }
@@ -163,4 +169,48 @@ func runServer(dir string, command string) {
     if err := cmd.Run(); err != nil {
         fmt.Printf("Erro ao rodar: %v\n", err)
     }
+}
+
+func checkStatus() {
+    fmt.Println("📊 Verificando saúde dos serviços via Nexus Gateway (http://localhost:8080/health)...")
+    
+    client := http.Client{Timeout: 3 * time.Second}
+    resp, err := client.Get("http://localhost:8080/health")
+    if err != nil {
+        fmt.Println("❌ Nexus Gateway está offline. Rode 'monoman serve' e escolha a opção 6.")
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    
+    // Estrutura para parsear o JSON
+    var data struct {
+        Gateway  string `json:"gateway"`
+        Services []struct {
+            Name   string `json:"name"`
+            Status string `json:"status"`
+            Port   string `json:"port"`
+        } `json:"services"`
+    }
+
+    json.Unmarshal(body, &data)
+
+    fmt.Printf("🚀 Gateway: %s%s\n", "\033[32m", data.Gateway+"\033[0m")
+    fmt.Println("-----------------------------------")
+    
+    for _, svc := range data.Services {
+        var color string
+        switch svc.Status {
+        case "Online":
+            color = "\033[32m" // Verde
+        case "Starting":
+            color = "\033[33m" // Amarelo
+        default:
+            color = "\033[31m" // Vermelho
+        }
+        
+        fmt.Printf("🔗 %-12s :%s  %s%s\033[0m\n", svc.Name, svc.Port, color, svc.Status)
+    }
+    fmt.Println("-----------------------------------")
 }
