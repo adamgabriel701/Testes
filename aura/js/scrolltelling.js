@@ -47,15 +47,15 @@ function drawScrollyFrame() {
   const h = scrollyContainer.offsetHeight;
   sCtx.clearRect(0, 0, w, h);
 
-  // Pega as cores dinamicamente do CSS (suporta light e dark)
+  // PEGA AS CORES DO TEMA ATUAL (DARK OU LIGHT)
   const style = getComputedStyle(document.documentElement);
-  const bg1 = style.getPropertyValue('--bg').trim();
-  const bg2 = style.getPropertyValue('--bg2').trim();
+  const bg1 = style.getPropertyValue('--bg').trim() || '#060608';
+  const bg2 = style.getPropertyValue('--bg2').trim() || '#0E0E14';
 
-  // Fundo sutil com gradiente
+  // Fundo sutil com gradiente adaptativo
   const bgGrad = sCtx.createLinearGradient(0, 0, 0, h);
-  bgGrad.addColorStop(0, bg1 || 'rgba(6,6,8,0.8)');
-  bgGrad.addColorStop(1, bg2 || 'rgba(14,14,20,0.9)');
+  bgGrad.addColorStop(0, bg1);
+  bgGrad.addColorStop(1, bg2);
   sCtx.fillStyle = bgGrad;
   sCtx.fillRect(0, 0, w, h);
 
@@ -121,7 +121,9 @@ function drawScrollyFrame() {
 }
 drawScrollyFrame();
 
-// --- TIMELINES ---
+// --- TIMELINES COM clearProps: "all" ---
+// O clearProps limpa o estilo inline após a animação, permitindo que o CSS do tema funcione 100%
+
 gsap.timeline({ scrollTrigger: { trigger: '#chapter-0', start: 'top center', end: 'bottom center', onEnter: () => setChapter(0), onEnterBack: () => setChapter(0) }})
 .from('#chapter-0 .chapter-number', { x: -60, opacity: 0, duration: 0.8, ease: 'power3.out', clearProps: "all" })
 .from('#chapter-0 .chapter-title', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2, clearProps: "all" }, '<')

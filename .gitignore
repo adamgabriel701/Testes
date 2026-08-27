@@ -34,3 +34,7 @@ cms-engine/database.sqlite
 Thumbs.db
 .vscode/
 .idea/
+
+# Added by cargo
+
+/target

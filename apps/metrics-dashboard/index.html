@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>NEXUS // System Metrics</title>
+    <style>
+        body { margin: 0; background: #050505; color: #00ff9f; font-family: 'Courier New', monospace; overflow: hidden; }
+        #header { border-bottom: 1px solid #00ff9f; padding: 10px 20px; display: flex; justify-content: space-between; }
+        #header h1 { margin: 0; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00ff9f; }
+        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
+        .card { border: 1px solid rgba(0, 255, 159, 0.3); background: rgba(0, 255, 159, 0.05); padding: 15px; position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #00ff9f; animation: scan 3s linear infinite; }
+        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .card h2 { font-size: 12px; margin: 0 0 10px 0; color: #fff; border-bottom: 1px dashed rgba(0, 255, 159, 0.5); padding-bottom: 5px; }
+        .status { font-size: 24px; font-weight: bold; text-shadow: 0 0 15px currentColor; }
+        .online { color: #00ff9f; } .offline { color: #ff003c; } .starting { color: #ffcc00; }
+        .log { position: fixed; bottom: 0; width: 100%; height: 150px; background: #000; border-top: 1px solid #00ff9f; padding: 10px; overflow-y: auto; font-size: 12px; }
+        .log span { display: block; }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>NEXUS_GATEWAY // LIVE TELEMETRY</h1>
+        <div id="clock">--:--:--</div>
+    </div>
+    <div id="grid" id="metricsGrid">
+        <!-- Cards gerados via JS -->
+    </div>
+    <div class="log" id="terminalLog"></div>
+
+    <script>
+        const grid = document.getElementById('metricsGrid');
+        const log = document.getElementById('terminalLog');
+        const clock = document.getElementById('clock');
+
+        function addLog(msg, type='info') {
+            const colors = { info: '#00ff9f', error: '#ff003c', warn: '#ffcc00' };
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('span');
+            line.style.color = colors[type];
+            line.textContent = `[${time}] > ${msg}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function fetchMetrics() {
+            try {
+                const res = await fetch('http://localhost:8080/api/health');
+                if (!res.ok) throw new Error('Gateway Offline');
+                const data = await res.json();
+                
+                grid.innerHTML = data.services.map(s => `
+                    <div class="card">
+                        <h2>${s.name.toUpperCase()}</h2>
+                        <div class="status ${s.status.toLowerCase()}">${s.status.toUpperCase()}</div>
+                        <div style="font-size: 10px; margin-top: 5px; color: #aaa;">PORT: ${s.port}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                addLog('Erro de conexão com o Gateway...', 'error');
+            }
+        }
+
+        setInterval(() => {
+            clock.textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        addLog('Iniciando monitoramento NEXUS...');
+        fetchMetrics();
+        setInterval(fetchMetrics, 2000);
+    </script>
+</body>
+</html>
