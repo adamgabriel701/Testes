@@ -30,8 +30,10 @@ func main() {
         installDeps()
     case "wasm":
         buildWasm()
-    case "status": // NOVO COMANDO
+    case "status":
         checkStatus()
+    case "tree": // NOVO COMANDO
+        printTree()
     default:
         showHelp()
     }
@@ -228,4 +230,56 @@ func checkStatus() {
         fmt.Printf("🔗 %-12s :%s  %s%s\033[0m\n", svc.Name, svc.Port, color, svc.Status)
     }
     fmt.Println("-----------------------------------")
+}
+
+func printTree() {
+    // Pega a lista de arquivos rastreados pelo Git
+    cmd := exec.Command("git", "ls-files")
+    output, err := cmd.Output()
+    if err != nil {
+        fmt.Println("❌ Erro ao ler arquivos do Git. Certifique-se de estar na raiz do repositório.")
+        return
+    }
+
+    files := strings.Split(strings.TrimSpace(string(output)), "\n")
+    
+    fmt.Println("📁 Estrutura do Projeto (Baseado no Git)")
+    fmt.Println(".")
+
+    // Mapa para guardar as pastas que já imprimimos
+    // Assim não imprimimos "css" várias vezes se houver vários arquivos lá dentro
+    printedDirs := make(map[string]bool) 
+
+    for _, file := range files {
+        if file == "" {
+            continue
+        }
+
+        parts := strings.Split(file, "/")
+        currentPath := ""
+
+        // Loop para imprimir as pastas pai (que ainda não foram impressas)
+        for i := 0; i < len(parts)-1; i++ {
+            currentPath += parts[i] + "/"
+            
+            if !printedDirs[currentPath] {
+                indent := ""
+                if i > 0 {
+                    indent = strings.Repeat("│   ", i)
+                }
+                fmt.Printf("%s├── %s/\n", indent, parts[i])
+                printedDirs[currentPath] = true
+            }
+        }
+
+        // Imprime o arquivo final
+        depth := len(parts) - 1
+        indent := ""
+        if depth > 0 {
+            indent = strings.Repeat("│   ", depth)
+        }
+        
+        fileName := parts[len(parts)-1]
+        fmt.Printf("%s├── %s\n", indent, fileName)
+    }
 }

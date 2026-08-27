@@ -1,13 +1,12 @@
 /* =============================================
    ACESSIBILIDADE VIVA — Daltonismo, Contraste, SR
-   ============================================= */
+   ======================================== */
 const a11yBtn = document.getElementById('a11yBtn');
 const a11yDropdown = document.getElementById('a11yDropdown');
 
 a11yBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   a11yDropdown.classList.toggle('open');
-  AudioSystem.click();
 });
 document.addEventListener('click', (e) => {
   if (!a11yDropdown.contains(e.target) && e.target !== a11yBtn) a11yDropdown.classList.remove('open');
@@ -22,12 +21,10 @@ document.querySelectorAll('.a11y-option').forEach(opt => {
     else document.documentElement.dataset.color = mode;
     a11yDropdown.classList.remove('open');
     window.updateContrastRatios?.();
-    AudioSystem.click();
     if (window.showToast) showToast(`Modo de visão: ${opt.textContent}`);
   });
 });
 
-// Razão de contraste
 function getLuminance(r,g,b) {
   const [rs,gs,bs] = [r,g,b].map(c => { c/=255; return c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4); });
   return 0.2126*rs + 0.7152*gs + 0.0722*bs;
@@ -51,7 +48,6 @@ setTimeout(window.updateContrastRatios, 500);
 new MutationObserver(window.updateContrastRatios)
   .observe(document.documentElement, { attributes:true, attributeFilter:['data-theme','data-color'] });
 
-// Leitor de tela visual
 const srItems = [
   { icon:'fa-image', title:'Imagem do Produto', desc:'Imagem: "Cadeira ergonômica modelo A200 em ambiente de escritório moderno com iluminação natural"' },
   { icon:'fa-cart-shopping', title:'Adicionar ao Carrinho', desc:'Botão: "Adicionar ao Carrinho" — preço: R$ 1.299,00 — em estoque' },
@@ -68,10 +64,11 @@ srItems.forEach(item => {
   el.innerHTML = `<i class="fa-solid ${item.icon}" style="color:var(--accent);width:20px;text-align:center;"></i><span style="font-size:13px;font-weight:500;">${item.title}</span>`;
   el.addEventListener('mouseenter', () => {
     document.getElementById('srOutput').textContent = item.desc;
-    AudioSystem.hover();
+    gsap.to(el, {x: 5, duration: 0.3, ease: 'power2.out'});
   });
   el.addEventListener('mouseleave', () => {
     document.getElementById('srOutput').textContent = 'Passe o mouse sobre um item acima...';
+    gsap.to(el, {x: 0, duration: 0.3, ease: 'power2.out'});
   });
   srContainer.appendChild(el);
 });

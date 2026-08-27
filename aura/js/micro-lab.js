@@ -1,6 +1,6 @@
 /* =============================================
    LAB DE MICROINTERAÇÕES — Física de botões
-   ============================================= */
+   ======================================== */
 let physMass = 1.0, physFriction = 0.3, physStiff = 0.15, physDistort = 0.2;
 let clickCount = 0;
 let lastFrameTime = performance.now(), frameCount = 0;
@@ -36,7 +36,6 @@ function updatePhysicsParams() {
 );
 updatePhysicsParams();
 
-// Comportamento de física nos botões
 const physBtns = ['physBtn1','physBtn2','physBtn3','physBtn4'].map(id => document.getElementById(id));
 
 physBtns.forEach(btn => {
@@ -52,19 +51,18 @@ physBtns.forEach(btn => {
   });
   const release = () => {
     if (!isPressed) return; isPressed = false;
-    btn.style.transform = 'scale(1) skewX(0deg)'; btn.style.boxShadow = 'none';
+    btn.style.transform = 'scale(1) skewX(0deg)'; 
+    btn.style.boxShadow = 'none';
     clickCount++;
     document.getElementById('clickCounter').textContent = clickCount;
     document.getElementById('physicsInfo').textContent =
       `Retorno em ${(physMass/physStiff*100).toFixed(0)}ms | Segurou: ${(performance.now()-pressStart).toFixed(0)}ms`;
     document.getElementById('stressBar').style.width = '0%';
-    AudioSystem.click();
   };
   btn.addEventListener('mouseup', release);
   btn.addEventListener('mouseleave', release);
 });
 
-// Presets
 const presets = {
   jelly: { mass: 0.5, friction: 0.15, stiff: 0.3, distort: 0.4 },
   heavy: { mass: 2.8, friction: 0.6, stiff: 0.05, distort: 0.1 },
@@ -77,12 +75,11 @@ document.querySelectorAll('[data-preset]').forEach(btn => {
     const p = presets[btn.dataset.preset];
     massSlider.value = p.mass; frictionSlider.value = p.friction;
     stiffSlider.value = p.stiff; distortSlider.value = p.distort;
-    updatePhysicsParams(); AudioSystem.click();
+    updatePhysicsParams();
     if (window.showToast) showToast(`Preset "${btn.textContent.trim()}" aplicado`);
   });
 });
 
-// FPS Counter
 function updateFps() {
   frameCount++;
   const now = performance.now();

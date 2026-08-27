@@ -4,11 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aura — Ecossistema de Sensações Digital</title>
+  <!-- Favicon embutido para evitar erro 404 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/scrollytelling.css">
+  <style>
+    kbd { padding: 2px 8px; background: var(--card-hover); border-radius: 4px; font-size: 12px; border: 1px solid var(--border); font-family: 'Space Grotesk', sans-serif; }
+  </style>
 </head>
 <body>
 
@@ -46,7 +52,7 @@
   <!-- Painel de Controles Fixo -->
   <div class="control-panel" id="controlPanel">
     <button class="ctrl-btn" id="zenBtn" data-cursor="control" data-label="Modo Zen" aria-label="Alternar Modo Zen"><i class="fa-solid fa-cube"></i></button>
-    <button class="ctrl-btn" id="soundBtn" data-cursor="control" data-label="Som" aria-label="Alternar som"><i class="fa-solid fa-volume-high"></i></button>
+    <button class="ctrl-btn" id="soundBtn" data-cursor="control" data-label="Som" aria-label="Alternar som" style="display:none;"><i class="fa-solid fa-volume-high"></i></button>
     <div style="position:relative;">
       <button class="ctrl-btn" id="a11yBtn" data-cursor="control" data-label="Acessibilidade" aria-label="Opções de acessibilidade"><i class="fa-solid fa-eye"></i></button>
       <div class="a11y-dropdown" id="a11yDropdown">
@@ -82,11 +88,7 @@
   <!-- ==================== SCROLLYTELLING ==================== -->
   <section id="scrollytelling">
     <canvas id="scrollyCanvas"></canvas>
-
-    <!-- Label do capítulo atual -->
     <div class="scrolly-chapter-label" id="scrollyChapterLabel">Despertar</div>
-
-    <!-- Navegação lateral com dots -->
     <div class="scrolly-nav">
       <button class="chapter-dot active" data-index="0" data-label="Despertar" style="background:#E8A838;" data-cursor="control" aria-label="Capítulo Despertar"></button>
       <div class="scrolly-nav-track"><div class="scrolly-nav-fill" id="scrollyProgressFill"></div></div>
@@ -95,26 +97,18 @@
       <button class="chapter-dot" data-index="3" data-label="Profundidade" data-cursor="control" aria-label="Capítulo Profundidade"></button>
       <button class="chapter-dot" data-index="4" data-label="Síntese" data-cursor="control" aria-label="Capítulo Síntese"></button>
     </div>
-
-    <!-- Capítulos da narrativa -->
     <div class="scrolly-chapters-wrapper">
-
-      <!-- Cap 0: Despertar -->
       <div class="scrolly-chapter" id="chapter-0">
         <div class="chapter-number">01</div>
         <h2 class="chapter-title">Tudo começa com uma sensação.</h2>
         <p class="chapter-text">Antes de qualquer pixel, antes de qualquer grade, existe o momento em que a interface deixa de ser tela e passa a ser experiência. O design não se lê — se sente.</p>
       </div>
-
-      <!-- Cap 1: Estrutura -->
       <div class="scrolly-chapter" id="chapter-1">
         <div class="chapter-number">02</div>
         <h2 class="chapter-title">A grade é invisível, mas tudo se apoia nela.</h2>
         <p class="chapter-text">Grids, espaçamentos, hierarquia tipográfica — a estrutura é o esqueleto que sustenta a beleza. Sem ela, o caos. Com ela, a clareza.</p>
         <div class="grid-lines"></div>
       </div>
-
-      <!-- Cap 2: Ritmo -->
       <div class="scrolly-chapter" id="chapter-2">
         <div class="chapter-number">03</div>
         <h2 class="chapter-title">O movimento dá vida ao estático.</h2>
@@ -125,8 +119,6 @@
           </svg>
         </div>
       </div>
-
-      <!-- Cap 3: Profundidade -->
       <div class="scrolly-chapter" id="chapter-3">
         <div class="chapter-number">04</div>
         <h2 class="chapter-title">Camadas criam a ilusão de espaço.</h2>
@@ -138,8 +130,6 @@
           <div class="depth-layer"></div>
         </div>
       </div>
-
-      <!-- Cap 4: Síntese -->
       <div class="scrolly-chapter" id="chapter-4">
         <div class="chapter-number">05</div>
         <h2 class="chapter-title">Quando tudo se une, a mágica acontece.</h2>
@@ -150,7 +140,6 @@
           <div class="synth-shape"></div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -163,18 +152,16 @@
       <h2 class="section-title reveal reveal-delay-1">Lab de Microinterações</h2>
       <p class="section-desc reveal reveal-delay-2 zen-hide">Ajuste a física dos botões em tempo real e sinta como cada parâmetro altera a percepção de qualidade da interface.</p>
       <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
-        <!-- Painel de Controle -->
         <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;gap:20px;">
           <h3 style="font-size:16px;font-weight:700;">Parâmetros de Física</h3>
           <div class="slider-group"><div class="slider-header"><label>Massa</label><span id="massVal" class="slider-value">1.0</span></div><input type="range" class="aura-slider" id="massSlider" min="0.2" max="3" step="0.1" value="1" data-cursor="control"></div>
           <div class="slider-group"><div class="slider-header"><label>Fricção</label><span id="frictionVal" class="slider-value">0.30</span></div><input type="range" class="aura-slider" id="frictionSlider" min="0.05" max="0.8" step="0.05" value="0.3" data-cursor="control"></div>
           <div class="slider-group"><div class="slider-header"><label>Rigidez da Mola</label><span id="stiffVal" class="slider-value">0.15</span></div><input type="range" class="aura-slider" id="stiffSlider" min="0.02" max="0.4" step="0.01" value="0.15" data-cursor="control"></div>
           <div class="slider-group"><div class="slider-header"><label>Distorção Máxima</label><span id="distortVal" class="slider-value">0.20</span></div><input type="range" class="aura-slider" id="distortSlider" min="0.05" max="0.5" step="0.05" value="0.2" data-cursor="control"></div>
-          <div style="margin-top:auto;padding:12px;background:var(--card);border-radius:10px;font-size:12px;color:var(--fg-muted);line-height:1.6;">
+          <div style="margin-top:auto;padding:12px;background:var(--bg2);border-radius:10px;font-size:12px;color:var(--fg-muted);line-height:1.6;">
             <strong style="color:var(--fg);">Dica:</strong> Clique e segure os botões ao lado. Observe como a massa controla a inércia e a rigidez define a velocidade de retorno.
           </div>
         </div>
-        <!-- Área de Teste -->
         <div class="glass-card span-2 row-2" style="padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
           <h3 style="font-size:16px;font-weight:700;align-self:flex-start;">Área de Teste</h3>
           <div class="physics-buttons-area">
@@ -185,15 +172,13 @@
           </div>
           <div id="physicsInfo" class="physics-info-text"></div>
         </div>
-        <!-- Presets -->
         <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
           <h4 class="card-subtitle">Presets</h4>
-          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="jelly" data-cursor="control" data-label="Gelatina">Gelatina</button>
-          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="heavy" data-cursor="control" data-label="Pesado">Pesado</button>
-          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="snappy" data-cursor="control" data-label="Elástico">Elástico</button>
-          <button class="physics-btn preset-btn" style="background:var(--card);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="slow" data-cursor="control" data-label="Lento">Lento</button>
+          <button class="physics-btn preset-btn" style="background:var(--bg2);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="jelly" data-cursor="control" data-label="Gelatina">Gelatina</button>
+          <button class="physics-btn preset-btn" style="background:var(--bg2);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="heavy" data-cursor="control" data-label="Pesado">Pesado</button>
+          <button class="physics-btn preset-btn" style="background:var(--bg2);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="snappy" data-cursor="control" data-label="Elástico">Elástico</button>
+          <button class="physics-btn preset-btn" style="background:var(--bg2);color:var(--fg);font-size:12px;padding:8px 16px;width:100%;" data-preset="slow" data-cursor="control" data-label="Lento">Lento</button>
         </div>
-        <!-- Métricas -->
         <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:8px;">
           <h4 class="card-subtitle">Métricas</h4>
           <div class="metric-row"><span class="metric-label">FPS</span><span id="fpsCounter" class="metric-value">60</span></div>
@@ -215,7 +200,6 @@
       <h2 class="section-title reveal reveal-delay-1">UX Playground</h2>
       <p class="section-desc reveal reveal-delay-2 zen-hide">Veja a Lei de Fitts e a Lei de Hick em ação. Seus movimentos geram dados reais que se transformam em mapas de calor.</p>
       <div class="bento-grid reveal reveal-delay-3" style="margin-top:48px;">
-        <!-- Fitts -->
         <div class="glass-card span-2 row-2" style="padding:0;overflow:hidden;">
           <div style="padding:20px 24px 12px;"><h3 style="font-size:16px;font-weight:700;">Lei de Fitts</h3><p style="font-size:12px;color:var(--fg-muted);margin-top:4px;" class="zen-hide">Clique nos alvos o mais rápido possível.</p></div>
           <div id="fittsArea" class="fitts-area"></div>
@@ -225,13 +209,11 @@
             <div><span style="color:var(--fg-muted);">Erros:</span> <span id="fittsMisses" style="color:#E84848;font-weight:600;">0</span></div>
           </div>
         </div>
-        <!-- Heatmap -->
         <div class="glass-card span-2 row-2" style="padding:20px;">
           <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Mapa de Calor ao Vivo</h3>
           <p style="font-size:12px;color:var(--fg-muted);margin-bottom:12px;" class="zen-hide">Mova o mouse sobre esta área para gerar o heatmap.</p>
           <canvas id="heatmap-canvas" class="heatmap-canvas" width="500" height="220"></canvas>
         </div>
-        <!-- Hick -->
         <div class="glass-card span-3" style="padding:24px;">
           <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Lei de Hick</h3>
           <p style="font-size:12px;color:var(--fg-muted);margin-bottom:16px;" class="zen-hide">Mais opções = mais tempo de decisão. Clique em "ALVO".</p>
@@ -243,7 +225,6 @@
           <div id="hickGrid" class="hick-grid"></div>
           <div style="margin-top:16px;font-size:13px;"><span style="color:var(--fg-muted);">Tempo médio:</span> <span id="hickAvgTime" style="color:var(--accent);font-weight:600;">—</span></div>
         </div>
-        <!-- Insights -->
         <div class="glass-card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
           <h4 class="card-subtitle">Insights</h4>
           <div id="uxInsight" style="font-size:13px;color:var(--fg);line-height:1.6;">Comece interagindo com os testes ao lado para gerar insights sobre seu comportamento.</div>
@@ -282,12 +263,12 @@
         </div>
         <div class="glass-card span-2" style="padding:28px;">
           <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Navegação por Teclado</h3>
-          <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Pressione <kbd style="padding:2px 8px;background:var(--card-hover);border-radius:4px;font-size:12px;border:1px solid var(--border);">Tab</kbd> para navegar.</p>
+          <p style="font-size:13px;color:var(--fg-muted);line-height:1.7;margin-bottom:20px;" class="zen-hide">Pressione <kbd>Tab</kbd> para navegar.</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
             <button style="padding:10px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 1</button>
             <button style="padding:10px 20px;border-radius:8px;background:var(--accent2);color:var(--bg);font-weight:600;font-family:'Syne';border:none;cursor:none;" data-cursor="control">Botão 2</button>
-            <button style="padding:10px 20px;border-radius:8px;background:var(--card);color:var(--fg);font-weight:600;font-family:'Syne';border:1px solid var(--border);cursor:none;" data-cursor="control">Botão 3</button>
-            <input type="text" placeholder="Campo de texto..." style="padding:10px 16px;border-radius:8px;background:var(--card);color:var(--fg);border:1px solid var(--border);font-family:'Space Grotesk';font-size:14px;outline:none;cursor:none;" data-cursor="control">
+            <button style="padding:10px 20px;border-radius:8px;background:var(--bg2);color:var(--fg);font-weight:600;font-family:'Syne';border:1px solid var(--border);cursor:none;" data-cursor="control">Botão 3</button>
+            <input type="text" placeholder="Campo de texto..." style="padding:10px 16px;border-radius:8px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);font-family:'Space Grotesk';font-size:14px;outline:none;cursor:none;" data-cursor="control">
           </div>
         </div>
         <div class="glass-card span-2" style="padding:28px;">
@@ -354,7 +335,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="js/scrolltelling.js"></script>
-  <script src="js/audio.js"></script>
   <script src="js/cursor.js"></script>
   <script type="module" src="js/hero-canvas.js"></script>
   <script src="js/micro-lab.js"></script>

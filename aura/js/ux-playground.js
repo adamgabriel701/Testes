@@ -1,7 +1,6 @@
 /* =============================================
    UX PLAYGROUND — Fitts, Hick, Heatmap
-   ============================================= */
-// Dados globais compartilhados com insights
+   ======================================== */
 window.uxTimingData = [];
 
 // --- LEI DE FITTS ---
@@ -19,9 +18,10 @@ function createFittsTarget() {
   target.className = 'fitts-target';
   Object.assign(target.style, {
     width: size+'px', height: size+'px', left: x+'px', top: y+'px',
-    background: 'radial-gradient(circle, var(--accent), #C47A18)',
-    color: '#08080C', fontSize: Math.max(10, size*0.25)+'px',
-    boxShadow: `0 0 ${size/2}px rgba(232,168,56,0.3)`
+    background: 'radial-gradient(circle, var(--accent), var(--bg2))',
+    color: 'var(--bg)', fontSize: Math.max(10, size*0.25)+'px',
+    boxShadow: `0 0 20px rgba(232,168,56,0.4), inset 0 0 10px rgba(255,255,255,0.1)`,
+    border: '1px solid var(--accent)'
   });
   target.textContent = size + 'px';
   target.setAttribute('data-cursor', 'control');
@@ -36,7 +36,8 @@ function createFittsTarget() {
     document.getElementById('fittsAvgTime').textContent =
       (fittsTimes.reduce((a,b)=>a+b,0)/fittsTimes.length).toFixed(0)+'ms';
     window.updateUxInsights?.(); window.updateMiniChart?.();
-    AudioSystem.hit(); setTimeout(createFittsTarget, 200);
+    gsap.fromTo(target, {scale: 0.8}, {scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.3)'});
+    setTimeout(createFittsTarget, 200);
   });
   fittsArea.appendChild(target);
   fittsTargetStart = performance.now();
@@ -46,7 +47,7 @@ fittsArea.addEventListener('click', (e) => {
   if (e.target === fittsArea) {
     fittsMisses++;
     document.getElementById('fittsMisses').textContent = fittsMisses;
-    AudioSystem.miss();
+    gsap.fromTo(fittsArea, {backgroundColor: 'rgba(232,72,72,0.1)'}, {backgroundColor: 'var(--bg2)', duration: 0.5});
   }
 });
 createFittsTarget();
@@ -74,14 +75,14 @@ heatCanvas.addEventListener('mousemove', (e) => {
 function drawHeatmap() {
   const w = heatCanvas.width/devicePixelRatio, h = heatCanvas.height/devicePixelRatio;
   heatCtx.clearRect(0,0,w,h);
-  heatCtx.fillStyle = document.documentElement.dataset.theme !== 'light' ? '#0E0E14' : '#EDE7DD';
+  heatCtx.fillStyle = document.documentElement.dataset.theme !== 'light' ? '#060608' : '#EDE7DD';
   heatCtx.fillRect(0,0,w,h);
   heatData.forEach(p => {
-    const g = heatCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,20);
+    const g = heatCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,25);
     g.addColorStop(0, `rgba(232,168,56,${p.intensity})`);
     g.addColorStop(0.5, `rgba(232,80,56,${p.intensity*0.5})`);
     g.addColorStop(1, 'rgba(232,80,56,0)');
-    heatCtx.fillStyle = g; heatCtx.fillRect(p.x-20,p.y-20,40,40);
+    heatCtx.fillStyle = g; heatCtx.fillRect(p.x-25,p.y-25,50,50);
   });
   heatData.forEach(p => p.intensity *= 0.998);
   heatData = heatData.filter(p => p.intensity > 0.01);
@@ -101,13 +102,14 @@ function createHickGrid() {
 
   for (let i = 0; i < count; i++) {
     const item = document.createElement('button');
-    item.style.cssText = 'padding:10px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-family:"Space Grotesk";font-size:13px;font-weight:500;cursor:none;transition:all 0.2s;text-align:center;';
+    item.style.cssText = 'padding:10px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--fg);font-family:"Space Grotesk";font-size:13px;font-weight:500;cursor:none;transition:all 0.2s;text-align:center;';
     item.setAttribute('data-cursor', 'control');
 
     if (i === targetIdx) {
       item.textContent = 'ALVO';
       item.style.background = 'var(--accent)'; item.style.color = 'var(--bg)';
       item.style.fontWeight = '700'; item.style.borderColor = 'var(--accent)';
+      item.style.boxShadow = '0 4px 15px rgba(232,168,56,0.3)';
       item.addEventListener('click', () => {
         const time = performance.now() - hickTargetStart;
         hickTimes.push(time);
@@ -115,14 +117,15 @@ function createHickGrid() {
         document.getElementById('hickAvgTime').textContent =
           (hickTimes.reduce((a,b)=>a+b,0)/hickTimes.length).toFixed(0)+'ms';
         window.updateUxInsights?.(); window.updateMiniChart?.();
-        AudioSystem.hit(); setTimeout(createHickGrid, 300);
+        gsap.fromTo(item, {scale: 0.9}, {scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.3)'});
+        setTimeout(createHickGrid, 300);
       });
     } else {
       item.textContent = distractors[i % distractors.length];
       item.addEventListener('click', () => {
-        AudioSystem.miss();
-        item.style.background = 'rgba(232,72,72,0.3)'; item.style.borderColor = '#E84848';
-        setTimeout(() => { item.style.background='var(--card)'; item.style.borderColor='var(--border)'; }, 300);
+        item.style.background = 'rgba(232,72,72,0.2)'; item.style.borderColor = '#E84848';
+        gsap.fromTo(item, {x: -5}, {x: 0, duration: 0.4, ease: 'elastic.out(1, 0.3)'});
+        setTimeout(() => { item.style.background='var(--bg2)'; item.style.borderColor='var(--border)'; }, 300);
       });
     }
     hickGrid.appendChild(item);
@@ -173,6 +176,6 @@ window.updateMiniChart = function() {
   const max = Math.max(...recent.map(d=>d.time), 100);
   c.innerHTML = recent.map(d => {
     const h = Math.max(4, (d.time/max)*56);
-    return `<div style="flex:1;height:${h}px;background:${d.type==='fitts'?'var(--accent)':'var(--accent2)'};border-radius:2px 2px 0 0;transition:height 0.3s;" title="${d.type}: ${d.time.toFixed(0)}ms"></div>`;
+    return `<div style="flex:1;height:${h}px;background:${d.type==='fitts'?'var(--accent)':'var(--accent2)'};border-radius:2px 2px 0 0;transition:height 0.3s;box-shadow:0 0 5px currentColor;" title="${d.type}: ${d.time.toFixed(0)}ms"></div>`;
   }).join('');
 };

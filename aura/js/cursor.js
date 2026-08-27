@@ -1,6 +1,6 @@
 /* =============================================
    CURSOR INTELIGENTE — Transformação contextual
-   ============================================= */
+   ======================================== */
 const cursorDot = document.getElementById('cursorDot');
 const cursorRing = document.getElementById('cursorRing');
 let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
@@ -37,7 +37,6 @@ document.addEventListener('mouseover', (e) => {
     if (el.dataset.label) {
       cursorDot.classList.add('label-mode');
       cursorDot.setAttribute('data-label', el.dataset.label);
-      AudioSystem.hover();
     }
   }
 });
