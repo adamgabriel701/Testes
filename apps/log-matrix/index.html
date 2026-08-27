@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>LOG MATRIX // Real-time Traces</title>
+    <style>
+        body { margin: 0; background: #000; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; }
+        #header { border-bottom: 1px solid #00ff41; padding: 10px; display: flex; justify-content: space-between; }
+        #logStream { padding: 20px; height: 90vh; overflow-y: auto; font-size: 14px; }
+        .log-line { margin-bottom: 4px; opacity: 0; animation: fadeIn 0.3s forwards; }
+        .info { color: #00ff41; } .warn { color: #ffcc00; } .error { color: #ff003c; }
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>SYSTEM_LOG_STREAM // LIVE</h1>
+        <div id="status">Conectando...</div>
+    </div>
+    <div id="logStream"></div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io('http://localhost:8007');
+        const stream = document.getElementById('logStream');
+        const status = document.getElementById('status');
+
+        socket.on('connect', () => {
+            status.textContent = 'ONLINE';
+            status.style.color = '#00ff41';
+            socket.emit('join_room', 'logs'); // Entra na sala de logs
+        });
+
+        socket.on('disconnect', () => {
+            status.textContent = 'OFFLINE';
+            status.style.color = '#ff003c';
+        });
+
+        // Escuta logs enviados pelo backend
+        socket.on('new_log', (data) => {
+            const line = document.createElement('div');
+            line.className = `log-line ${data.level}`;
+            const time = new Date().toLocaleTimeString();
+            line.textContent = `[${time}] [${data.source.toUpperCase()}] > ${data.message}`;
+            stream.appendChild(line);
+            
+            // Mantém apenas os últimos 100 logs na tela
+            if (stream.children.length > 100) {
+                stream.removeChild(stream.firstChild);
+            }
+            stream.scrollTop = stream.scrollHeight;
+        });
+    </script>
+</body>
+</html>

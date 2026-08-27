@@ -55,3 +55,16 @@ const PORT = 8007;
 server.listen(PORT, () => {
   console.log(`🚀 Live-Hub (WebSocket) rodando na porta ${PORT}`);
 });
+
+// Simulação de geração de logs para o Log Matrix
+const logSources = ['NEXUS-GO', 'READIUM-PY', 'CMS-PHP', 'AURA-WASM'];
+const logLevels = ['info', 'info', 'info', 'warn', 'error'];
+
+setInterval(() => {
+    const log = {
+        source: logSources[Math.floor(Math.random() * logSources.length)],
+        level: logLevels[Math.floor(Math.random() * logLevels.length)],
+        message: `Latência: ${Math.floor(Math.random() * 200)}ms | Reqs/s: ${Math.floor(Math.random() * 500)}`
+    };
+    io.to('logs').emit('new_log', log);
+}, 1500);
