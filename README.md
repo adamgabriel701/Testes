@@ -83,4 +83,3 @@ monoman tree
 
 ---
 Construído com foco em arquitetura limpa, performance e experimentação técnica.
-```
