@@ -248,5 +248,70 @@
         // Inicializar clima na index
         document.addEventListener('DOMContentLoaded', () => { initWeather(); });
     </script>
+<!-- Script do Socket.io via CDN -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  // Conecta ao Live-Hub
+  const socket = io('http://localhost:8007');
+
+  socket.on('connect', () => {
+    console.log('✅ Conectado ao Live-Hub em tempo real!');
+    socket.emit('join_room', 'guarana'); // Entra na sala do Guaraná
+  });
+
+  // Escuta o evento de atualização de conteúdo enviado pelo PHP
+  socket.on('content_update', (payload) => {
+    console.log('📡 Recebi atualização:', payload);
+    
+    if(payload.type === 'evento') {
+      const evento = payload.data;
+
+      // 1. Cria o Toast (Aviso pop-up usando as classes do Tailwind do seu projeto)
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 right-6 bg-guarana text-white px-6 py-4 rounded-xl shadow-2xl shadow-guarana/40 z-[9999] flex items-center gap-4 transition-all duration-500 transform translate-y-0 opacity-100';
+      
+      // Usando Template String (``) para escrever HTML direto no JS
+      toast.innerHTML = `
+        <iconify-icon icon="lucide:party-popper" class="text-2xl text-sol"></iconify-icon>
+        <div>
+          <strong class="block font-heading text-sm uppercase tracking-wider">Novo Evento!</strong>
+          <span class="text-sm font-body">${evento.nome}</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+
+      // Some depois de 5 segundos
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 500);
+      }, 5000);
+      
+      // 2. Injeta o card direto na lista de eventos (se você estiver na página de eventos)
+      // Supondo que você tenha um container com id="lista-eventos" na pagina noticias-e-eventos.html
+      const listaEventos = document.getElementById('lista-eventos');
+      if (listaEventos) {
+        const novoCard = document.createElement('div');
+        novoCard.className = 'reveal scale-in-animation bg-white rounded-2xl p-6 border border-areia-dark/50 hover:shadow-xl cursor-pointer';
+        
+        novoCard.innerHTML = `
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-heading font-bold uppercase tracking-widest text-guarana">${evento.tipo}</span>
+            <span class="text-xs text-gray-400">• ${new Date(evento.data).toLocaleDateString('pt-BR')}</span>
+          </div>
+          <h3 class="font-heading font-bold text-xl text-amazon-dark mb-2">${evento.nome}</h3>
+          <p class="text-sm text-gray-500 font-body leading-relaxed mb-4">${evento.desc}</p>
+          <div class="flex items-center gap-2 text-xs text-gray-400">
+            <iconify-icon icon="lucide:map-pin"></iconify-icon>
+            <span>${evento.local}</span>
+          </div>
+        `;
+        
+        // Adiciona o novo evento no topo da lista
+        listaEventos.prepend(novoCard);
+      }
+    }
+  });
+</script> 
 </body>
 </html>

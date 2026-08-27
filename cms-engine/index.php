@@ -86,6 +86,30 @@ if (strpos($route, 'admin') === 0 && !$isAdmin) {
 if ($route === 'admin/save-evento' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $db->prepare("INSERT INTO eventos (nome, data, mes, tipo, cor, descricao, local) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['nome'], $_POST['data'], $_POST['mes'], $_POST['tipo'], $_POST['cor'], $_POST['desc'], $_POST['local']]);
+    
+    // Pega os dados que acabaram de ser salvos para enviar para o Live-Hub
+    $eventoSalvo = [
+        'nome' => $_POST['nome'],
+        'data' => $_POST['data'],
+        'local' => $_POST['local'],
+        'desc' => $_POST['desc']
+    ];
+
+    // ---- INÍCIO DO AVISO EM TEMPO REAL ----
+    $payload = json_encode([
+        'type' => 'evento',
+        'data' => $eventoSalvo
+    ]);
+
+    $ch = curl_init('http://localhost:8007/webhook/cms-engine');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_exec($ch);
+    curl_close($ch);
+    // ---- FIM DO AVISO EM TEMPO REAL ----
+
     header('Location: index.php?route=admin&tab=eventos');
     exit;
 }
