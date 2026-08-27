@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TERRA — Cozinha de Origem</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        emerald: { 950: '#021a0f', 900: '#0a2e1a', 800: '#0f3d22', 700: '#155c33', 600: '#1a7a42' },
+        charcoal: { 900: '#0d0d0d', 800: '#141414', 700: '#1a1a1a', 600: '#222222', 500: '#2a2a2a' },
+        gold: { 400: '#e8d5a3', 500: '#d4b978', 600: '#c4a55a', 700: '#a8893e', 800: '#8a6f2f' },
+        copper: { 400: '#d4956a', 500: '#c4814f', 600: '#a86b3a' }
+      },
+      fontFamily: {
+        serif: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Outfit', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Outfit', sans-serif; background: #0d0d0d; color: #e8e8e8; overflow-x: hidden; }
+
+  /* Linen texture overlay */
+  .linen-texture {
+    position: relative;
+  }
+  .linen-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hero video overlay */
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(2,26,15,0.4) 0%, rgba(13,13,13,0.6) 50%, rgba(13,13,13,1) 100%);
+  }
+
+  /* Gold shimmer animation */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .gold-shimmer {
+    background: linear-gradient(90deg, #d4b978 0%, #f0e0b0 25%, #d4b978 50%, #f0e0b0 75%, #d4b978 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 6s linear infinite;
+  }
+
+  /* Glow pulse for availability indicator */
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 4px #1a7a42, 0 0 8px #1a7a42; }
+    50% { box-shadow: 0 0 8px #1a7a42, 0 0 16px #1a7a42, 0 0 24px rgba(26,122,66,0.3); }
+  }
+  .glow-available { animation: glow-pulse 2s ease-in-out infinite; }
+  .glow-unavailable { box-shadow: 0 0 4px #991b1b, 0 0 8px #991b1b; }
+
+  /* Parallax section */
+  .parallax-bg {
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+  }
+  @media (max-width: 768px) {
+    .parallax-bg { background-attachment: scroll; }
+  }
+
+  /* Horizontal scroll container */
+  .drag-scroll {
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .drag-scroll::-webkit-scrollbar { display: none; }
+  .drag-scroll:active { cursor: grabbing; }
+  .drag-scroll > * { scroll-snap-align: start; }
+
+  /* Dish card hover reveal */
+  .dish-card { position: relative; }
+  .dish-card .dish-image {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .dish-card:hover .dish-image {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .dish-card:hover .dish-name {
+    color: #d4b978;
+  }
+  .dish-card .dish-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dish-card:hover .dish-details {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+
+  /* Menu filter pills */
+  .filter-pill {
+    transition: all 0.3s ease;
+  }
+  .filter-pill.active {
+    background: linear-gradient(135deg, #d4b978, #c4a55a);
+    color: #0d0d0d;
+  }
+
+  /* Fade-in on scroll */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Copper divider */
+  .copper-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c4814f, #d4956a, #c4814f, transparent);
+  }
+
+  /* Reservation modal */
+  .modal-backdrop {
+    backdrop-filter: blur(12px);
+    background: rgba(2,26,15,0.85);
+  }
+
+  /* Toast notification */
+  @keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+  }
+  .toast-in { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .toast-out { animation: slideOutRight 0.3s ease-in forwards; }
+
+  /* Nav blur */
+  .nav-blur {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(13,13,13,0.7);
+    border-bottom: 1px solid rgba(196,129,79,0.15);
+  }
+
+  /* Ingredient tag */
+  .ingredient-tag {
+    border: 1px solid rgba(212,185,120,0.25);
+    background: rgba(212,185,120,0.05);
+  }
+
+  /* Custom scrollbar for body */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0d0d0d; }
+  ::-webkit-scrollbar-thumb { background: #1a7a42; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #d4b978; }
+
+  /* Wine card glass effect */
+  .wine-card {
+    background: linear-gradient(145deg, rgba(26,26,26,0.9), rgba(20,20,20,0.95));
+    border: 1px solid rgba(196,129,79,0.12);
+    transition: all 0.4s ease;
+  }
+  .wine-card:hover {
+    border-color: rgba(196,129,79,0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  /* Chef section image */
+  .chef-img-wrapper {
+    position: relative;
+  }
+  .chef-img-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(196,129,79,0.3);
+    z-index: -1;
+  }
+
+  /* Counter animation */
+  .counter-num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Event card */
+  .event-card {
+    background: linear-gradient(160deg, rgba(15,61,34,0.3), rgba(13,13,13,0.9));
+    border: 1px solid rgba(26,122,66,0.15);
+    transition: all 0.4s ease;
+  }
+  .event-card:hover {
+    border-color: rgba(212,185,120,0.3);
+    background: linear-gradient(160deg, rgba(15,61,34,0.5), rgba(13,13,13,0.95));
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mobile-menu.open {
+    transform: translateX(0);
+  }
+</style>
+</head>
+<body class="linen-texture">
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-3"></div>
+
+<!-- Navigation -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#hero" class="flex items-center gap-3 group">
+      <div class="w-10 h-10 rounded-full border border-gold-600/40 flex items-center justify-center group-hover:border-gold-500 transition-colors duration-300">
+        <span class="font-serif text-gold-500 text-lg font-bold">T</span>
+      </div>
+      <span class="font-serif text-xl tracking-wide text-white">TERRA</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#cardapio" class="text-sm font-light tracking-widest uppercase text-white/70 hover:text-gold-500 transition-colors duration-300">Cardápio</a>
+      <a href="#chef" class="text-sm font-light tracking-widest uppercase text-white/70 hover:text-gold-500 transition-colors duration-300">O Chef</a>
+      <a href="#experiencias" class="text-sm font-light tracking-widest uppercase text-white/70 hover:text-gold-500 transition-colors duration-300">Experiências</a>
+      <a href="#vinhos" class="text-sm font-light tracking-widest uppercase text-white/70 hover:text-gold-500 transition-colors duration-300">Vinhos</a>
+      <button onclick="openReservation()" class="ml-4 px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-700 text-charcoal-900 text-sm font-semibold tracking-wide uppercase rounded-sm hover:from-gold-500 hover:to-gold-600 transition-all duration-300 hover:shadow-lg hover:shadow-gold-700/20">
+        Reservar
+      </button>
+    </div>
+    <button onclick="toggleMobileMenu()" class="md:hidden text-white p-2">
+      <span class="iconify" data-icon="lucide:menu" data-width="24"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="mobile-menu fixed inset-0 z-[60] bg-charcoal-900/98 backdrop-blur-xl flex flex-col">
+  <div class="flex justify-between items-center px-6 py-4">
+    <span class="font-serif text-xl text-white">TERRA</span>
+    <button onclick="toggleMobileMenu()" class="text-white p-2">
+      <span class="iconify" data-icon="lucide:x" data-width="24"></span>
+    </button>
+  </div>
+  <div class="flex-1 flex flex-col justify-center px-8 gap-8">
+    <a href="#cardapio" onclick="toggleMobileMenu()" class="font-serif text-4xl text-white/80 hover:text-gold-500 transition-colors">Cardápio</a>
+    <a href="#chef" onclick="toggleMobileMenu()" class="font-serif text-4xl text-white/80 hover:text-gold-500 transition-colors">O Chef</a>
+    <a href="#experiencias" onclick="toggleMobileMenu()" class="font-serif text-4xl text-white/80 hover:text-gold-500 transition-colors">Experiências</a>
+    <a href="#vinhos" onclick="toggleMobileMenu()" class="font-serif text-4xl text-white/80 hover:text-gold-500 transition-colors">Vinhos</a>
+    <div class="copper-divider my-4"></div>
+    <button onclick="openReservation(); toggleMobileMenu();" class="px-8 py-4 bg-gradient-to-r from-gold-600 to-gold-700 text-charcoal-900 text-lg font-semibold tracking-wide uppercase rounded-sm">
+      Reservar uma Mesa
+    </button>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section id="hero" class="relative h-screen min-h-[700px] flex items-end overflow-hidden">
+  <div class="absolute inset-0">
+    <img src="https://picsum.photos/seed/gastronomy-plating-dark/1920/1080.jpg" alt="Plating em andamento" class="w-full h-full object-cover scale-105" style="filter: brightness(0.6) contrast(1.1) saturate(0.9);">
+    <div class="hero-overlay absolute inset-0"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 pb-20 md:pb-28 w-full">
+    <div class="max-w-3xl">
+      <p class="text-gold-500 text-sm tracking-[0.35em] uppercase font-light mb-6 fade-up">Cozinha de Origem · Farm to Table</p>
+      <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-tight mb-6 fade-up" style="transition-delay: 0.1s;">
+        Onde a terra<br>
+        <span class="italic font-light gold-shimmer">encontra o fogo</span>
+      </h1>
+      <p class="text-white/60 text-lg md:text-xl font-light max-w-xl leading-relaxed mb-10 fade-up" style="transition-delay: 0.2s;">
+        Ingredientes locais, técnicas ancestrais e uma experiência que desperta todos os sentidos.
+      </p>
+      <div class="flex flex-wrap gap-4 fade-up" style="transition-delay: 0.3s;">
+        <a href="#cardapio" class="group px-8 py-4 bg-gradient-to-r from-gold-600 to-gold-700 text-charcoal-900 text-sm font-semibold tracking-widest uppercase rounded-sm hover:from-gold-500 hover:to-gold-600 transition-all duration-300 flex items-center gap-3">
+          Explorar Cardápio
+          <span class="iconify group-hover:translate-x-1 transition-transform duration-300" data-icon="lucide:arrow-right" data-width="16"></span>
+        </a>
+        <button onclick="openReservation()" class="px-8 py-4 border border-white/20 text-white text-sm font-light tracking-widest uppercase rounded-sm hover:border-gold-500/50 hover:text-gold-500 transition-all duration-300">
+          Reservar Mesa
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+    <span class="text-white/30 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+    <span class="iconify text-white/30" data-icon="lucide:chevron-down" data-width="16"></span>
+  </div>
+</section>
+
+<!-- Philosophy Strip -->
+<section class="relative bg-emerald-950 py-16 overflow-hidden">
+  <div class="copper-divider absolute top-0 left-0 right-0"></div>
+  <div class="copper-divider absolute bottom-0 left-0 right-0"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center fade-up">
+      <div>
+        <p class="font-serif text-4xl md:text-5xl text-gold-500 counter-num" data-target="47">0</p>
+        <p class="text-white/40 text-xs tracking-[0.25em] uppercase mt-2 font-light">Produtores Locais</p>
+      </div>
+      <div>
+        <p class="font-serif text-4xl md:text-5xl text-gold-500 counter-num" data-target="12">0</p>
+        <p class="text-white/40 text-xs tracking-[0.25em] uppercase mt-2 font-light">Anos de Tradição</p>
+      </div>
+      <div>
+        <p class="font-serif text-4xl md:text-5xl text-gold-500 counter-num" data-target="8">0</p>
+        <p class="text-white/40 text-xs tracking-[0.25em] uppercase mt-2 font-light">Mesas Exclusivas</p>
+      </div>
+      <div>
+        <p class="font-serif text-4xl md:text-5xl text-gold-500 counter-num" data-target="1">0</p>
+        <p class="text-white/40 text-xs tracking-[0.25em] uppercase mt-2 font-light">Estrela Michelin</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Menu Interativo -->
+<section id="cardapio" class="relative py-24 md:py-32">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Section Header -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16 fade-up">
+      <div>
+        <p class="text-copper-500 text-sm tracking-[0.35em] uppercase font-light mb-3">O Cardápio</p>
+        <h2 class="font-serif text-4xl md:text-6xl text-white leading-tight tracking-tight">
+          Sabores que contam<br><span class="italic font-light text-white/70">histórias da terra</span>
+        </h2>
+      </div>
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2" id="menu-filters">
+        <button class="filter-pill active px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="all">Todos</button>
+        <button class="filter-pill px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="entrada">Entradas</button>
+        <button class="filter-pill px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="principal">Principais</button>
+        <button class="filter-pill px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="sobremesa">Sobremesas</button>
+        <button class="filter-pill px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="veg">Vegetariano</button>
+        <button class="filter-pill px-5 py-2 rounded-full text-xs tracking-widest uppercase border border-white/10 text-white/60" data-filter="sg">Sem Glúten</button>
+      </div>
+    </div>
+
+    <!-- Dishes Grid -->
+    <div id="dishes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+      <!-- Dishes will be injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Parallax Section - Cozinha Aberta -->
+<section class="relative parallax-bg py-32 md:py-44" style="background-image: url('https://picsum.photos/seed/open-kitchen-dark-chef/1920/900.jpg');">
+  <div class="absolute inset-0 bg-gradient-to-r from-charcoal-900/95 via-charcoal-900/80 to-charcoal-900/60"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6">
+    <div class="max-w-lg fade-up">
+      <p class="text-copper-400 text-sm tracking-[0.35em] uppercase font-light mb-4">A Cozinha Aberta</p>
+      <h2 class="font-serif text-4xl md:text-5xl text-white leading-tight mb-6">
+        O teatro do<br><span class="italic font-light text-gold-500">sabor ao vivo</span>
+      </h2>
+      <p class="text-white/50 text-lg font-light leading-relaxed mb-8">
+        Nossa cozinha aberta é o palco onde cada ingrediente se transforma. Assista de perto a precisão cirúrgica do corte, o domínio do fogo e a arte da finalização — uma experiência que antecede o primeiro garfo.
+      </p>
+      <a href="#chef" class="inline-flex items-center gap-2 text-gold-500 text-sm tracking-widest uppercase font-light hover:text-gold-400 transition-colors group">
+        Conheça o Chef
+        <span class="iconify group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" data-width="14"></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- O Chef Section -->
+<section id="chef" class="relative py-24 md:py-32 bg-emerald-950">
+  <div class="copper-divider absolute top-0 left-0 right-0"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div class="fade-up">
+        <div class="chef-img-wrapper">
+          <img src="https://picsum.photos/seed/chef-portrait-culinary/600/750.jpg" alt="Chef Executivo" class="w-full h-[500px] md:h-[600px] object-cover" style="filter: brightness(0.85) contrast(1.05);">
+        </div>
+      </div>
+      <div class="fade-up" style="transition-delay: 0.15s;">
+        <p class="text-copper-400 text-sm tracking-[0.35em] uppercase font-light mb-4">O Chef</p>
+        <h2 class="font-serif text-4xl md:text-5xl text-white leading-tight mb-2">
+          Ricardo Mendes
+        </h2>
+        <p class="text-gold-500 text-sm tracking-widest uppercase font-light mb-8">Chef Executivo · Fundador</p>
+        <div class="space-y-5 text-white/50 text-base font-light leading-relaxed">
+          <p>
+            Com passagens por El Celler de Can Roca e Central, Ricardo retornou ao Brasil com uma missão clara: revelar ao mundo a riqueza invisível dos biomas brasileiros através da alta gastronomia.
+          </p>
+          <p>
+            Cada prato do TERRA é uma cartografia de sabor — mapeando produtores, sazonalidades e técnicas ancestrais que transformam ingredientes humildes em experiências extraordinárias.
+          </p>
+          <p>
+            "Não cozinho para impressionar. Cozinho para que a pessoa ao outro lado da mesa se reconecte com algo que sempre soube, mas nunca sabia nomear."
+          </p>
+        </div>
+        <div class="flex items-center gap-6 mt-10">
+          <div class="flex items-center gap-2 text-white/30 text-xs tracking-widest uppercase">
+            <span class="iconify" data-icon="lucide:award" data-width="14"></span>
+            Michelin 2023
+          </div>
+          <div class="w-1 h-1 rounded-full bg-copper-500/50"></div>
+          <div class="flex items-center gap-2 text-white/30 text-xs tracking-widest uppercase">
+            <span class="iconify" data-icon="lucide:globe" data-width="14"></span>
+            Latin America's 50 Best
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experiências & Eventos -->
+<section id="experiencias" class="relative py-24 md:py-32">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 fade-up">
+      <p class="text-copper-400 text-sm tracking-[0.35em] uppercase font-light mb-3">Experiências</p>
+      <h2 class="font-serif text-4xl md:text-6xl text-white leading-tight tracking-tight">
+        Momentos que ficam<br><span class="italic font-light text-white/70">para sempre</span>
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Event 1 -->
+      <div class="event-card rounded-2xl p-8 flex flex-col fade-up">
+        <div class="w-14 h-14 rounded-xl bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mb-6">
+          <span class="iconify text-gold-500" data-icon="lucide:wine" data-width="24"></span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Jantar Harmonizado</h3>
+        <p class="text-white/40 font-light leading-relaxed flex-1 text-sm">
+          Menu degustação de 7 etapas com pareamento exclusivo selecionado pelo nosso sommelier. Cada taça conta uma história complementar ao prato.
+        </p>
+        <div class="mt-6 pt-6 border-t border-white/5">
+          <p class="text-gold-500 text-sm font-light">A partir de <span class="font-serif text-2xl">R$ 890</span>/pessoa</p>
+          <button onclick="openReservation('harmonizado')" class="mt-4 text-xs tracking-widest uppercase text-white/50 hover:text-gold-500 transition-colors flex items-center gap-2 group">
+            Reservar experiência
+            <span class="iconify group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" data-width="12"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Event 2 -->
+      <div class="event-card rounded-2xl p-8 flex flex-col fade-up" style="transition-delay: 0.1s;">
+        <div class="w-14 h-14 rounded-xl bg-emerald-700/20 border border-emerald-700/30 flex items-center justify-center mb-6">
+          <span class="iconify text-emerald-600" data-icon="lucide:building-2" data-width="24"></span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Eventos Corporativos</h3>
+        <p class="text-white/40 font-light leading-relaxed flex-1 text-sm">
+          Locação exclusiva do espaço para até 40 convidados. Menu personalizado, serviço dedicado e ambientação sob medida para sua marca.
+        </p>
+        <div class="mt-6 pt-6 border-t border-white/5">
+          <p class="text-gold-500 text-sm font-light">Sob consulta</p>
+          <button onclick="openReservation('corporativo')" class="mt-4 text-xs tracking-widest uppercase text-white/50 hover:text-gold-500 transition-colors flex items-center gap-2 group">
+            Solicitar proposta
+            <span class="iconify group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" data-width="12"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Event 3 -->
+      <div class="event-card rounded-2xl p-8 flex flex-col fade-up" style="transition-delay: 0.2s;">
+        <div class="w-14 h-14 rounded-xl bg-copper-500/10 border border-copper-500/20 flex items-center justify-center mb-6">
+          <span class="iconify text-copper-400" data-icon="lucide:flame" data-width="24"></span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Chef's Table</h3>
+        <p class="text-white/40 font-light leading-relaxed flex-1 text-sm">
+          Uma mesa única posicionada dentro da cozinha. Interação direta com o chef e sua equipe enquanto o menu surpreendente é criado ao vivo.
+        </p>
+        <div class="mt-6 pt-6 border-t border-white/5">
+          <p class="text-gold-500 text-sm font-light">A partir de <span class="font-serif text-2xl">R$ 1.200</span>/pessoa</p>
+          <button onclick="openReservation('chef-table')" class="mt-4 text-xs tracking-widest uppercase text-white/50 hover:text-gold-500 transition-colors flex items-center gap-2 group">
+            Reservar experiência
+            <span class="iconify group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" data-width="12"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Private event form -->
+    <div class="mt-20 bg-charcoal-700/40 border border-white/5 rounded-2xl p-8 md:p-12 fade-up">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <h3 class="font-serif text-3xl text-white mb-4">Evento Privado Sob Medida</h3>
+          <p class="text-white/40 font-light leading-relaxed text-sm">
+            Conte-nos sobre sua ocasião especial. Nossa equipe de eventos entrará em contato em até 24 horas com uma proposta personalizada.
+          </p>
+        </div>
+        <form onsubmit="handleEventForm(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input type="text" placeholder="Seu nome" required class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors placeholder:text-white/25">
+            <input type="email" placeholder="E-mail" required class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors placeholder:text-white/25">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <input type="date" required class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors [color-scheme:dark]">
+            <select required class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors appearance-none">
+              <option value="" disabled selected class="text-white/25">Convidados</option>
+              <option>10-15 pessoas</option>
+              <option>16-25 pessoas</option>
+              <option>26-40 pessoas</option>
+            </select>
+            <select required class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors appearance-none">
+              <option value="" disabled selected class="text-white/25">Tipo</option>
+              <option>Aniversário</option>
+              <option>Corporativo</option>
+              <option>Casamento</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <textarea placeholder="Conte-nos mais sobre seu evento..." rows="3" class="w-full px-4 py-3 bg-charcoal-900/80 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors placeholder:text-white/25 resize-none"></textarea>
+          <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-gold-600 to-gold-700 text-charcoal-900 text-sm font-semibold tracking-widest uppercase rounded-lg hover:from-gold-500 hover:to-gold-600 transition-all duration-300">
+            Enviar Solicitação
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Vinhos & Mixologia - Horizontal Scroll -->
+<section id="vinhos" class="relative py-24 md:py-32 bg-emerald-950 overflow-hidden">
+  <div class="copper-divider absolute top-0 left-0 right-0"></div>
+  <div class="max-w-7xl mx-auto px-6 mb-12">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 fade-up">
+      <div>
+        <p class="text-copper-400 text-sm tracking-[0.35em] uppercase font-light mb-3">Carta de Bebidas</p>
+        <h2 class="font-serif text-4xl md:text-6xl text-white leading-tight tracking-tight">
+          Vinhos &<br><span class="italic font-light text-white/70">Mixologia autoral</span>
+        </h2>
+      </div>
+      <p class="text-white/40 text-sm font-light max-w-xs flex items-center gap-2">
+        <span class="iconify" data-icon="lucide:hand" data-width="16"></span>
+        Arraste para explorar a seleção
+      </p>
+    </div>
+  </div>
+  <div id="wine-scroll" class="drag-scroll flex gap-6 px-6 pb-6 overflow-x-auto">
+    <!-- Wine cards injected by JS -->
+  </div>
+  <div class="max-w-7xl mx-auto px-6 mt-10 fade-up">
+    <p class="text-center text-white/30 text-xs tracking-widest uppercase">
+      Nossa carta completa possui 340 rótulos · Consulte o sommelier para sugestões de pareamento
+    </p>
+  </div>
+</section>
+
+<!-- Parallax Section - Salão -->
+<section class="relative parallax-bg py-32 md:py-44" style="background-image: url('https://picsum.photos/seed/luxury-restaurant-interior-dark/1920/900.jpg');">
+  <div class="absolute inset-0 bg-gradient-to-l from-charcoal-900/95 via-charcoal-900/80 to-charcoal-900/60"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 flex justify-end">
+    <div class="max-w-lg text-right fade-up">
+      <p class="text-copper-400 text-sm tracking-[0.35em] uppercase font-light mb-4">O Salão</p>
+      <h2 class="font-serif text-4xl md:text-5xl text-white leading-tight mb-6">
+        Um refúgio de<br><span class="italic font-light text-gold-500">intimidade e luz</span>
+      </h2>
+      <p class="text-white/50 text-lg font-light leading-relaxed mb-8">
+        Oito mesas dispostas com generosidade. Iluminação cálida pensada quadro a quadro. Cada ângulo do salão foi desenhado para que a refeição seja um momento de presença plena.
+      </p>
+      <button onclick="openReservation()" class="inline-flex items-center gap-2 px-8 py-4 border border-gold-500/30 text-gold-500 text-sm tracking-widest uppercase font-light rounded-sm hover:bg-gold-500/10 transition-all duration-300 group">
+        Garantir minha mesa
+        <span class="iconify group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" data-width="14"></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="relative bg-charcoal-900 pt-20 pb-8">
+  <div class="copper-divider absolute top-0 left-0 right-0"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-full border border-gold-600/40 flex items-center justify-center">
+            <span class="font-serif text-gold-500 text-lg font-bold">T</span>
+          </div>
+          <span class="font-serif text-2xl text-white tracking-wide">TERRA</span>
+        </div>
+        <p class="text-white/30 font-light leading-relaxed max-w-sm text-sm">
+          Cozinha de origem, onde cada ingrediente carrega a identidade do solo, da estação e das mãos que o cultivaram.
+        </p>
+        <div class="flex gap-4 mt-6">
+          <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-gold-500 hover:border-gold-500/30 transition-all">
+            <span class="iconify" data-icon="lucide:instagram" data-width="16"></span>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-gold-500 hover:border-gold-500/30 transition-all">
+            <span class="iconify" data-icon="lucide:facebook" data-width="16"></span>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-gold-500 hover:border-gold-500/30 transition-all">
+            <span class="iconify" data-icon="lucide:mail" data-width="16"></span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-gold-500 text-xs tracking-[0.25em] uppercase font-semibold mb-6">Horários</h4>
+        <div class="space-y-3 text-white/40 text-sm font-light">
+          <div class="flex justify-between"><span>Ter — Sex</span><span class="text-white/60">19h — 23h</span></div>
+          <div class="flex justify-between"><span>Sábado</span><span class="text-white/60">18h — 00h</span></div>
+          <div class="flex justify-between"><span>Domingo</span><span class="text-white/60">18h — 22h</span></div>
+          <div class="flex justify-between"><span>Segunda</span><span class="text-white/30">Fechado</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-gold-500 text-xs tracking-[0.25em] uppercase font-semibold mb-6">Contato</h4>
+        <div class="space-y-3 text-white/40 text-sm font-light">
+          <p class="flex items-center gap-2"><span class="iconify text-copper-500" data-icon="lucide:map-pin" data-width="14"></span> Rua Augusta, 1200 — SP</p>
+          <p class="flex items-center gap-2"><span class="iconify text-copper-500" data-icon="lucide:phone" data-width="14"></span> (11) 9 8765-4321</p>
+          <p class="flex items-center gap-2"><span class="iconify text-copper-500" data-icon="lucide:mail" data-width="14"></span> reserva@terra.com.br</p>
+        </div>
+      </div>
+    </div>
+    <div class="copper-divider mb-8"></div>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-white/20 text-xs tracking-wider">
+      <p>© 2025 TERRA Cozinha de Origem. Todos os direitos reservados.</p>
+      <p class="flex items-center gap-1">Feito com <span class="iconify text-copper-500" data-icon="lucide:heart" data-width="12"></span> e ingredientes reais</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Sticky Reserve CTA -->
+<div id="sticky-reserve" class="fixed bottom-6 right-6 z-50 opacity-0 translate-y-4 transition-all duration-500 pointer-events-none">
+  <button onclick="openReservation()" class="relative flex items-center gap-3 px-6 py-3.5 bg-charcoal-800/90 backdrop-blur-xl border border-gold-600/25 rounded-full shadow-2xl shadow-black/40 hover:border-gold-500/50 hover:shadow-gold-700/10 transition-all duration-300 group">
+    <span id="availability-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-600 glow-available flex-shrink-0"></span>
+    <span class="text-sm font-light text-white/80 group-hover:text-gold-500 transition-colors">Reservar Mesa</span>
+    <span class="iconify text-gold-500 group-hover:translate-x-0.5 transition-transform" data-icon="lucide:arrow-right" data-width="14"></span>
+  </button>
+</div>
+
+<!-- Reservation Modal -->
+<div id="reservation-modal" class="fixed inset-0 z-[80] hidden">
+  <div class="modal-backdrop absolute inset-0" onclick="closeReservation()"></div>
+  <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+    <div id="modal-content" class="w-full max-w-lg bg-charcoal-800 border border-white/10 rounded-2xl p-8 md:p-10 transform scale-95 opacity-0 transition-all duration-400" style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h3 class="font-serif text-2xl text-white">Reservar Mesa</h3>
+          <p id="modal-subtitle" class="text-white/40 text-sm font-light mt-1">Selecione a data e horário desejados</p>
+        </div>
+        <button onclick="closeReservation()" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all">
+          <span class="iconify" data-icon="lucide:x" data-width="18"></span>
+        </button>
+      </div>
+      <form onsubmit="handleReservation(event)" class="space-y-5">
+        <div>
+          <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Nome Completo</label>
+          <input type="text" required class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors placeholder:text-white/20" placeholder="Como podemos chamá-lo?">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Data</label>
+            <input type="date" id="res-date" required class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors [color-scheme:dark]">
+          </div>
+          <div>
+            <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Horário</label>
+            <select id="res-time" required class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors appearance-none">
+              <option value="" disabled selected>Selecione</option>
+              <option>18:00</option>
+              <option>18:30</option>
+              <option>19:00</option>
+              <option>19:30</option>
+              <option>20:00</option>
+              <option>20:30</option>
+              <option>21:00</option>
+              <option>21:30</option>
+              <option>22:00</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Pessoas</label>
+            <select id="res-guests" required class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors appearance-none">
+              <option value="" disabled selected>Quantas?</option>
+              <option>1 pessoa</option>
+              <option>2 pessoas</option>
+              <option>3 pessoas</option>
+              <option>4 pessoas</option>
+              <option>5 pessoas</option>
+              <option>6 pessoas</option>
+              <option>7+ pessoas</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Ambiente</label>
+            <select id="res-area" required class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors appearance-none">
+              <option value="" disabled selected>Onde?</option>
+              <option>Salão Principal</option>
+              <option>Varanda Jardim</option>
+              <option>Chef's Table</option>
+              <option>Sala Privativa</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs tracking-widest uppercase text-white/40 mb-2 block">Observações</label>
+          <textarea rows="2" class="w-full px-4 py-3 bg-charcoal-900 border border-white/10 rounded-lg text-white text-sm font-light focus:outline-none focus:border-gold-600/50 transition-colors placeholder:text-white/20 resize-none" placeholder="Alergias, ocasião especial, preferências..."></textarea>
+        </div>
+        <button type="submit" class="w-full py-4 bg-gradient-to-r from-gold-600 to-gold-700 text-charcoal-900 text-sm font-semibold tracking-widest uppercase rounded-lg hover:from-gold-500 hover:to-gold-600 transition-all duration-300 hover:shadow-lg hover:shadow-gold-700/20">
+          Confirmar Reserva
+        </button>
+        <p class="text-center text-white/20 text-xs">Você receberá a confirmação por e-mail em instantes</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+const dishes = [
+  { name: 'Tártaro de Cordeiro', desc: 'Carne crua temperada com especiarias, gema curada e microfolhas', price: 'R$ 145', category: 'entrada', tags: ['sg'], img: 'lamb-tartare-dark-food', pairing: 'Pinot Noir Jura', ingredients: ['Cordeiro crioulo', 'Gema de codorna curada', 'Alcaparras', 'Micro rúcula'] },
+  { name: 'Ceviche de Peixe Branco', desc: 'Leite de tigre de mandioca, limão-siciliano e chips de batata-doce', price: 'R$ 118', category: 'entrada', tags: ['sg'], img: 'ceviche-fresh-fish-dark', pairing: 'Sauvignon Blanc Costeira', ingredients: ['Robalo', 'Mandioca', 'Limão siciliano', 'Pimenta dedo-de-moça'] },
+  { name: 'Burrata com Ervas Silvestres', desc: 'Massa fresca recheada de stracciatella, azeite trufado e pão fermentado', price: 'R$ 98', category: 'entrada', tags: ['veg'], img: 'burrata-herbs-closeup', pairing: 'Vermentino Sardenha', ingredients: ['Burrata artesanal', 'Ervas silvestres', 'Azeite trufado', 'Pão de fermentação natural'] },
+  { name: 'Risoto de Cogumelos Selvagens', desc: 'Arroz carnaroli, mix de cogumelos, parmesão 36 meses e azeite', price: 'R$ 128', category: 'principal', tags: ['veg'], img: 'mushroom-risotto-dark-plating', pairing: 'Chardonnay Barrica', ingredients: ['Carnaroli', 'Shiitake, Shimeji, Paris', 'Parmesão 36 meses', 'Azeite extra virgem'] },
+  { name: 'Ancho Angus 400g', desc: 'Corte maduro 45 dias, grelhado em carvão, com manteiga de ervas e purê de batata trufado', price: 'R$ 298', category: 'principal', tags: ['sg'], img: 'angus-steak-grill-fire', pairing: 'Malbec Mendoza', ingredients: ['Ancho Angus certificado', 'Manteiga composta', 'Batata trufada', 'Cebola caramelizada'] },
+  { name: 'Lombo de Cordeiro Confit', desc: 'Confit lento por 8 horas, crusta de ervas, ratatouille e jus reduzido', price: 'R$ 265', category: 'principal', tags: ['sg'], img: 'lamb-loin-herb-crust-plating', pairing: 'Grenache Rhône', ingredients: ['Cordeiro patagônico', 'Confit em banha', 'Ratatouille', 'Jus de cordeiro'] },
+  { name: 'Cernambi Assado', desc: 'Peixe inteiro com crosta de sal, fenoquê, azeitonas e alho confit', price: 'R$ 245', category: 'principal', tags: ['sg'], img: 'whole-roasted-fish-herbs-dark', pairing: 'Alvarinho Vinho Verde', ingredients: ['Cernibre inteiro', 'Crosta de sal marinho', 'Fenoquê', 'Alho confit'] },
+  { name: 'Soufflé de Chocolate Amargo', desc: 'Soufflé quente com 72% cacau, sorvete de baunilha Madagascar e crumble de café', price: 'R$ 78', category: 'sobremesa', tags: ['veg'], img: 'chocolate-souffle-dark-dessert', pairing: 'Porto Tawny 20 anos', ingredients: ['Cacau 72%', 'Baunilha Madagascar', 'Café especial', 'Creme fresco'] },
+  { name: 'Panna Cotta de Frutas Vermelhas', desc: 'Creme de leite fresco com coulis de morango e framboesa, crocante de amêndoas', price: 'R$ 68', category: 'sobremesa', tags: ['veg', 'sg'], img: 'panna-cotta-berries-dark-plating', pairing: 'Moscato d\'Asti', ingredients: ['Creme fresco', 'Morango orgânico', 'Framboesa', 'Amêndoas torradas'] },
+  { name: 'Tiramisù Deconstruído', desc: 'Espuma de mascarpone, café especial, biscoito e cacau em pó', price: 'R$ 72', category: 'sobremesa', tags: ['veg'], img: 'deconstructed-tiramisu-plating', pairing: 'Espresso Martini Autoral', ingredients: ['Mascarpone', 'Café Coei', 'Biscoito savoiardi', 'Cacão Valrhona'] },
+];
+
+const wines = [
+  { name: 'Catena Zapata Malbec', region: 'Mendoza, Argentina', year: '2019', type: 'Tinto', price: 'R$ 280', img: 'malbec-wine-bottle-dark', note: 'Cereja negra, chocolate, baunilha' },
+  { name: 'Cloudy Bay Sauvignon Blanc', region: 'Marlborough, NZ', year: '2022', type: 'Branco', price: 'R$ 320', img: 'sauvignon-blanc-bottle-dark', note: 'Toranja, maracujá, mineralidade' },
+  { name: 'Barolo Riserva Giacomo Conterno', region: 'Piemonte, Itália', year: '2015', type: 'Tinto', price: 'R$ 1.450', img: 'barolo-wine-bottle-italian', note: 'Alcatrão, rosa seca, tabaco' },
+  { name: 'Dom Pérignon Vintage', region: 'Champagne, França', year: '2013', type: 'Espumante', price: 'R$ 1.890', img: 'champagne-dom-perignon-dark', note: 'Avelã, cítrico, crosta de pão' },
+  { name: 'Château d\'Yquem Sauternes', region: 'Bordeaux, França', year: '2017', type: 'Doce', price: 'R$ 2.200', img: 'sauternes-gold-wine-bottle', note: 'Apricot, mel, cera de abelha' },
+  { name: 'Terra Vermelho Autoral', region: 'Serra Gaúcha, Brasil', year: '2021', type: 'Tinto', price: 'R$ 190', img: 'brazilian-red-wine-bottle', note: 'Ameixa, especiarias, terroir' },
+  { name: 'Smoked Negroni', region: 'Mixologia Autoral', year: '', type: 'Coquetel', price: 'R$ 68', img: 'smoked-negroni-cocktail-dark', note: 'Gin infundido, Campari, fumaça de cerejeira' },
+  { name: 'Garden of Eden', region: 'Mixologia Autoral', year: '', type: 'Coquetel', price: 'R$ 72', img: 'garden-cocktail-green-herbs', note: 'Cachaça, ervas frescas, yuzu, clara de ovo' },
+];
+
+// ==================== RENDER DISHES ====================
+function renderDishes(filter = 'all') {
+  const grid = document.getElementById('dishes-grid');
+  const filtered = dishes.filter(d => {
+    if (filter === 'all') return true;
+    if (filter === 'veg') return d.tags.includes('veg');
+    if (filter === 'sg') return d.tags.includes('sg');
+    return d.category === filter;
+  });
+
+  grid.innerHTML = filtered.map((dish, i) => `
+    <div class="dish-card py-5 border-b border-white/5 fade-up visible" style="transition-delay: ${i * 0.05}s;" data-category="${dish.category}" data-tags="${dish.tags.join(',')}">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <h3 class="dish-name font-serif text-xl md:text-2xl text-white transition-colors duration-300 cursor-default">${dish.name}</h3>
+          <p class="text-white/30 text-sm font-light mt-1 leading-relaxed">${dish.desc}</p>
+          <!-- Hidden details on hover -->
+          <div class="dish-details">
+            <div class="flex flex-wrap gap-1.5 mb-2">
+              ${dish.ingredients.map(ing => `<span class="ingredient-tag text-[10px] px-2.5 py-1 rounded-full text-gold-400/70 tracking-wide">${ing}</span>`).join('')}
+            </div>
+            <p class="text-copper-400 text-xs font-light flex items-center gap-1.5">
+              <span class="iconify" data-icon="lucide:wine" data-width="11"></span>
+              Harmonização: ${dish.pairing}
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-3 flex-shrink-0">
+          <span class="font-serif text-lg text-gold-500">${dish.price}</span>
+          ${dish.tags.includes('veg') ? '<span class="text-[9px] tracking-widest uppercase text-emerald-600 border border-emerald-700/40 px-2 py-0.5 rounded-full">Vegetariano</span>' : ''}
+          ${dish.tags.includes('sg') ? '<span class="text-[9px] tracking-widest uppercase text-white/25 border border-white/10 px-2 py-0.5 rounded-full">Sem Glúten</span>' : ''}
+        </div>
+      </div>
+      <!-- Floating image on hover -->
+      <div class="dish-image absolute right-0 top-0 w-48 h-48 md:w-64 md:h-64 rounded-xl overflow-hidden shadow-2xl shadow-black/60 z-20 pointer-events-none">
+        <img src="https://picsum.photos/seed/${dish.img}/400/400.jpg" alt="${dish.name}" class="w-full h-full object-cover" style="filter: brightness(0.85) contrast(1.1);">
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== RENDER WINES ====================
+function renderWines() {
+  const scroll = document.getElementById('wine-scroll');
+  scroll.innerHTML = wines.map(w => `
+    <div class="wine-card rounded-2xl overflow-hidden flex-shrink-0 w-[280px] md:w-[320px]">
+      <div class="h-48 md:h-56 overflow-hidden">
+        <img src="https://picsum.photos/seed/${w.img}/400/350.jpg" alt="${w.name}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" style="filter: brightness(0.75) contrast(1.05);">
+      </div>
+      <div class="p-6">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-[9px] tracking-[0.2em] uppercase px-2 py-0.5 rounded-full ${w.type === 'Tinto' ? 'bg-red-900/30 text-red-400 border border-red-800/30' : w.type === 'Branco' ? 'bg-yellow-900/20 text-yellow-400/70 border border-yellow-800/20' : w.type === 'Espumante' ? 'bg-amber-900/20 text-amber-400/70 border border-amber-800/20' : w.type === 'Doce' ? 'bg-orange-900/20 text-orange-400/70 border border-orange-800/20' : 'bg-emerald-900/20 text-emerald-400/70 border border-emerald-800/20'}">${w.type}</span>
+          ${w.year ? `<span class="text-white/20 text-[10px]">${w.year}</span>` : ''}
+        </div>
+        <h4 class="font-serif text-lg text-white leading-snug mb-1">${w.name}</h4>
+        <p class="text-white/30 text-xs font-light mb-3">${w.region}</p>
+        <p class="text-white/25 text-xs italic font-light mb-4">"${w.note}"</p>
+        <div class="flex items-center justify-between">
+          <span class="font-serif text-gold-500">${w.price}</span>
+          <button onclick="openReservation()" class="text-[10px] tracking-widest uppercase text-white/30 hover:text-gold-500 transition-colors">Reservar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== MENU FILTERS ====================
+document.getElementById('menu-filters').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  renderDishes(pill.dataset.filter);
+});
+
+// ==================== DRAG TO SCROLL ====================
+function initDragScroll() {
+  const el = document.getElementById('wine-scroll');
+  let isDown = false, startX, scrollLeft;
+
+  el.addEventListener('mousedown', e => {
+    isDown = true;
+    el.style.cursor = 'grabbing';
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  el.addEventListener('mouseleave', () => { isDown = false; el.style.cursor = 'grab'; });
+  el.addEventListener('mouseup', () => { isDown = false; el.style.cursor = 'grab'; });
+  el.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    el.scrollLeft = scrollLeft - walk;
+  });
+}
+
+// ==================== NAV SCROLL EFFECT ====================
+function initNavScroll() {
+  const nav = document.getElementById('navbar');
+  const sticky = document.getElementById('sticky-reserve');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+      nav.classList.add('nav-blur');
+    } else {
+      nav.classList.remove('nav-blur');
+    }
+    if (window.scrollY > 600) {
+      sticky.style.opacity = '1';
+      sticky.style.transform = 'translateY(0)';
+      sticky.style.pointerEvents = 'auto';
+    } else {
+      sticky.style.opacity = '0';
+      sticky.style.transform = 'translateY(16px)';
+      sticky.style.pointerEvents = 'none';
+    }
+  });
+}
+
+// ==================== FADE IN ON SCROLL ====================
+function initFadeIn() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+}
+
+// ==================== COUNTER ANIMATION ====================
+function initCounters() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        let current = 0;
+        const increment = target / 40;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          el.textContent = Math.floor(current);
+        }, 40);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.counter-num').forEach(el => observer.observe(el));
+}
+
+// ==================== AVAILABILITY CHECK ====================
+function checkAvailability() {
+  const dot = document.getElementById('availability-dot');
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+
+  // Simulate: available Tue-Sat after 10am, before 10pm
+  if (day >= 2 && day <= 6 && hour >= 10 && hour < 22) {
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-600 glow-available flex-shrink-0';
+  } else {
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-red-800 glow-unavailable flex-shrink-0';
+  }
+}
+
+// ==================== RESERVATION MODAL ====================
+function openReservation(experience) {
+  const modal = document.getElementById('reservation-modal');
+  const content = document.getElementById('modal-content');
+  const subtitle = document.getElementById('modal-subtitle');
+
+  if (experience === 'harmonizado') {
+    subtitle.textContent = 'Jantar Harmonizado — Menu 7 etapas com pareamento';
+    const area = document.getElementById('res-area');
+    if (area) area.value = 'Salão Principal';
+  } else if (experience === 'corporativo') {
+    subtitle.textContent = 'Evento Corporativo — Preencha e receberá uma proposta';
+    const area = document.getElementById('res-area');
+    if (area) area.value = 'Sala Privativa';
+  } else if (experience === 'chef-table') {
+    subtitle.textContent = "Chef's Table — Uma experiência única na cozinha";
+    const area = document.getElementById('res-area');
+    if (area) area.value = "Chef's Table";
+  } else {
+    subtitle.textContent = 'Selecione a data e horário desejados';
+  }
+
+  // Set min date to today
+  const dateInput = document.getElementById('res-date');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => {
+    content.style.transform = 'scale(1)';
+    content.style.opacity = '1';
+  });
+}
+
+function closeReservation() {
+  const modal = document.getElementById('reservation-modal');
+  const content = document.getElementById('modal-content');
+  content.style.transform = 'scale(0.95)';
+  content.style.opacity = '0';
+  setTimeout(() => {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+function handleReservation(e) {
+  e.preventDefault();
+  closeReservation();
+  showToast('Reserva confirmada!', 'Você receberá os detalhes por e-mail em instantes.', 'success');
+}
+
+function handleEventForm(e) {
+  e.preventDefault();
+  e.target.reset();
+  showToast('Solicitação enviada!', 'Nossa equipe de eventos entrará em contato em até 24h.', 'success');
+}
+
+// ==================== TOAST ====================
+function showToast(title, message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast-in flex items-start gap-3 px-5 py-4 bg-charcoal-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/40 max-w-sm';
+  toast.innerHTML = `
+    <div class="w-8 h-8 rounded-full ${type === 'success' ? 'bg-emerald-700/30' : 'bg-red-900/30'} flex items-center justify-center flex-shrink-0 mt-0.5">
+      <span class="iconify ${type === 'success' ? 'text-emerald-400' : 'text-red-400'}" data-icon="${type === 'success' ? 'lucide:check' : 'lucide:alert-circle'}" data-width="16"></span>
+    </div>
+    <div>
+      <p class="text-white text-sm font-medium">${title}</p>
+      <p class="text-white/40 text-xs font-light mt-0.5">${message}</p>
+    </div>
+    <button onclick="this.closest('.toast-in, .toast-out').classList.add('toast-out'); setTimeout(() => this.closest('.toast-in, .toast-out')?.remove(), 300);" class="text-white/20 hover:text-white/50 transition-colors flex-shrink-0 mt-0.5">
+      <span class="iconify" data-icon="lucide:x" data-width="14"></span>
+    </button>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.classList.remove('toast-in');
+      toast.classList.add('toast-out');
+      setTimeout(() => toast.remove(), 300);
+    }
+  }, 5000);
+}
+
+// ==================== MOBILE MENU ====================
+function toggleMobileMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// ==================== ESC KEY ====================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeReservation();
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu.classList.contains('open')) toggleMobileMenu();
+  }
+});
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderDishes();
+  renderWines();
+  initDragScroll();
+  initNavScroll();
+  initFadeIn();
+  initCounters();
+  checkAvailability();
+  setInterval(checkAvailability, 60000);
+
+  // Trigger initial fade-ups for hero
+  setTimeout(() => {
+    document.querySelectorAll('#hero .fade-up').forEach(el => el.classList.add('visible'));
+  }, 300);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="retro.sh — a developer blog that behaves like a terminal.">
+<title>retro.sh — ~/blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep:   #050709;
+    --bg:        #0a0d11;
+    --bg-soft:   #0e1217;
+    --bg-elev:   #131820;
+    --fg:        #d8d4ce;
+    --fg-dim:    #6b7585;
+    --fg-faint:  #2a303c;
+    --amber:     #ffb86c;
+    --amber-bright: #ffd09b;
+    --phosphor:  #a3e635;
+    --cyan:      #67e8f9;
+    --magenta:   #f472b6;
+    --red:       #ef4444;
+    --green:     #4ade80;
+    --yellow:    #facc15;
+    --border:    #1d2530;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-deep);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background:
+      radial-gradient(ellipse 80% 50% at top, rgba(255, 184, 108, 0.05), transparent 70%),
+      radial-gradient(ellipse 60% 40% at bottom, rgba(103, 232, 249, 0.025), transparent 70%),
+      var(--bg-deep);
+  }
+
+  /* film grain noise */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.5'/></svg>");
+    mix-blend-mode: overlay;
+    opacity: 0.06;
+  }
+
+  /* === CRT OVERLAY === */
+  .crt-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.4s;
+  }
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0.32) 3px,
+      rgba(0,0,0,0.32) 4px
+    );
+    opacity: 0.55;
+    animation: scan 6s linear infinite;
+  }
+  @keyframes scan {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+  }
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 110% 100% at center, transparent 45%, rgba(0,0,0,0.55) 100%);
+  }
+  .flicker {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 184, 108, 0.018);
+    animation: flicker 7s infinite;
+  }
+  @keyframes flicker {
+    0%, 94%, 100% { opacity: 1; }
+    95% { opacity: 0.82; }
+    96% { opacity: 1; }
+    97% { opacity: 0.93; }
+    98% { opacity: 1; }
+  }
+
+  /* === STATUS BAR === */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 14px;
+    background: linear-gradient(to bottom, var(--bg-soft), var(--bg));
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--fg-dim);
+    flex-shrink: 0;
+    user-select: none;
+    letter-spacing: 0.02em;
+  }
+  .status-group { display: flex; gap: 16px; align-items: center; }
+  .status-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .status-item b { color: var(--amber); font-weight: 500; }
+  .status-item .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 7px var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* === TERMINAL === */
+  .terminal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 14px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .output {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .output::-webkit-scrollbar { width: 6px; }
+  .output::-webkit-scrollbar-track { background: transparent; }
+  .output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .output::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }
+  .line {
+    margin-bottom: 2px;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  /* === PROMPT === */
+  .prompt-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--bg-soft);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .prompt {
+    color: var(--green);
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.45);
+    font-weight: 500;
+    flex-shrink: 0;
+    user-select: none;
+  }
+  .prompt .path {
+    color: var(--cyan);
+    text-shadow: 0 0 6px rgba(103, 232, 249, 0.4);
+  }
+  .prompt.compose { color: var(--magenta); text-shadow: 0 0 8px rgba(244, 114, 182, 0.5); }
+  .input-area { position: relative; flex: 1; min-width: 0; }
+  .input-display { pointer-events: none; color: var(--fg); }
+  .ghost-text { color: var(--fg-dim); opacity: 0.55; }
+  .block-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 17px;
+    background: var(--amber);
+    vertical-align: text-bottom;
+    box-shadow: 0 0 8px var(--amber);
+    animation: blink 1.06s steps(2, end) infinite;
+    margin-left: 1px;
+    margin-right: 1px;
+  }
+  @keyframes blink {
+    0%, 49.999% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  #cmdInput {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: transparent;
+    caret-color: transparent;
+    font: inherit;
+    z-index: 2;
+    cursor: text;
+    padding: 0;
+  }
+
+  /* === TEXT === */
+  .error { color: var(--red); text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+  .success { color: var(--green); }
+  .info, .cyan { color: var(--cyan); }
+  .warn, .yellow { color: var(--yellow); }
+  .dim { color: var(--fg-dim); }
+  .amber { color: var(--amber); }
+  .magenta { color: var(--magenta); }
+  .phosphor { color: var(--phosphor); }
+  .cmd-echo { color: var(--fg); }
+
+  /* === MARKDOWN === */
+  .post { margin: 8px 0 14px; }
+  .post h1, .post h2, .post h3 {
+    color: var(--amber);
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255, 184, 108, 0.4);
+    line-height: 1.3;
+    margin: 18px 0 8px;
+  }
+  .post h1 {
+    font-size: 1.5em;
+    letter-spacing: -0.01em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .post h2 { font-size: 1.2em; }
+  .post h3 { font-size: 1.05em; color: var(--amber-bright); }
+  .post p { margin: 8px 0; color: var(--fg); }
+  .post em { color: var(--fg); font-style: italic; opacity: 0.85; }
+  .post strong { color: var(--amber-bright); font-weight: 600; }
+  .post code {
+    color: var(--phosphor);
+    background: rgba(163, 230, 53, 0.08);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 0.95em;
+    border: 1px solid rgba(163, 230, 53, 0.18);
+  }
+  .post pre {
+    margin: 10px 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 12px;
+    overflow-x: auto;
+  }
+  .post pre code {
+    display: block;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  .post a {
+    color: var(--cyan);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(103, 232, 249, 0.4);
+    transition: color 0.15s, text-decoration-color 0.15s;
+  }
+  .post a:hover { color: var(--magenta); text-decoration-color: var(--magenta); }
+  .post blockquote {
+    border-left: 2px solid var(--amber);
+    padding: 6px 0 6px 14px;
+    margin: 12px 0;
+    color: var(--fg-dim);
+    font-style: italic;
+    background: rgba(255, 184, 108, 0.04);
+  }
+  .post ul, .post ol { padding-left: 22px; margin: 8px 0; }
+  .post li { margin: 3px 0; }
+  .post ul li::marker, .post ol li::marker { color: var(--amber); }
+  .divider { color: var(--fg-faint); margin: 8px 0; overflow: hidden; }
+
+  /* === LISTING === */
+  .listing {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 22px;
+    margin: 4px 0;
+    line-height: 1.7;
+  }
+  .file { color: var(--fg); }
+  .file.dir { color: var(--cyan); font-weight: 500; }
+  .file.dir::after { content: '/'; opacity: 0.7; }
+  .file.md { color: var(--amber); }
+  .file.hidden { color: var(--fg-dim); }
+
+  /* === MAN PAGE === */
+  .man-page {
+    border: 1px solid var(--border);
+    background: linear-gradient(to bottom, rgba(255,184,108,0.025), rgba(255,184,108,0.005));
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-radius: 2px;
+    box-shadow: inset 0 0 30px rgba(255, 184, 108, 0.03);
+  }
+  .man-page pre { font: inherit; white-space: pre-wrap; color: var(--fg); }
+
+  /* === BOOT === */
+  .boot-line { color: var(--fg-dim); font-size: 0.95em; }
+  .boot-line .ok { color: var(--green); font-weight: 500; }
+  .boot-line .warn { color: var(--yellow); font-weight: 500; }
+  .motd { margin: 8px 0 6px; color: var(--fg); }
+  .neofetch { color: var(--fg); line-height: 1.25; }
+  .file-header { color: var(--fg-dim); margin: 6px 0 4px; line-height: 1.5; }
+  pre.tree { color: var(--fg); line-height: 1.4; font-size: 0.95em; }
+
+  /* === MAIL === */
+  .mail-form { border: 1px dashed var(--border); padding: 8px 12px; margin: 6px 0; }
+  .mail-summary {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    margin: 8px 0;
+    background: rgba(74,222,128,0.04);
+  }
+
+  /* === SELECTION === */
+  ::selection { background: rgba(255, 184, 108, 0.32); color: var(--amber-bright); }
+
+  /* === MOBILE === */
+  @media (max-width: 640px) {
+    html { font-size: 12px; }
+    .terminal { padding: 10px; }
+    .status-bar { font-size: 10px; padding: 4px 10px; }
+    .status-group { gap: 10px; }
+    .status-item:not(.essential):not(:first-child) { display: none; }
+    .block-cursor { width: 7px; height: 15px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- CRT overlay -->
+  <div class="crt-overlay" id="crtOverlay" aria-hidden="true">
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="flicker"></div>
+  </div>
+
+  <!-- Status bar -->
+  <header class="status-bar" role="banner">
+    <div class="status-group">
+      <span class="status-item essential"><span class="dot" aria-hidden="true"></span>user@blog</span>
+      <span class="status-item essential">pwd: <b id="statusPath">~</b></span>
+    </div>
+    <div class="status-group">
+      <span class="status-item">theme: <b id="statusTheme">amber</b></span>
+      <span class="status-item">crt: <b id="statusCrt">on</b></span>
+      <span class="status-item">sound: <b id="statusSound">off</b></span>
+      <span class="status-item essential" id="statusTime">--:--:--</span>
+    </div>
+  </header>
+
+  <!-- Terminal body -->
+  <main class="terminal" role="main">
+    <div class="output" id="output" aria-live="polite" aria-label="terminal output" tabindex="-1"></div>
+
+    <div class="prompt-line" id="promptLine">
+      <span class="prompt" id="promptText" aria-hidden="true">user@blog<span class="path">:~</span>$</span>
+      <div class="input-area">
+        <div class="input-display" aria-hidden="true">
+          <span id="typedText"></span><span class="block-cursor" id="blockCursor"></span><span class="ghost-text" id="ghostText"></span>
+        </div>
+        <input
+          type="text"
+          id="cmdInput"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="terminal command input"
+          autofocus
+        />
+      </div>
+    </div>
+  </main>
+
+<script>
+'use strict';
+
+// =================== BLOG CONTENT ===================
+const POSTS = {
+  'building-things-that-last.md': {
+    name: 'building-things-that-last.md',
+    title: 'Building Things That Last',
+    date: '2024.03.14',
+    tags: ['engineering', 'philosophy', 'craft'],
+    readTime: 7,
+    content: `# Building Things That Last
+
+*I've been writing software for fifteen years. The thing I keep coming back to is this: most of what we build is temporary, and we know it, and we ship it anyway.*
+
+## The 18-Month Half-Life
+
+The average npm package has a half-life of about eighteen months before it is deprecated, forked, abandoned, or quietly replaced by something with better marketing. Half the JavaScript frameworks from five years ago are punchlines today. The other half are tombstones in a \`node_modules\` somewhere.
+
+We do not talk about this much. We are too busy learning the next thing.
+
+## What Survives
+
+Look at what is still around from the 1970s:
+
+- \`grep\`, \`awk\`, \`sed\` — text tools, unchanged in spirit
+- pipes — the original component model
+- the filesystem hierarchy
+- TCP/IP — the wire protocol of the internet
+- vi — yes, including the hjkl thing
+
+These were not the hippest tools of their era. They were the boring ones.
+
+> The best software is opinionated about the problem and agnostic about the solution.
+
+## Principles
+
+1. **Prefer composition over configuration.** Pipes outlive plugins.
+2. **Make the common case fast and the edge case possible.** Never the other way around.
+3. **Text is the universal interface.** If your tool cannot be scripted, it is a toy.
+4. **Boring is a feature.** Exciting is for hobbies.
+
+## A Confession
+
+I rewrote my blog last weekend. For the eleventh time. In a framework that did not exist three years ago. The previous version, written in a framework that did not exist five years ago, was perfectly fine.
+
+This time, I wrote it as a terminal. Because terminals do not go out of style.
+
+*— EOF —*`
+  },
+
+  'vim-forever.md': {
+    name: 'vim-forever.md',
+    title: 'Why I Still Use Vim in 2024',
+    date: '2024.02.28',
+    tags: ['vim', 'tools', 'editor'],
+    readTime: 5,
+    content: `# Why I Still Use Vim in 2024
+
+*Yes, I know about VS Code. Yes, I have tried Helix. Yes, I have seen your Emacs config. No, I am not switching.*
+
+## The Setup Question
+
+Every six months someone asks me what editor I use. The answer has not changed since 2012. The follow-up is always the same: *but why?*
+
+Here is why.
+
+## Modal Editing Is Just Better
+
+In a normal editor, to delete a word you select it, then press delete. Two actions, plus the cognitive load of aiming.
+
+In Vim: \`daw\` — *delete a word*. One motion. The verb-noun grammar generalizes:
+
+- \`ci"\` — change inside quotes
+- \`das\` — delete a sentence
+- \`cip\` — change inside paragraph
+- \`gqip\` — reformat the paragraph
+
+Once your fingers learn the language, editing becomes *speaking*.
+
+## It Is Everywhere
+
+Every Linux server I have ever SSH'd into has Vim. Every docker container. Every CI runner. Every recovery shell. The skill transfers. The muscle memory compounds.
+
+Your fancy editor requires me to download 200MB of Electron to edit a config file on a remote box at 3am.
+
+No thanks.
+
+## The Real Reason
+
+Vim is the only editor that has gotten *worse* with each "improvement" attempt. Neovim, Vim 9, the LSP integration — all of these are concessions to people who wanted Vim to be more like other editors.
+
+The original Vim, the one from 1991, was already right.
+
+> The tools we keep are the ones that refused to compromise.
+
+## Quitting
+
+\`:q!\`
+
+*— EOF —*`
+  },
+
+  'death-of-microservices.md': {
+    name: 'death-of-microservices.md',
+    title: 'The Slow Death of Microservices',
+    date: '2024.01.15',
+    tags: ['architecture', 'engineering', 'opinion'],
+    readTime: 9,
+    content: `# The Slow Death of Microservices
+
+*We took a pattern that worked at Amazon's scale and applied it to a CRUD app with 200 users. This went about as well as you would expect.*
+
+## What We Were Promised
+
+- Independent deployment
+- Independent scaling
+- Technology flexibility
+- Team autonomy
+- Fault isolation
+
+## What We Got
+
+- A distributed monolith
+- 47 services that all need to deploy together
+- A Kafka cluster that costs more than the rest of the infrastructure combined
+- Three weeks of on-call before every junior engineer quits
+- A tracing dashboard nobody understands
+
+## Where It Actually Helps
+
+Microservices make sense when:
+
+1. You have more than 50 engineers
+2. You have genuinely independent business domains
+3. Your scale demands independent scaling
+4. You are Netflix
+
+If any of these are not true, you do not need microservices. You need a well-factored monolith and a CI pipeline that runs in under five minutes.
+
+## The Pendulum
+
+The industry is swinging back.
+
+- Shopify runs on a single Ruby monolith
+- GitHub runs on a single Rails app
+- Stack Overflow runs on a single C# app serving 16 billion requests a month from nine servers
+
+> The boring architecture scales further than you think.
+
+## A Modest Proposal
+
+Start with a monolith. Extract a service only when the *organizational* cost of keeping it in the monolith exceeds the *operational* cost of running it separately.
+
+You will extract maybe two services. And they will be the right two.
+
+*— EOF —*`
+  },
+
+  'terminal-aesthetic.md': {
+    name: 'terminal-aesthetic.md',
+    title: 'In Praise of the Terminal Aesthetic',
+    date: '2023.11.20',
+    tags: ['design', 'cli', 'philosophy'],
+    readTime: 6,
+    content: `# In Praise of the Terminal Aesthetic
+
+*You are reading this in a terminal right now. That was not an accident.*
+
+## Why This Site Is A Terminal
+
+Three reasons.
+
+### 1. Honesty
+
+A terminal does not pretend to be a magazine. It does not have hero images, gradients, or animated call-to-action banners. It is what it is: a prompt, a cursor, and a stream of text. The reader knows exactly what they are getting.
+
+### 2. Speed
+
+This page is roughly 30KB. It loads in 80 milliseconds on a cold connection. There is no JavaScript bundle. There is no font-display swap. There is no cookie banner. There is just text.
+
+### 3. Respect
+
+A terminal assumes the user is competent. It does not hide options behind menus. It does not autocomplete their intent. It waits for them to speak, and it responds.
+
+> Most websites treat you like a customer. A terminal treats you like an operator.
+
+## The Cost
+
+Yes, there is friction. Yes, you have to learn commands. Yes, your grandparents cannot use it.
+
+That is the point.
+
+## Try This At Home
+
+If you build developer tools, consider shipping a CLI before — or instead of — a GUI. Your power users will thank you. Your support load will shrink. And your software will outlive the framework you wrote it in.
+
+*— EOF —*`
+  },
+
+  'letters-to-young-programmer.md': {
+    name: 'letters-to-young-programmer.md',
+    title: 'Letters to a Young Programmer',
+    date: '2023.09.04',
+    tags: ['career', 'advice', 'craft'],
+    readTime: 8,
+    content: `# Letters to a Young Programmer
+
+*Things I wish someone had told me when I was twenty-two and thought I knew everything.*
+
+## I.
+
+Learn one language deeply before learning five shallowly. The depth transfers; the breadth does not.
+
+## II.
+
+Read code. More than you write. The ratio should be at least 10:1. Open source exists for a reason. Use it.
+
+## III.
+
+The bug is almost never in the framework. The bug is almost never in the compiler. The bug is in your code. Look there first. Look there second. Look there seventeenth.
+
+## IV.
+
+Write tests. Not because testing is virtuous, but because the act of writing a test forces you to define what your code is supposed to do. Most bugs are revealed in this step, before the test even runs.
+
+## V.
+
+Pick a senior engineer you admire. Watch what they do when they are stuck. You will notice they do not type faster. They read more carefully. They ask better questions. They take walks.
+
+> Speed is a side effect of understanding. You cannot optimize for it directly.
+
+## VI.
+
+Your first job will teach you bad habits along with the good ones. This is fine. Just do not confuse the habits with the principles.
+
+## VII.
+
+The technology will change. The principles will not. Spend more time on the principles.
+
+## VIII.
+
+Nobody knows what they are doing. The senior engineer is improvising. The staff engineer is googling. The principal engineer is asking ChatGPT and verifying. The CTO is hoping. We are all just trying to ship something that does not break on a Tuesday.
+
+*— EOF —*`
+  }
+};
+
+const PROJECTS = {
+  'pocketforth': {
+    name: 'pocketforth',
+    title: 'pocketforth',
+    lang: 'C',
+    desc: 'A complete Forth interpreter in exactly 1KB of C.',
+    content: `# pocketforth
+
+A Forth interpreter in 1024 bytes of C99.
+
+\`\`\`
+ $ ./pforth
+: square dup * ;
+5 square .
+25 ok
+\`\`\`
+
+## Why
+
+I wanted to know how small a real programming language could be. Forth is the answer.
+
+## Features
+
+- Compiler for new words (\`: name ... ;\`)
+- All stack operations (\`dup\`, \`swap\`, \`drop\`, \`over\`, \`rot\`)
+- Arithmetic, comparison, branching
+- Memory access (\`@\`, \`!\`, \`,\`)
+- Outer interpreter loop
+
+## What Is Missing (Deliberately)
+
+- Strings
+- Floating point
+- Comments beyond \\\\
+- Anything that would push it over 1KB
+
+*— EOF —*`
+  },
+  'glow.css': {
+    name: 'glow.css',
+    title: 'glow.css',
+    lang: 'CSS',
+    desc: 'A drop-in CSS file that adds phosphor glow to any element.',
+    content: `# glow.css
+
+A single CSS file. Adds CRT phosphor glow to text, borders, and shadows. Zero dependencies, zero JavaScript.
+
+\`\`\`html
+<link rel="stylesheet" href="glow.css">
+<h1 class="glow-amber">hello, world</h1>
+\`\`\`
+
+That is it. That is the library.
+
+## Palettes
+
+- \`glow-amber\`   — IBM 3270 amber
+- \`glow-green\`   — VT100 phosphor
+- \`glow-cyan\`    — modern terminal
+- \`glow-magenta\` — for the bold
+
+*— EOF —*`
+  },
+  'markit': {
+    name: 'markit',
+    title: 'markit',
+    lang: 'Rust',
+    desc: 'A minimal markdown editor for people who think Word was a mistake.',
+    content: `# markit
+
+A markdown editor with no chrome. No toolbar. No sidebar. No settings panel.
+
+Just text.
+
+## Keyboard Shortcuts
+
+- \`Cmd+S\` — save (you will never need this; autosave is on)
+- \`Cmd+P\` — preview
+- \`Cmd+\\\` — split view
+- \`Cmd+W\` — close (joke; this quits the app)
+
+That is all the shortcuts. There are no others.
+
+*— EOF —*`
+  },
+  'warp-core': {
+    name: 'warp-core',
+    title: 'warp-core',
+    lang: 'C++',
+    desc: 'A retro game engine targeting MS-DOS aesthetics on modern hardware.',
+    content: `# warp-core
+
+A game engine that thinks 1992 was the peak of visual design.
+
+## Specs
+
+- 320x240 internal resolution (scaled up)
+- 256-color palette (custom, hand-tuned)
+- Software rasterizer (no GPU)
+- Mod-style tracker music
+- Optional CRT post-processing
+
+## Why
+
+Modern games look like refrigerators. Too many polygons. Too much HDR. Too much ray-traced water reflecting a skybox nobody is looking at.
+
+I wanted to make games that looked like they came on five floppy disks.
+
+*— EOF —*`
+  }
+};
+
+const ABOUT = `# about
+
+I am a software engineer who writes things on the internet occasionally.
+
+I have been shipping code professionally since 2009 — mostly infrastructure, developer tooling, and the occasional ill-advised side project. I have worked at three startups (two acquired, one dead), one big-tech company (no comment), and I currently do independent consulting.
+
+I believe:
+
+- That the UNIX philosophy was right and we forgot it.
+- That most "modern" software is slower than the software it replaced.
+- That the terminal is the most honest UI we have ever built.
+- That Vim is correct and I will not be taking questions.
+
+This blog is a terminal because terminals do not go out of style.
+
+> Reach me at hi@retro.sh — or type \`mail hi@retro.sh\` below.`;
+
+const CONTACT = `# contact
+
+- email:    hi@retro.sh
+- github:   github.com/example
+- mastodon: @example@hachyderm.io
+- irc:      #retro on libera.chat (not always around)
+- pgp:      0xDEADBEEFCAFEBABE
+
+I read everything. I reply to most of it. Sometimes it takes a week.
+
+Or just type \`mail hi@retro.sh\` and write me from this terminal.`;
+
+const README = `# README.md
+
+welcome to retro.sh — a developer blog that thinks it is a terminal.
+
+this is the entire website. there is no other page. there is no javascript
+framework. there is no cookie banner. there is just a prompt and a cursor
+and a small virtual filesystem containing things I have written.
+
+type \`help\` to see what you can do.
+type \`ls\` to look around.
+type \`cat README.md\` to read this again.
+
+> everything here is text. everything here is scriptable. everything here
+> will still work in twenty years.`;
+
+// =================== HELP / MAN ===================
+const HELP_TEXT = `NAME
+    retro.sh - a developer blog, in terminal form
+
+SYNOPSIS
+    <command> [arguments]
+
+DESCRIPTION
+    You are reading a blog by typing commands at a prompt. There is
+    no other interface. This is the entire interface.
+
+COMMANDS
+    help              show this message
+    ls [path]         list directory contents
+    cat <file>        print a file's contents
+    cd <dir>          change directory
+    pwd               print working directory
+    whoami            display author info
+    mail <addr>       compose a message to me
+    tree              show the filesystem tree
+    history           show command history
+    neofetch          system info, the cute way
+    man <command>     manual for a command
+    clear             clear screen (also Ctrl+L)
+    date              current date and time
+    echo <text>       print text back
+
+SETTINGS
+    theme [name]      amber | green | cyan
+    crt [on|off]      toggle CRT scanlines
+    sound [on|off]    toggle keypress sound
+
+KEYBOARD
+    Tab               autocomplete current word
+    Up / Down         navigate command history
+    Right Arrow       accept ghost-text suggestion
+    Ctrl+L            clear screen
+    Ctrl+C            cancel current line
+
+TIPS
+    Files in posts/ are markdown. Try 'cat posts/vim-forever.md'.
+    Topics are virtual directories. Try 'cd topics/vim' then 'ls'.
+
+AUTHOR
+    Written by the author of this terminal.
+
+REPORTING BUGS
+    There are no bugs. There are only features you have not found yet.`;
+
+const MAN_PAGES = {
+  ls: `LS(1)
+
+NAME
+    ls - list directory contents
+
+SYNOPSIS
+    ls [directory]
+
+DESCRIPTION
+    List files and subdirectories. Without arguments, lists the
+    current working directory.
+
+    Output is color-coded:
+      cyan    directories
+      amber   markdown files
+      dim     hidden (dot) files
+
+EXAMPLES
+    ls
+    ls posts
+    ls ~/topics
+
+SEE ALSO
+    cd(1), cat(1), tree(1)`,
+
+  cat: `CAT(1)
+
+NAME
+    cat - concatenate and print files
+
+SYNOPSIS
+    cat <file>
+
+DESCRIPTION
+    Print the contents of a file. Markdown files (ending in .md)
+    are rendered with formatting: headings, bold, italic, code,
+    lists, blockquotes, and links.
+
+EXAMPLES
+    cat README.md
+    cat posts/vim-forever.md
+    cat .about
+
+SEE ALSO
+    ls(1)`,
+
+  cd: `CD(1)
+
+NAME
+    cd - change working directory
+
+SYNOPSIS
+    cd [directory]
+
+DESCRIPTION
+    Change the current working directory. Without arguments, returns
+    to the home directory (~).
+
+    Special values:
+      ..    parent directory
+      ~     home directory
+      .     current directory (no-op)
+
+EXAMPLES
+    cd posts
+    cd ../projects
+    cd ~/topics/vim
+    cd`,
+
+  help: `HELP(1)
+
+    Type 'help' (or 'man retro.sh') to see all commands.`,
+
+  whoami: `WHOAMI(1)
+
+NAME
+    whoami - display effective user id (in this case, the author)
+
+SYNOPSIS
+    whoami
+
+DESCRIPTION
+    Display information about the author of this blog.`,
+
+  mail: `MAIL(1)
+
+NAME
+    mail - send a message to the author
+
+SYNOPSIS
+    mail <address>
+
+DESCRIPTION
+    Compose and send an email. After invoking the command, you will
+    be prompted for a subject and body. End the body with a single
+    '.' on its own line, or press Ctrl+D.
+
+    A backup of the message will also be opened in your system mail
+    client via mailto:.
+
+EXAMPLES
+    mail hi@retro.sh`,
+
+  theme: `THEME(1)
+
+NAME
+    theme - change the phosphor color theme
+
+SYNOPSIS
+    theme [name]
+
+DESCRIPTION
+    Without arguments, prints the current theme.
+    With an argument, switches to that theme.
+
+AVAILABLE THEMES
+    amber   - IBM 3270 amber (default)
+    green   - VT100 phosphor green
+    cyan    - modern terminal cyan`,
+};
+
+// =================== STATE ===================
+const state = {
+  cwd: '~',
+  history: [],
+  historyIndex: -1,
+  sound: false,
+  crt: true,
+  theme: 'amber',
+  bootTime: Date.now(),
+};
+let composeState = null;
+
+try {
+  const stored = JSON.parse(localStorage.getItem('retroHistory') || '[]');
+  if (Array.isArray(stored)) state.history = stored.slice(-100);
+} catch (e) {}
+
+// =================== THEMES ===================
+const THEMES = {
+  amber: { phosphor: '#ffb86c', bright: '#ffd09b' },
+  green: { phosphor: '#a3e635', bright: '#d4f881' },
+  cyan:  { phosphor: '#67e8f9', bright: '#a5f3fc' },
+};
+function applyTheme(name) {
+  const t = THEMES[name];
+  if (!t) return;
+  document.documentElement.style.setProperty('--amber', t.phosphor);
+  document.documentElement.style.setProperty('--amber-bright', t.bright);
+  state.theme = name;
+  document.getElementById('statusTheme').textContent = name;
+}
+
+// =================== DOM ===================
+const $ = (id) => document.getElementById(id);
+const output = $('output');
+const cmdInput = $('cmdInput');
+const typedText = $('typedText');
+const ghostText = $('ghostText');
+const promptText = $('promptText');
+const statusPath = $('statusPath');
+const statusTime = $('statusTime');
+
+// =================== AUDIO ===================
+let audioCtx;
+function ensureAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { audioCtx = null; }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playClick() {
+  if (!state.sound) return;
+  ensureAudio();
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(1700 + Math.random() * 500, now);
+  gain.gain.setValueAtTime(0.018, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + 0.03);
+}
+function playBell() {
+  if (!state.sound) return;
+  ensureAudio();
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(660, now);
+  osc.frequency.exponentialRampToValueAtTime(880, now + 0.05);
+  gain.gain.setValueAtTime(0.04, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + 0.4);
+}
+
+// =================== UTIL ===================
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function scrollBottom() { output.scrollTop = output.scrollHeight; }
+function print(html, cls = '') {
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.innerHTML = html;
+  output.appendChild(div);
+  scrollBottom();
+  return div;
+}
+function printRaw(html) { return print(html); }
+function printBlank() { print('&nbsp;'); }
+
+// =================== MARKDOWN ===================
+function inlineMd(text) {
+  return text
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+function renderMarkdown(md) {
+  const lines = escapeHtml(md).split('\n');
+  const out = [];
+  let inUl = false, inOl = false, inCode = false;
+  let paraBuf = [];
+  const flushPara = () => { if (paraBuf.length) { out.push('<p>' + paraBuf.join(' ') + '</p>'); paraBuf = []; } };
+  const closeLists = () => { if (inUl) { out.push('</ul>'); inUl = false; } if (inOl) { out.push('</ol>'); inOl = false; } };
+
+  for (const line of lines) {
+    if (line.match(/^```/)) {
+      if (inCode) { out.push('</code></pre>'); inCode = false; }
+      else { flushPara(); closeLists(); out.push('<pre><code>'); inCode = true; }
+      continue;
+    }
+    if (inCode) { out.push(line); continue; }
+    if (line.trim() === '') { flushPara(); closeLists(); continue; }
+    let m;
+    if (m = line.match(/^### (.+)$/)) { flushPara(); closeLists(); out.push('<h3>' + inlineMd(m[1]) + '</h3>'); }
+    else if (m = line.match(/^## (.+)$/)) { flushPara(); closeLists(); out.push('<h2>' + inlineMd(m[1]) + '</h2>'); }
+    else if (m = line.match(/^# (.+)$/)) { flushPara(); closeLists(); out.push('<h1>' + inlineMd(m[1]) + '</h1>'); }
+    else if (m = line.match(/^&gt; (.+)$/)) { flushPara(); closeLists(); out.push('<blockquote>' + inlineMd(m[1]) + '</blockquote>'); }
+    else if (m = line.match(/^(\d+)\. (.+)$/)) {
+      flushPara();
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      if (!inOl) { out.push('<ol>'); inOl = true; }
+      out.push('<li>' + inlineMd(m[2]) + '</li>');
+    } else if (m = line.match(/^[-*] (.+)$/)) {
+      flushPara();
+      if (inOl) { out.push('</ol>'); inOl = false; }
+      if (!inUl) { out.push('<ul>'); inUl = true; }
+      out.push('<li>' + inlineMd(m[1]) + '</li>');
+    } else if (line.match(/^---+$/)) {
+      flushPara(); closeLists();
+      out.push('<div class="divider">' + '─'.repeat(72) + '</div>');
+    } else {
+      paraBuf.push(inlineMd(line));
+    }
+  }
+  flushPara(); closeLists();
+  if (inCode) out.push('</code></pre>');
+  return out.join('');
+}
+
+// =================== FS ===================
+function resolvePath(input) {
+  if (!input || input === '~') return '~';
+  if (input === '.') return state.cwd;
+  if (input === '..') {
+    if (state.cwd === '~') return '~';
+    const parts = state.cwd.split('/');
+    parts.pop();
+    return parts.length === 1 ? '~' : parts.join('/');
+  }
+  if (input.startsWith('~/')) return input;
+  if (input.startsWith('/')) return '~' + input;
+  if (state.cwd === '~') return '~/' + input;
+  return state.cwd + '/' + input;
+}
+function collectTags() {
+  const tags = new Set();
+  Object.values(POSTS).forEach(p => p.tags.forEach(t => tags.add(t)));
+  return Array.from(tags).sort();
+}
+function isDir(path) {
+  if (path === '~' || path === '~/posts' || path === '~/projects' || path === '~/topics') return true;
+  if (path.startsWith('~/topics/')) return collectTags().includes(path.split('/').pop());
+  if (path.startsWith('~/projects/')) return !!PROJECTS[path.split('/')[2]];
+  return false;
+}
+function listDir(path) {
+  if (path === '~') return [
+    { name: 'posts', type: 'dir' },
+    { name: 'projects', type: 'dir' },
+    { name: 'topics', type: 'dir' },
+    { name: 'README.md', type: 'file', cls: 'md' },
+    { name: '.about', type: 'file', cls: 'hidden' },
+    { name: '.contact', type: 'file', cls: 'hidden' },
+  ];
+  if (path === '~/posts') return Object.keys(POSTS).map(n => ({ name: n, type: 'file', cls: 'md' }));
+  if (path === '~/projects') return Object.keys(PROJECTS).map(n => ({ name: n, type: 'dir' }));
+  if (path === '~/topics') return collectTags().map(t => ({ name: t, type: 'dir' }));
+  if (path.startsWith('~/topics/')) {
+    const tag = path.split('/').pop();
+    return Object.keys(POSTS).filter(n => POSTS[n].tags.includes(tag)).map(n => ({ name: n, type: 'file', cls: 'md' }));
+  }
+  if (path.startsWith('~/projects/')) {
+    const proj = path.split('/')[2];
+    if (PROJECTS[proj]) return [
+      { name: 'README.md', type: 'file', cls: 'md' },
+      { name: 'LICENSE', type: 'file' },
+      { name: 'Makefile', type: 'file' },
+    ];
+  }
+  return null;
+}
+function resolveFile(input) {
+  const path = resolvePath(input);
+  const parts = path.split('/');
+  const last = parts[parts.length - 1];
+
+  if (path === '~/README.md' || (state.cwd === '~' && input === 'README.md')) return { content: README, name: 'README.md' };
+  if (path === '~/.about' || (state.cwd === '~' && input === '.about')) return { content: ABOUT, name: '.about' };
+  if (path === '~/.contact' || (state.cwd === '~' && input === '.contact')) return { content: CONTACT, name: '.contact' };
+
+  if (state.cwd === '~/posts' && POSTS[input]) return POSTS[input];
+  if (path.startsWith('~/posts/') && POSTS[last]) return POSTS[last];
+
+  if (state.cwd === '~/projects' && PROJECTS[input]) return { content: PROJECTS[input].content, name: input + '/README.md', title: PROJECTS[input].name };
+  if (path.startsWith('~/projects/')) {
+    const proj = parts[2];
+    const file = parts[3];
+    if (PROJECTS[proj] && (!file || file === 'README.md')) return { content: PROJECTS[proj].content, name: proj + '/README.md', title: PROJECTS[proj].name };
+  }
+  return null;
+}
+
+// =================== COMPLETION ===================
+function getCurrentWord() {
+  const val = cmdInput.value;
+  const words = val.split(' ');
+  return { word: words[words.length - 1], isFirst: words.length === 1, cmd: words[0], words };
+}
+function getCandidates(word, isFirst, cmd) {
+  let candidates = [];
+  if (isFirst) candidates = Object.keys(COMMANDS);
+  else if (cmd === 'cat' || cmd === 'ls') {
+    const items = listDir(state.cwd);
+    if (items) candidates = items.map(i => i.name);
+    if (state.cwd === '~') candidates.push('README.md', '.about', '.contact');
+    if (state.cwd === '~') candidates.push('posts/', 'projects/', 'topics/');
+  } else if (cmd === 'cd') {
+    const items = listDir(state.cwd);
+    if (items) candidates = items.filter(i => i.type === 'dir').map(i => i.name);
+    candidates.push('..', '~', 'posts', 'projects', 'topics');
+  } else if (cmd === 'man' || cmd === 'help') {
+    candidates = [...new Set(Object.keys(MAN_PAGES).concat(Object.keys(COMMANDS)))];
+  } else if (cmd === 'theme') candidates = Object.keys(THEMES);
+  else if (cmd === 'crt' || cmd === 'sound') candidates = ['on', 'off'];
+  else if (cmd === 'mail') candidates = ['hi@retro.sh'];
+  return candidates;
+}
+function updateGhost() {
+  const { word, isFirst, cmd } = getCurrentWord();
+  if (!word) { ghostText.textContent = ''; return; }
+  const candidates = getCandidates(word, isFirst, cmd);
+  const matches = candidates.filter(c => c.toLowerCase().startsWith(word.toLowerCase()));
+  if (matches.length === 0) ghostText.textContent = '';
+  else if (matches.length === 1) ghostText.textContent = matches[0].slice(word.length);
+  else {
+    let prefix = matches[0];
+    for (const m of matches) while (!m.toLowerCase().startsWith(prefix.toLowerCase())) prefix = prefix.slice(0, -1);
+    ghostText.textContent = prefix.length > word.length ? prefix.slice(word.length) : '';
+  }
+}
+function acceptCompletion() {
+  if (ghostText.textContent) {
+    cmdInput.value += ghostText.textContent;
+    typedText.textContent = cmdInput.value;
+    ghostText.textContent = '';
+    updateGhost();
+    playClick();
+    return;
+  }
+  // no ghost — show all matches below
+  const { word, isFirst, cmd } = getCurrentWord();
+  if (word) {
+    const candidates = getCandidates(word, isFirst, cmd);
+    const matches = candidates.filter(c => c.toLowerCase().startsWith(word.toLowerCase()));
+    if (matches.length > 1) {
+      print('<span class="dim">' + matches.map(escapeHtml).join('    ') + '</span>');
+      return;
+    }
+  }
+  playBell();
+}
+
+// =================== HISTORY ===================
+function navigateHistory(dir) {
+  if (state.history.length === 0) return;
+  if (dir === -1) {
+    if (state.historyIndex === -1) state.historyIndex = state.history.length - 1;
+    else if (state.historyIndex > 0) state.historyIndex--;
+    else return;
+  } else {
+    if (state.historyIndex === -1) return;
+    if (state.historyIndex < state.history.length - 1) state.historyIndex++;
+    else { state.historyIndex = -1; cmdInput.value = ''; typedText.textContent = ''; ghostText.textContent = ''; return; }
+  }
+  cmdInput.value = state.history[state.historyIndex];
+  typedText.textContent = cmdInput.value;
+  ghostText.textContent = '';
+  updateGhost();
+}
+function saveHistory(cmd) {
+  if (state.history[state.history.length - 1] !== cmd) state.history.push(cmd);
+  if (state.history.length > 100) state.history.shift();
+  state.historyIndex = -1;
+  try { localStorage.setItem('retroHistory', JSON.stringify(state.history)); } catch (e) {}
+}
+
+// =================== PROMPT ===================
+function updatePrompt() {
+  if (composeState) {
+    promptText.innerHTML = '<span class="compose">mail</span>(<span style="color:var(--cyan)">' + composeState.mode + '</span>)<span class="path">▸</span>';
+    statusPath.textContent = '~ (composing)';
+  } else {
+    const p = state.cwd === '~' ? ':~' : ':' + state.cwd;
+    promptText.innerHTML = '<span style="color:var(--green)">user@blog</span><span class="path">' + p + '</span>$';
+    statusPath.textContent = state.cwd;
+  }
+}
+
+// =================== MAN PAGE TYPING ===================
+let typingCancelled = false;
+async function typeOutText(text, targetEl, delay = 4) {
+  typingCancelled = false;
+  targetEl.innerHTML = '';
+  let buf = '';
+  for (let i = 0; i < text.length; i++) {
+    if (typingCancelled) {
+      targetEl.innerHTML = '<pre>' + escapeHtml(text).replace(/\n/g, '<br>') + '</pre>';
+      scrollBottom();
+      return;
+    }
+    buf += text[i];
+    targetEl.innerHTML = '<pre>' + escapeHtml(buf).replace(/\n/g, '<br>') + '</pre>';
+    if (i % 6 === 0) scrollBottom();
+    if (text[i] !== ' ' && text[i] !== '\n' && i % 2 === 0) await sleep(delay);
+    else if (text[i] === '\n') await sleep(delay * 2);
+  }
+  scrollBottom();
+}
+function printManPage(text) {
+  const div = document.createElement('div');
+  div.className = 'line man-page';
+  output.appendChild(div);
+  scrollBottom();
+  typeOutText(text, div, 3);
+}
+
+// =================== COMMANDS ===================
+const COMMANDS = {};
+
+COMMANDS.help = (args) => {
+  if (args[0]) {
+    if (MAN_PAGES[args[0]]) printManPage(MAN_PAGES[args[0]]);
+    else if (COMMANDS[args[0]]) printManPage(args[0].toUpperCase() + '(1)\n\n    No detailed manual. Try \'' + args[0] + '\' directly.');
+    else print('man: no manual entry for \'' + args[0] + '\'', 'error');
+    return;
+  }
+  printManPage(HELP_TEXT);
+};
+
+COMMANDS.man = (args) => {
+  if (!args[0]) { print('What manual page do you want?', 'error'); print('Try: man ls, man cat, man cd, man mail', 'dim'); return; }
+  const cmd = args[0];
+  if (MAN_PAGES[cmd]) printManPage(MAN_PAGES[cmd]);
+  else if (COMMANDS[cmd]) printManPage(cmd.toUpperCase() + '(1)\n\nNAME\n    ' + cmd + ' - no detailed manual available\n\nDESCRIPTION\n    Command exists but no manual page has been written.\n    Type \'' + cmd + '\' to try it.');
+  else print('man: No manual entry for ' + cmd, 'error');
+};
+
+COMMANDS.ls = (args) => {
+  let target = state.cwd;
+  if (args[0]) target = resolvePath(args[0]);
+  const items = listDir(target);
+  if (!items) { print('ls: cannot access \'' + (args[0] || '') + '\': No such file or directory', 'error'); return; }
+  if (items.length === 0) { printBlank(); return; }
+  const html = items.map(item => {
+    const cls = 'file ' + (item.cls || (item.type === 'dir' ? 'dir' : ''));
+    return '<span class="' + cls + '">' + escapeHtml(item.name) + '</span>';
+  }).join('');
+  printRaw('<div class="listing">' + html + '</div>');
+};
+
+COMMANDS.cat = (args) => {
+  if (!args[0]) { print('cat: missing file operand', 'error'); print('Try \'cat README.md\'', 'dim'); return; }
+  const file = resolveFile(args[0]);
+  if (!file) { print('cat: ' + args[0] + ': No such file or directory', 'error'); return; }
+  if (file.title) {
+    const tags = file.tags ? file.tags.join(', ') : '';
+    printRaw('<div class="file-header"><span class="dim">' + '─'.repeat(74) + '</span>\n  <span class="amber">' + escapeHtml(file.name || args[0]) + '</span>' + (file.date ? ' <span class="dim">· ' + file.date + ' · ' + file.readTime + ' min' + (tags ? ' · ' + tags : '') + '</span>' : '') + '\n<span class="dim">' + '─'.repeat(74) + '</span></div>');
+  }
+  printRaw('<div class="post">' + renderMarkdown(file.content) + '</div>');
+};
+
+COMMANDS.cd = (args) => {
+  const target = args[0] || '~';
+  const resolved = resolvePath(target);
+  if (!isDir(resolved)) { print('cd: ' + target + ': Not a directory', 'error'); return; }
+  state.cwd = resolved;
+  updatePrompt();
+};
+
+COMMANDS.pwd = () => print(state.cwd.replace('~', '/home/user'));
+
+COMMANDS.whoami = () => printRaw('<div class="post">' + renderMarkdown(ABOUT) + '</div>');
+
+COMMANDS.mail = (args) => {
+  if (!args[0]) { print('usage: mail <address>', 'error'); print('example: mail hi@retro.sh', 'dim'); return; }
+  startMailCompose(args[0]);
+};
+
+COMMANDS.clear = () => { output.innerHTML = ''; };
+COMMANDS.cls = COMMANDS.clear;
+
+COMMANDS.history = () => {
+  if (state.history.length === 0) { print('<span class="dim">[empty history]</span>'); return; }
+  state.history.forEach((cmd, i) => print('  <span class="dim">' + String(i + 1).padStart(3, ' ') + '</span>  ' + escapeHtml(cmd)));
+};
+
+COMMANDS.tree = () => {
+  const tree = '.\n├── posts/\n│   ├── building-things-that-last.md\n│   ├── death-of-microservices.md\n│   ├── letters-to-young-programmer.md\n│   ├── terminal-aesthetic.md\n│   └── vim-forever.md\n├── projects/\n│   ├── pocketforth/\n│   ├── glow.css/\n│   ├── markit/\n│   └── warp-core/\n├── topics/\n│   ├── engineering/\n│   ├── philosophy/\n│   ├── vim/\n│   ├── architecture/\n│   ├── design/\n│   ├── career/\n│   └── craft/\n├── README.md\n├── .about\n└── .contact\n\n7 directories, 12 files';
+  printRaw('<pre class="tree">' + escapeHtml(tree) + '</pre>');
+};
+
+COMMANDS.neofetch = () => {
+  const uptime = formatUptime(Date.now() - state.bootTime);
+  const tags = collectTags().length;
+  const logo = '   ___\n  /   \\\n |  \\u25C6  |      <span class="green">user</span>@<span class="green">blog</span>\n |     |      <span class="dim">─────────────</span>\n |  \\u25AE  |      <span class="amber">OS</span>:      retro.sh 2.4.1\n  \\___/       <span class="amber">shell</span>:   /bin/rsh\n   |||        <span class="amber">uptime</span>:  ' + uptime + '\n              <span class="amber">posts</span>:   ' + Object.keys(POSTS).length + '\n              <span class="amber">projects</span>: ' + Object.keys(PROJECTS).length + '\n              <span class="amber">topics</span>:   ' + tags + '\n              <span class="amber">theme</span>:   ' + state.theme + '\n              <span class="amber">crt</span>:     ' + (state.crt ? 'on' : 'off') + '\n              <span class="amber">sound</span>:   ' + (state.sound ? 'on' : 'off');
+  // need to render unicode chars properly
+  const logoHtml = logo.replace(/\\u25C6/g, '\u25C6').replace(/\\u25AE/g, '\u25AE');
+  printRaw('<pre class="neofetch">' + logoHtml + '</pre>');
+};
+
+COMMANDS.theme = (args) => {
+  const name = args[0];
+  if (!name) { print('available: ' + Object.keys(THEMES).join(', '), 'dim'); print('current: ' + state.theme, 'success'); return; }
+  if (!THEMES[name]) { print('theme: \'' + name + '\' not found. available: ' + Object.keys(THEMES).join(', '), 'error'); return; }
+  applyTheme(name);
+  print('theme: ' + name, 'success');
+};
+
+COMMANDS.crt = (args) => {
+  const v = args[0];
+  if (v === 'on' || v === 'off') state.crt = v === 'on';
+  else state.crt = !state.crt;
+  document.getElementById('crtOverlay').style.opacity = state.crt ? '1' : '0';
+  $('statusCrt').textContent = state.crt ? 'on' : 'off';
+  print('crt: ' + (state.crt ? 'on' : 'off'), 'success');
+};
+
+COMMANDS.sound = (args) => {
+  const v = args[0];
+  if (v === 'on' || v === 'off') state.sound = v === 'on';
+  else state.sound = !state.sound;
+  $('statusSound').textContent = state.sound ? 'on' : 'off';
+  if (state.sound) { ensureAudio(); playClick(); }
+  print('sound: ' + (state.sound ? 'on' : 'off'), 'success');
+};
+
+COMMANDS.echo = (args) => print(escapeHtml(args.join(' ')));
+COMMANDS.date = () => print(new Date().toString());
+
+// Easter eggs
+COMMANDS.sudo = () => {
+  print('<span class="error">user is not in the sudoers file. This incident will be reported.</span>');
+  print('<span class="dim">[incident #42 logged to /var/log/auth]</span>');
+};
+COMMANDS.rm = (args) => {
+  const s = args.join(' ');
+  if (s.includes('-rf') && (s.includes('/') || s.includes('~') || s.includes('*'))) {
+    print('<span class="error">rm: permission denied: nice try.</span>');
+    print('<span class="dim">[this incident has been reported to /dev/null]</span>');
+  } else if (args.length === 0) { print('rm: missing operand', 'error'); print("Try 'rm --help'.", 'dim'); }
+  else print('rm: cannot remove \'' + args[0] + '\': Permission denied', 'error');
+};
+COMMANDS.exit = () => print('<span class="dim">there is no escape. this is the only window.</span>');
+COMMANDS.logout = COMMANDS.exit;
+COMMANDS.vim = () => { print('<span class="dim">you are already in a terminal. opening vim would be redundant.</span>'); print('<span class="dim">:q!</span>'); };
+COMMANDS.emacs = () => print('<span class="dim">emacs is a great operating system. it lacks only a decent editor.</span>');
+COMMANDS.apt = COMMANDS.brew = COMMANDS.npm = COMMANDS.yarn = COMMANDS.pip = () => {
+  print('<span class="dim">this is a static site. there is nothing to install.</span>');
+  print('<span class="dim">but nice try.</span>');
+};
+COMMANDS.cowboy = () => print("<span class='amber'>🤠</span> <span class='dim'>howdy. (yes, that's an emoji. the terminal forgives me.)</span>");
+COMMANDS.about = COMMANDS.whoami;
+
+// =================== MAIL ===================
+function startMailCompose(to) {
+  composeState = { to, subject: '', lines: [], mode: 'subject' };
+  printRaw('<div class="mail-form"><span class="dim">┌── compose ──────────────────────────────</span>\n<span class="dim">│</span> <span class="dim">to:</span> <span class="cyan">' + escapeHtml(to) + '</span>\n<span class="dim">│</span> <span class="dim">subject:</span> <span class="dim">(type below, then Enter)</span>\n<span class="dim">└─────────────────────────────────────────</span></div>');
+  updatePrompt();
+}
+function handleComposeLine(val) {
+  if (!composeState) return;
+  if (composeState.mode === 'subject') {
+    composeState.subject = val;
+    print('<span class="dim">subject:</span> <span class="amber">' + escapeHtml(val) + '</span>');
+    print('<span class="dim">type your message. end with a single "." on its own line, or Ctrl+D.</span>', 'dim');
+    composeState.mode = 'body';
+  } else {
+    if (val === '.') finishMailCompose();
+    else { composeState.lines.push(val); print('<span class="dim">›</span> ' + escapeHtml(val)); }
+  }
+}
+function finishMailCompose() {
+  if (!composeState) return;
+  const cs = composeState;
+  printBlank();
+  const body = cs.lines.join('\n');
+  printRaw('<div class="mail-summary"><span class="dim">─── message ready ───</span>\n\n  <span class="dim">To:</span> <span class="cyan">' + escapeHtml(cs.to) + '</span>\n  <span class="dim">Subject:</span> <span class="amber">' + escapeHtml(cs.subject || '(no subject)') + '</span>\n\n' + (body ? cs.lines.map(l => '  ' + escapeHtml(l)).join('\n') : '  <span class="dim">(empty body)</span>') + '\n\n<span class="success">[message sent. or it would be, if this were a real mail server.]</span>\n<span class="dim">[opening your mail client as backup...]</span></div>');
+  composeState = null;
+  updatePrompt();
+  const mailto = 'mailto:' + cs.to + '?subject=' + encodeURIComponent(cs.subject) + '&body=' + encodeURIComponent(body);
+  setTimeout(() => { try { window.open(mailto, '_blank'); } catch (e) {} }, 800);
+}
+
+// =================== SUBMIT ===================
+function submitCommand(raw) {
+  const val = raw.trim();
+  const pathStr = state.cwd === '~' ? ':~' : ':' + state.cwd;
+  print('<span style="color:var(--green)">user@blog</span><span class="path">' + pathStr + '</span>$ ' + escapeHtml(val), 'cmd-echo');
+  if (!val) return;
+  saveHistory(val);
+  const parts = val.split(/\s+/);
+  const cmd = parts[0];
+  const args = parts.slice(1);
+  if (COMMANDS[cmd]) {
+    try { COMMANDS[cmd](args); }
+    catch (e) { print('<span class="error">internal error: ' + escapeHtml(e.message) + '</span>'); console.error(e); }
+  } else {
+    print('<span class="error">' + cmd + ': command not found</span>');
+    // suggest similar
+    const known = Object.keys(COMMANDS);
+    const close = known.filter(c => c.startsWith(cmd.slice(0, Math.max(1, cmd.length - 2)))).slice(0, 3);
+    if (close.length) print('<span class="dim">did you mean: ' + close.map(s => '`' + s + '`').join(' / ') + '?</span>', 'dim');
+    print("<span class='dim'>type 'help' for available commands.</span>", 'dim');
+    playBell();
+  }
+}
+
+// =================== INPUT ===================
+cmdInput.addEventListener('keydown', (e) => {
+  typingCancelled = true;
+
+  if (composeState) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = cmdInput.value;
+      handleComposeLine(val);
+      cmdInput.value = '';
+      typedText.textContent = '';
+      ghostText.textContent = '';
+      playClick();
+    } else if (e.key === 'd' && e.ctrlKey) {
+      e.preventDefault();
+      if (composeState.mode === 'body') { finishMailCompose(); cmdInput.value = ''; typedText.textContent = ''; }
+    } else if (e.key === 'c' && e.ctrlKey) {
+      e.preventDefault();
+      print('<span class="error">^C</span> <span class="dim">[compose cancelled]</span>');
+      composeState = null;
+      cmdInput.value = '';
+      typedText.textContent = '';
+      updatePrompt();
+    }
+    return;
+  }
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = cmdInput.value;
+    submitCommand(val);
+    cmdInput.value = '';
+    typedText.textContent = '';
+    ghostText.textContent = '';
+    playClick();
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    acceptCompletion();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    navigateHistory(-1);
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    navigateHistory(1);
+  } else if (e.key === 'ArrowRight' && ghostText.textContent) {
+    e.preventDefault();
+    cmdInput.value += ghostText.textContent;
+    typedText.textContent = cmdInput.value;
+    ghostText.textContent = '';
+    updateGhost();
+    playClick();
+  } else if (e.key === 'End') {
+    if (ghostText.textContent) {
+      e.preventDefault();
+      cmdInput.value += ghostText.textContent;
+      typedText.textContent = cmdInput.value;
+      ghostText.textContent = '';
+      updateGhost();
+    }
+  } else if (e.key === 'l' && e.ctrlKey) {
+    e.preventDefault();
+    output.innerHTML = '';
+  } else if (e.key === 'c' && e.ctrlKey) {
+    e.preventDefault();
+    const val = cmdInput.value;
+    const pathStr = state.cwd === '~' ? ':~' : ':' + state.cwd;
+    print('<span style="color:var(--green)">user@blog</span><span class="path">' + pathStr + '</span>$ ' + escapeHtml(val) + '<span class="error">^C</span>', 'cmd-echo');
+    cmdInput.value = '';
+    typedText.textContent = '';
+    ghostText.textContent = '';
+  }
+});
+
+cmdInput.addEventListener('input', () => {
+  typedText.textContent = cmdInput.value;
+  updateGhost();
+  playClick();
+});
+
+cmdInput.addEventListener('paste', () => {
+  setTimeout(() => { typedText.textContent = cmdInput.value; updateGhost(); }, 0);
+});
+
+// Click anywhere in terminal focuses input
+document.querySelector('.terminal').addEventListener('click', (e) => {
+  if (window.getSelection().toString()) return;
+  cmdInput.focus();
+});
+
+// =================== CLOCK ===================
+function formatUptime(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return h + 'h ' + m + 'm';
+  if (m > 0) return m + 'm ' + sec + 's';
+  return sec + 's';
+}
+function updateClock() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  statusTime.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// =================== BOOT ===================
+async function boot() {
+  applyTheme(state.theme);
+  updatePrompt();
+
+  const bootLines = [
+    { t: '[ <span class="ok">OK</span> ] retro shell v2.4.1 starting...', d: 70 },
+    { t: '[ <span class="ok">OK</span> ] mounting <span class="cyan">/posts</span> <span class="dim">(' + Object.keys(POSTS).length + ' entries)</span>', d: 110 },
+    { t: '[ <span class="ok">OK</span> ] mounting <span class="cyan">/projects</span> <span class="dim">(' + Object.keys(PROJECTS).length + ' entries)</span>', d: 95 },
+    { t: '[ <span class="ok">OK</span> ] mounting <span class="cyan">/topics</span> <span class="dim">(' + collectTags().length + ' tags)</span>', d: 85 },
+    { t: '[ <span class="ok">OK</span> ] loading phosphor drivers <span class="dim">[amber]</span>', d: 75 },
+    { t: '[ <span class="ok">OK</span> ] initializing crt subsystem', d: 65 },
+    { t: '[ <span class="warn">WARN</span> ] sound subsystem inactive <span class="dim">(type \'sound on\' to enable)</span>', d: 55 },
+    { t: '[ <span class="ok">OK</span> ] reading history <span class="dim">(' + state.history.length + ' commands)</span>', d: 45 },
+    { t: '', d: 100 },
+  ];
+
+  for (const line of bootLines) {
+    print(line.t, 'boot-line');
+    await sleep(line.d);
+  }
+
+  const motd = '<span class="dim">┌──────────────────────────────────────────────────────────────────────────┐</span>\n' +
+               '<span class="dim">│</span>                                                                          <span class="dim">│</span>\n' +
+               '<span class="dim">│</span>   <span class="amber" style="font-weight:600">retro.sh</span>  <span class="dim">—</span>  a developer blog that thinks it is a terminal.   <span class="dim">│</span>\n' +
+               '<span class="dim">│</span>                                                                          <span class="dim">│</span>\n' +
+               '<span class="dim">│</span>   type <span class="success">help</span> to see commands.    type <span class="success">ls</span> to look around.        <span class="dim">│</span>\n' +
+               '<span class="dim">│</span>   type <span class="success">cat README.md</span> to begin.   type <span class="success">neofetch</span> for fun.       <span class="dim">│</span>\n' +
+               '<span class="dim">│</span>                                                                          <span class="dim">│</span>\n' +
+               '<span class="dim">└──────────────────────────────────────────────────────────────────────────┘</span>';
+  printRaw(motd);
+  printBlank();
+
+  cmdInput.focus();
+}
+
+boot();
+</script>
+</body>
+</html>

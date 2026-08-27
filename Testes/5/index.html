@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aero-Santarém 3D — Explorador Tático da Cidade</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-primary': '#0D0E12',
+            'bg-secondary': '#16181E',
+            'bg-elevated': '#1F222A',
+            'text-high': '#FFFFFF',
+            'text-medium': '#A0A5B1',
+            'text-muted': '#626775',
+            'brand': '#00FF9D',
+            'brand-hover': '#00CC7D',
+            'warning': '#FFB800',
+            'danger': '#FF4757',
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            heading: ['"Inter"', 'sans-serif'],
+            body: ['"Inter"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          maxWidth: { 'content': '1440px' },
+          animation: {
+            'pulse-glow': 'pulseGlow 2.5s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 8px rgba(0,255,157,0.3), 0 0 24px rgba(0,255,157,0.1)' },
+              '50%': { boxShadow: '0 0 16px rgba(0,255,157,0.5), 0 0 48px rgba(0,255,157,0.2)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html { font-family: 'Inter', sans-serif; background: #0D0E12; color: #FFFFFF; }
+    body { overflow-x: hidden; margin: 0; }
+    ::selection { background: rgba(0,255,157,0.3); color: #FFFFFF; }
+
+    .cta-primary {
+      position: relative;
+      background: #00FF9D;
+      color: #0D0E12;
+      /* CORREÇÃO: Removido o calc() que quebra o clip-path em navegadores */
+      clip-path: polygon(0 0, 92% 0, 100% 100%, 0 100%);
+      transition: all 150ms ease;
+    }
+    .cta-primary:hover { background: #00CC7D; box-shadow: 0 0 20px rgba(0,255,157,0.4); }
+
+    .glass-card {
+      background: rgba(22, 24, 30, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 350ms ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(0,255,157,0.25);
+      box-shadow: 0 0 30px rgba(0,255,157,0.08);
+    }
+
+    .glass-nav {
+      background: rgba(13, 14, 18, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    #city-canvas { position: absolute; inset: 0; z-index: 0; }
+    #city-canvas canvas { display: block; }
+
+    .neon-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,157,0.4), transparent);
+    }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      transform: translateX(120%);
+      transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateX(0); }
+    .toast-success { background: rgba(0,255,157,0.15); border: 1px solid rgba(0,255,157,0.3); color: #00FF9D; }
+
+    .district-filter {
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 150ms ease;
+    }
+    .district-filter.active { border-color: #00FF9D; background: rgba(0,255,157,0.1); }
+  </style>
+</head>
+<body class="bg-bg-primary text-text-high antialiased">
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- NAVBAR -->
+  <nav class="glass-nav fixed top-0 left-0 right-0 z-50 h-16">
+    <div class="max-w-content mx-auto px-6 h-full flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2">
+        <div class="w-7 h-7 bg-brand flex items-center justify-center" style="clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 100%, 0 100%);">
+          <span class="text-bg-primary font-display text-sm font-bold">A</span>
+        </div>
+        <span class="font-display text-base tracking-tight text-text-high">AERO-MAP 3D</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#mapa-3d" class="font-mono text-xs tracking-widest uppercase text-text-medium hover:text-brand">Visão 3D</a>
+        <a href="#zonas" class="font-mono text-xs tracking-widest uppercase text-text-medium hover:text-brand">Zonas Urbanas</a>
+        <!-- CORREÇÃO: Link agora aponta para uma seção que existe -->
+        <a href="#aeroporto" class="font-mono text-xs tracking-widest uppercase text-text-medium hover:text-brand">Pista de Pouso</a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 font-mono text-xs text-text-muted">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-brand"></i>
+          <span>GPS ATIVO</span>
+        </div>
+        <button class="cta-primary px-5 py-2 font-mono text-xs font-semibold uppercase" id="nav-cta">Explorar</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO SECTION (Mapa Three.js de Fundo) -->
+    <section class="relative min-h-screen flex flex-col justify-center overflow-hidden" id="mapa-3d">
+      <div id="city-canvas"></div>
+
+      <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-bg-primary/30 to-transparent z-[1]"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-bg-primary/70 via-transparent to-transparent z-[1]"></div>
+
+      <div class="relative z-10 max-w-content mx-auto px-6 pt-32 pb-20 w-full">
+        <div class="hero-stagger flex items-center gap-3 mb-6" style="opacity:0">
+          <div class="w-2.5 h-2.5 rounded-full bg-brand animate-pulse-glow"></div>
+          <span class="font-mono text-xs tracking-widest uppercase text-text-muted">Modelagem de Terreno 3D em Tempo Real</span>
+        </div>
+
+        <h1 class="hero-stagger font-display text-[clamp(2.5rem,5vw+1rem,4.5rem)] leading-[1.1] tracking-[-0.03em] max-w-[850px] mb-6" style="opacity:0">
+          Mapeamento Tático<br>
+          <span class="text-brand">Costeiro & Urbano</span>
+        </h1>
+
+        <p class="hero-stagger font-body text-text-medium text-lg md:text-xl max-w-[60ch] leading-relaxed mb-8" style="opacity:0">
+          Visualização tridimensional procedural reconstruindo a orla, áreas densamente povoadas, pistas aeroportuárias e faixas de vegetação nativa.
+        </p>
+
+        <div class="hero-stagger flex flex-wrap items-center gap-4 mb-10" style="opacity:0">
+          <button class="cta-primary px-8 py-3.5 font-mono text-sm font-semibold uppercase animate-pulse-glow" id="btn-focus-airport">
+            Focar na Pista de Pouso
+          </button>
+          <button class="px-6 py-3.5 border border-brand/30 text-brand rounded font-mono text-sm font-semibold hover:bg-brand/10" id="btn-focus-city">
+            Focar na Zona Urbana
+          </button>
+        </div>
+
+        <!-- Painel de Métricas -->
+        <div class="hero-stagger glass-card rounded-lg p-5 max-w-xl" style="opacity:0">
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-brand">1.600m</div>
+              <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted mt-1">Extensão da Pista</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-text-high">68%</div>
+              <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted mt-1">Cobertura Florestal</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-text-high">3D</div>
+              <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted mt-1">Procedural Three.js</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-float pointer-events-none">
+        <span class="font-mono text-[10px] tracking-widest uppercase text-text-muted">Role para explorar</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-brand"></i>
+      </div>
+    </section>
+
+    <!-- ZONAS DA IMAGEM -->
+    <section class="relative py-24" id="zonas">
+      <div class="neon-divider mb-20"></div>
+
+      <div class="max-w-content mx-auto px-6">
+        <div class="flex items-center gap-3 mb-4 section-reveal" style="opacity:0">
+          <div class="w-8 h-px bg-brand"></div>
+          <span class="font-mono text-xs tracking-widest uppercase text-brand">Análise de Imagem</span>
+        </div>
+
+        <h2 class="section-reveal font-heading text-3xl md:text-4xl tracking-tight mb-12" style="opacity:0">
+          Principais Setores Mapeados
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-6 section-reveal" style="opacity:0">
+          <div class="glass-card rounded-xl p-6">
+            <div class="w-10 h-10 rounded bg-brand/10 flex items-center justify-center text-brand mb-4">
+              <i data-lucide="plane" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-display text-xl mb-2">Pista Aeroportuária</h3>
+            <p class="font-body text-sm text-text-muted leading-relaxed">
+              Localizada na extremidade noroeste (superior esquerda na foto), cercada por campos agrícolas e conectada por via direta à área urbana.
+            </p>
+          </div>
+
+          <div class="glass-card rounded-xl p-6">
+            <div class="w-10 h-10 rounded bg-brand/10 flex items-center justify-center text-brand mb-4">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-display text-xl mb-2">Malha Urbana & Orla</h3>
+            <p class="font-body text-sm text-text-muted leading-relaxed">
+              A alta densidade residencial estende-se ao longo da margem fluvial/costeira do rio/mar à esquerda, contendo portos e ancoradouros.
+            </p>
+          </div>
+
+          <div class="glass-card rounded-xl p-6">
+            <div class="w-10 h-10 rounded bg-brand/10 flex items-center justify-center text-brand mb-4">
+              <i data-lucide="trees" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-display text-xl mb-2">Mata Densa e Rios</h3>
+            <p class="font-body text-sm text-text-muted leading-relaxed">
+              O setor leste e norte apresenta vegetação amazônica contínua cortada por meandros fluviais serpenteantes e pequenas clareiras.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORREÇÃO: Seção adicionada para o link do menu "Pista de Pouso" funcionar -->
+    <section class="relative py-24" id="aeroporto">
+      <div class="neon-divider mb-20"></div>
+      <div class="max-w-content mx-auto px-6">
+        <div class="flex items-center gap-3 mb-4 section-reveal" style="opacity:0">
+          <div class="w-8 h-px bg-brand"></div>
+          <span class="font-mono text-xs tracking-widest uppercase text-brand">Estrutura Aeronáutica</span>
+        </div>
+        
+        <h2 class="section-reveal font-heading text-3xl md:text-4xl tracking-tight mb-6" style="opacity:0">
+          Operações na Pista
+        </h2>
+        <p class="section-reveal font-body text-text-medium text-lg max-w-[60ch] leading-relaxed mb-10" style="opacity:0">
+          A infraestrutura de pouso e decolagem assume papel estratégico, servindo como principal via de acesso rápido para a região, interligando o centro urbano aos fluxos logísticos regionais.
+        </p>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 section-reveal" style="opacity:0">
+          <div class="glass-card rounded-xl p-5 text-center">
+            <div class="font-mono text-2xl font-semibold text-brand mb-1">1.600m</div>
+            <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted">Comprimento Total</div>
+          </div>
+          <div class="glass-card rounded-xl p-5 text-center">
+            <div class="font-mono text-2xl font-semibold text-text-high mb-1">45m</div>
+            <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted">Largura da Pista</div>
+          </div>
+          <div class="glass-card rounded-xl p-5 text-center">
+            <div class="font-mono text-2xl font-semibold text-text-high mb-1">Asfalto</div>
+            <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted">Tipo de Pavimentação</div>
+          </div>
+          <div class="glass-card rounded-xl p-5 text-center">
+            <div class="font-mono text-2xl font-semibold text-warning mb-1">VFR</div>
+            <div class="font-mono text-[10px] tracking-widest uppercase text-text-muted">Regra de Voo</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/5 py-8">
+    <!-- CORREÇÃO: Removida a tag [cite: 1] estraga o visual -->
+    <div class="max-w-content mx-auto px-6 text-center font-mono text-xs text-text-muted">
+      Renderizador 3D Procedural · Inspirado na interface Neo-Tóquio
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-success show';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ==========================================
+    // THREE.JS: MAPA 3D RECONSTRUINDO A IMAGEM
+    // ==========================================
+    (function init3DMap() {
+      const container = document.getElementById('city-canvas');
+      if (!container) return;
+
+      const scene = new THREE.Scene();
+      // CORREÇÃO: Alterado de hexadecimal 0x0D0E12 para string padrão '#0D0E12'
+      scene.fog = new THREE.FogExp2('#0D0E12', 0.018);
+
+      const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(-10, 35, 40);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      // Luzes
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0x00FF9D, 0.8);
+      dirLight.position.set(20, 40, 20);
+      scene.add(dirLight);
+
+      // --- TERRENO (BASE) ---
+      const terrainGeo = new THREE.PlaneGeometry(100, 100, 128, 128);
+      terrainGeo.rotateX(-Math.PI / 2);
+
+      const posAttr = terrainGeo.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        const x = posAttr.getX(i);
+        const z = posAttr.getZ(i);
+        
+        // Relevo suave para vegetação/morros
+        let y = Math.sin(x * 0.1) * Math.cos(z * 0.1) * 1.5;
+        
+        // Afundar a área da água (Lado Esquerdo / Oeste)
+        if (x < -15) {
+          y = -1.5;
+        }
+        // Plana na área da pista de pouso
+        if (x < -20 && x > -35 && z < -10 && z > -40) {
+          y = 0.1;
+        }
+
+        posAttr.setY(i, y);
+      }
+      terrainGeo.computeVertexNormals();
+
+      const terrainMat = new THREE.MeshStandardMaterial({
+        color: 0x121d17, // Verde escuro para floresta
+        wireframe: false,
+        roughness: 0.9
+      });
+      const terrain = new THREE.Mesh(terrainGeo, terrainMat);
+      scene.add(terrain);
+
+      // --- RIO / MAR (ÁGUA) ---
+      const waterGeo = new THREE.PlaneGeometry(50, 100);
+      waterGeo.rotateX(-Math.PI / 2);
+      const waterMat = new THREE.MeshStandardMaterial({
+        color: 0x051a2e,
+        roughness: 0.1,
+        metalness: 0.8
+      });
+      const water = new THREE.Mesh(waterGeo, waterMat);
+      water.position.set(-35, -0.8, 0);
+      scene.add(water);
+
+      // --- PISTA DE POUSO (AIRPORT RUNWAY) ---
+      const runwayGeo = new THREE.PlaneGeometry(4, 28);
+      runwayGeo.rotateX(-Math.PI / 2);
+      const runwayMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
+      const runway = new THREE.Mesh(runwayGeo, runwayMat);
+      runway.position.set(-27, 0.15, -20);
+      runway.rotation.y = -0.1;
+      scene.add(runway);
+
+      // Linha central da pista
+      const lineGeo = new THREE.PlaneGeometry(0.3, 26);
+      lineGeo.rotateX(-Math.PI / 2);
+      const lineMat = new THREE.MeshBasicMaterial({ color: 0x00FF9D });
+      const line = new THREE.Mesh(lineGeo, lineMat);
+      line.position.copy(runway.position);
+      line.position.y += 0.02;
+      line.rotation.y = runway.rotation.y;
+      scene.add(line);
+
+      // --- CIDADE PROCEDURAL (Blocos residenciais) ---
+      const buildingGroup = new THREE.Group();
+      const bMat = new THREE.MeshStandardMaterial({ color: 0x2A2D36, roughness: 0.5 });
+      const bEdgeMat = new THREE.LineBasicMaterial({ color: 0x00FF9D, transparent: true, opacity: 0.25 });
+
+      for (let i = 0; i < 350; i++) {
+        const x = -15 + Math.random() * 25; // Concentrado no centro/costa
+        const z = -20 + Math.random() * 45;
+
+        // Evita criar casas dentro da água
+        if (x < -16) continue;
+
+        const h = 0.5 + Math.random() * 1.5;
+        const w = 0.6 + Math.random() * 0.8;
+        const d = 0.6 + Math.random() * 0.8;
+
+        const bGeo = new THREE.BoxGeometry(w, h, d);
+        const bMesh = new THREE.Mesh(bGeo, bMat);
+        // Posicionado um pouco negativo no Y para evitar efeito de "flutuação" no relevo
+        bMesh.position.set(x, h / 2 - 0.3, z);
+
+        const edges = new THREE.EdgesGeometry(bGeo);
+        const lineSeg = new THREE.LineSegments(edges, bEdgeMat);
+        lineSeg.position.copy(bMesh.position);
+
+        buildingGroup.add(bMesh);
+        buildingGroup.add(lineSeg);
+      }
+      scene.add(buildingGroup);
+
+      // --- VEGETAÇÃO / ÁRVORES (Pontos Verdes Leste) ---
+      const treeCount = 600;
+      const treeGeo = new THREE.ConeGeometry(0.6, 1.8, 4);
+      const treeMat = new THREE.MeshStandardMaterial({ color: 0x004d25, flatShading: true });
+      const treeInstanced = new THREE.InstancedMesh(treeGeo, treeMat, treeCount);
+
+      const dummy = new THREE.Object3D();
+      let treeIdx = 0;
+      for (let i = 0; i < treeCount; i++) {
+        const x = 5 + Math.random() * 40; // Mais ao leste
+        const z = -45 + Math.random() * 90;
+
+        dummy.position.set(x, 0.9, z);
+        dummy.scale.setScalar(0.7 + Math.random() * 0.6);
+        dummy.updateMatrix();
+
+        treeInstanced.setMatrixAt(treeIdx++, dummy.matrix);
+      }
+      scene.add(treeInstanced);
+
+      // Controles / Interações
+      document.getElementById('btn-focus-airport').addEventListener('click', () => {
+        gsap.to(camera.position, { x: -27, y: 12, z: 5, duration: 2 });
+        showToast("Câmera focada na Pista de Pouso");
+      });
+
+      document.getElementById('btn-focus-city').addEventListener('click', () => {
+        gsap.to(camera.position, { x: -2, y: 18, z: 20, duration: 2 });
+        showToast("Câmera focada na Zona Urbana");
+      });
+
+      document.getElementById('nav-cta').addEventListener('click', () => {
+        document.getElementById('mapa-3d').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Animação Contínua
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Rotação suave em órbita
+        const time = Date.now() * 0.0002;
+        scene.rotation.y = Math.sin(time) * 0.15;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    })();
+
+    // GSAP Reveals
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.to('.hero-stagger', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power3.out',
+      delay: 0.2
+    });
+
+    document.querySelectorAll('.section-reveal').forEach(el => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+      });
+      el.style.transform = 'translateY(30px)';
+    });
+  </script>
+</body>
+</html>

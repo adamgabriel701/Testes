@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERTEX CAPITAL | Wealth Management Alternativo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@300;400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        navy: { 950:'#060a14', 900:'#0a0f1e', 800:'#111827', 700:'#1a2340', 600:'#243056' },
+        titan: { 950:'#030508', 900:'#0a0d12', 800:'#12161d', 700:'#1c2028' },
+        emerald: { accent:'#00d474', dim:'#00a85c', glow:'rgba(0,212,116,0.12)' },
+        platinum: { DEFAULT:'#a8b2c1', light:'#c8d0dc', dim:'#6b7a90', subtle:'rgba(168,178,193,0.08)' }
+      },
+      fontFamily: {
+        editorial: ['Newsreader','Georgia','serif'],
+        mono: ['JetBrains Mono','monospace'],
+        body: ['DM Sans','system-ui','sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root {
+    --navy-950:#060a14; --navy-900:#0a0f1e; --navy-800:#111827; --navy-700:#1a2340;
+    --titan-950:#030508; --titan-900:#0a0d12; --titan-800:#12161d;
+    --emerald:#00d474; --emerald-dim:#00a85c; --emerald-glow:rgba(0,212,116,0.12);
+    --platinum:#a8b2c1; --platinum-light:#c8d0dc; --platinum-dim:#6b7a90;
+    --glass-bg:rgba(10,15,30,0.55); --glass-border:rgba(168,178,193,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'DM Sans',sans-serif; background:var(--navy-950); color:#e2e6ed; overflow-x:hidden; }
+
+  /* Textura fibra de carbono */
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.03;
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(168,178,193,0.15) 1px,rgba(168,178,193,0.15) 2px),
+    repeating-linear-gradient(90deg,transparent,transparent 1px,rgba(168,178,193,0.1) 1px,rgba(168,178,193,0.1) 2px);
+  }
+
+  /* Glassmorphism */
+  .glass { background:var(--glass-bg); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid var(--glass-border); }
+  .glass-strong { background:rgba(10,15,30,0.75); backdrop-filter:blur(32px); -webkit-backdrop-filter:blur(32px); border:1px solid rgba(168,178,193,0.12); }
+
+  /* Animação de entrada das seções */
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:0.1s; }
+  .reveal-delay-2 { transition-delay:0.2s; }
+  .reveal-delay-3 { transition-delay:0.3s; }
+  .reveal-delay-4 { transition-delay:0.4s; }
+
+  /* SVG Chart path animation */
+  .chart-line { stroke-dasharray:2000; stroke-dashoffset:2000; animation:drawLine 2.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+  .chart-line-delayed { animation-delay:0.5s; }
+  .chart-fill { opacity:0; animation:fadeIn 1s ease 2s forwards; }
+  @keyframes drawLine { to { stroke-dashoffset:0; } }
+  @keyframes fadeIn { to { opacity:1; } }
+
+  /* Pulso suave nos dados do gráfico */
+  .data-pulse { animation:pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ opacity:0.7; } 50%{ opacity:1; } }
+
+  /* Grid animado de fundo */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(168,178,193,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(168,178,193,0.03) 1px, transparent 1px);
+    background-size:60px 60px;
+  }
+
+  /* Glow sutil em elementos de destaque */
+  .emerald-glow { box-shadow:0 0 30px rgba(0,212,116,0.08), 0 0 60px rgba(0,212,116,0.04); }
+  .emerald-glow-strong { box-shadow:0 0 20px rgba(0,212,116,0.15), 0 0 40px rgba(0,212,116,0.08); }
+
+  /* Divider de platina */
+  .platinum-divider { height:1px; background:linear-gradient(90deg, transparent, var(--platinum-dim), transparent); opacity:0.3; }
+
+  /* Hover dos cards de ativo */
+  .asset-card { position:relative; transition:all 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .asset-card:hover { transform:translateY(-4px); border-color:rgba(0,212,116,0.2); box-shadow:0 8px 40px rgba(0,0,0,0.3), 0 0 30px rgba(0,212,116,0.06); }
+
+  /* Sparkline container */
+  .sparkline-popup {
+    position:absolute; bottom:calc(100% + 12px); left:50%; transform:translateX(-50%) scale(0.9);
+    opacity:0; pointer-events:none; transition:all 0.3s cubic-bezier(0.16,1,0.3,1); z-index:50;
+  }
+  .asset-card:hover .sparkline-popup { opacity:1; transform:translateX(-50%) scale(1); }
+
+  /* Slider metálico customizado */
+  input[type="range"].metal-slider {
+    -webkit-appearance:none; appearance:none; width:100%; height:6px;
+    background:linear-gradient(90deg, var(--navy-700), var(--platinum-dim));
+    border-radius:3px; outline:none; cursor:pointer;
+  }
+  input[type="range"].metal-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; width:24px; height:24px; border-radius:50%;
+    background:linear-gradient(135deg, #c8d0dc, #6b7a90);
+    border:2px solid var(--emerald); box-shadow:0 0 12px rgba(0,212,116,0.3);
+    cursor:grab; transition:box-shadow 0.3s;
+  }
+  input[type="range"].metal-slider::-webkit-slider-thumb:active { cursor:grabbing; box-shadow:0 0 20px rgba(0,212,116,0.5); }
+  input[type="range"].metal-slider::-moz-range-thumb {
+    width:24px; height:24px; border-radius:50%;
+    background:linear-gradient(135deg, #c8d0dc, #6b7a90);
+    border:2px solid var(--emerald); box-shadow:0 0 12px rgba(0,212,116,0.3); cursor:grab;
+  }
+
+  /* Formulário em etapas */
+  .form-step { display:none; animation:stepIn 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .form-step.active { display:block; }
+  @keyframes stepIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+
+  /* Sticky bar */
+  .sticky-bar { transform:translateY(100%); transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .sticky-bar.visible { transform:translateY(0); }
+
+  /* Barra de progresso das etapas */
+  .step-indicator { transition:all 0.4s ease; }
+  .step-indicator.active { background:var(--emerald); box-shadow:0 0 10px rgba(0,212,116,0.4); }
+  .step-indicator.completed { background:var(--emerald-dim); }
+  .step-connector { transition:background 0.4s ease; }
+  .step-connector.active { background:var(--emerald-dim); }
+
+  /* Hover nos perfis de liderança */
+  .leader-card { transition:all 0.4s ease; }
+  .leader-card:hover { border-color:rgba(168,178,193,0.15); }
+  .leader-card:hover .leader-img { filter:grayscale(0); transform:scale(1.03); }
+  .leader-img { filter:grayscale(40%); transition:all 0.6s ease; }
+
+  /* Navegação */
+  .nav-link { position:relative; }
+  .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:1px; background:var(--emerald); transition:width 0.3s ease; }
+  .nav-link:hover::after { width:100%; }
+
+  /* Botão primário */
+  .btn-primary {
+    background:var(--emerald); color:var(--navy-950); font-weight:600;
+    padding:14px 32px; border-radius:4px; border:none; cursor:pointer;
+    transition:all 0.3s ease; letter-spacing:0.02em;
+  }
+  .btn-primary:hover { background:#00e87f; box-shadow:0 0 24px rgba(0,212,116,0.3); transform:translateY(-1px); }
+  .btn-primary:active { transform:translateY(0); }
+
+  .btn-outline {
+    background:transparent; color:var(--platinum); font-weight:500;
+    padding:13px 31px; border-radius:4px; border:1px solid var(--platinum-dim); cursor:pointer;
+    transition:all 0.3s ease;
+  }
+  .btn-outline:hover { border-color:var(--emerald); color:var(--emerald); }
+
+  /* Toast notification */
+  .toast {
+    position:fixed; top:24px; right:24px; z-index:9999; padding:16px 24px; border-radius:6px;
+    transform:translateX(120%); transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .toast.show { transform:translateX(0); }
+
+  /* Scrollbar customizada */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--navy-950); }
+  ::-webkit-scrollbar-thumb { background:var(--navy-700); border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--platinum-dim); }
+
+  /* Redução de movimento */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+    .reveal { opacity:1; transform:none; }
+  }
+
+  /* Responsividade */
+  @media (max-width:768px) {
+    .hero-metrics { flex-direction:column; gap:16px; }
+    .asset-grid { grid-template-columns:1fr !important; }
+    .leaders-grid { grid-template-columns:1fr !important; }
+  }
+</style>
+</head>
+<body class="grid-bg">
+
+<!-- Toast de notificação -->
+<div id="toast" class="toast glass-strong" role="alert" aria-live="polite">
+  <p class="text-sm font-body text-platinum-light"></p>
+</div>
+
+<!-- ==================== NAVEGAÇÃO ==================== -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-strong" role="navigation" aria-label="Navegação principal">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3" aria-label="Vertex Capital - Início">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M14 2L26 26H2L14 2Z" stroke="#00d474" stroke-width="1.5" fill="none"/>
+        <path d="M14 10L20 24H8L14 10Z" stroke="#a8b2c1" stroke-width="1" fill="rgba(0,212,116,0.06)"/>
+        <line x1="14" y1="2" x2="14" y2="26" stroke="rgba(168,178,193,0.2)" stroke-width="0.5"/>
+      </svg>
+      <span class="font-editorial text-lg font-500 tracking-wide text-platinum-light">VERTEX CAPITAL</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#portfolio" class="nav-link text-sm font-body text-platinum-dim hover:text-platinum-light transition-colors">Portfólio</a>
+      <a href="#governance" class="nav-link text-sm font-body text-platinum-dim hover:text-platinum-light transition-colors">Governança</a>
+      <a href="#leadership" class="nav-link text-sm font-body text-platinum-dim hover:text-platinum-light transition-colors">Liderança</a>
+      <a href="#schedule" class="nav-link text-sm font-body text-platinum-dim hover:text-platinum-light transition-colors">Acesso Privado</a>
+    </div>
+    <a href="#schedule" class="btn-primary text-sm hidden sm:inline-block">Solicitar Acesso</a>
+    <!-- Menu mobile -->
+    <button id="mobileMenuBtn" class="md:hidden text-platinum-dim hover:text-platinum-light" aria-label="Abrir menu">
+      <i class="fas fa-bars text-lg"></i>
+    </button>
+  </div>
+  <!-- Menu mobile expandido -->
+  <div id="mobileMenu" class="md:hidden hidden border-t border-platinum-subtle">
+    <div class="px-6 py-4 flex flex-col gap-3">
+      <a href="#portfolio" class="text-sm font-body text-platinum-dim hover:text-platinum-light py-2">Portfólio</a>
+      <a href="#governance" class="text-sm font-body text-platinum-dim hover:text-platinum-light py-2">Governança</a>
+      <a href="#leadership" class="text-sm font-body text-platinum-dim hover:text-platinum-light py-2">Liderança</a>
+      <a href="#schedule" class="btn-primary text-sm text-center mt-2">Solicitar Acesso</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== HERO SECTION ==================== -->
+<header class="relative min-h-screen flex items-center pt-16 overflow-hidden">
+  <!-- Orbs de gradiente de fundo -->
+  <div class="absolute top-1/4 -left-32 w-96 h-96 bg-emerald-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-0 w-80 h-80 bg-navy-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-6 w-full py-12">
+    <div class="grid lg:grid-cols-5 gap-10 items-center">
+      <!-- Coluna de texto -->
+      <div class="lg:col-span-2 space-y-8">
+        <div class="reveal">
+          <span class="inline-flex items-center gap-2 text-xs font-mono text-emerald-accent tracking-widest uppercase mb-4">
+            <span class="w-2 h-2 bg-emerald-accent rounded-full data-pulse"></span>
+            Mercados Abertos
+          </span>
+          <h1 class="font-editorial text-4xl sm:text-5xl lg:text-[3.5rem] font-600 leading-[1.1] text-white">
+            Alocação de capital<br>
+            <span class="text-platinum-dim">para além dos</span><br>
+            mercados convencionais
+          </h1>
+        </div>
+        <p class="reveal reveal-delay-1 text-platinum-dim font-body text-base leading-relaxed max-w-md">
+          Acesso institucional a Private Equity, Credit, Venture Capital e Real Estate
+          com gestão algorítmica de risco e governança independente. Exclusivo para investidores qualificados.
+        </p>
+        <div class="reveal reveal-delay-2 flex flex-wrap gap-4">
+          <a href="#schedule" class="btn-primary text-sm">Agendar Reunião Privada</a>
+          <a href="#portfolio" class="btn-outline text-sm">Explorar Teses</a>
+        </div>
+      </div>
+
+      <!-- Coluna do Gráfico -->
+      <div class="lg:col-span-3 reveal reveal-delay-1">
+        <div class="glass rounded-lg p-5 relative" style="background:rgba(6,10,20,0.7);">
+          <!-- Header do gráfico -->
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-xs font-mono text-platinum-dim tracking-wider uppercase">Vertex Composite Index</p>
+              <p class="font-mono text-2xl text-white font-500 mt-1" id="heroIndex">1,847.32</p>
+            </div>
+            <div class="text-right">
+              <p class="font-mono text-emerald-accent text-sm font-500" id="heroChange">+12.47 (0.68%)</p>
+              <p class="text-xs font-mono text-platinum-dim mt-1">YTD <span class="text-emerald-accent">+24.83%</span></p>
+            </div>
+          </div>
+          <!-- SVG Chart -->
+          <svg id="heroChart" viewBox="0 0 700 220" class="w-full h-auto" aria-label="Gráfico de alocação de ativos em tempo real">
+            <defs>
+              <linearGradient id="chartFillGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00d474" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#00d474" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="chartLineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#00a85c"/>
+                <stop offset="100%" stop-color="#00d474"/>
+              </linearGradient>
+            </defs>
+            <!-- Linhas de grade -->
+            <g id="chartGrid" stroke="rgba(168,178,193,0.06)" stroke-width="0.5"></g>
+            <!-- Área preenchida -->
+            <path id="chartArea" class="chart-fill" fill="url(#chartFillGrad)"/>
+            <!-- Linha principal -->
+            <path id="chartLine" class="chart-line" fill="none" stroke="url(#chartLineGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Ponto atual -->
+            <circle id="chartDot" cx="0" cy="0" r="4" fill="#00d474" opacity="0" style="transition:opacity 0.5s ease 2.5s;">
+              <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle id="chartDotGlow" cx="0" cy="0" r="10" fill="rgba(0,212,116,0.15)" opacity="0" style="transition:opacity 0.5s ease 2.5s;">
+              <animate attributeName="r" values="10;16;10" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+          <!-- Legenda de classes -->
+          <div class="flex flex-wrap gap-4 mt-4 pt-3 border-t border-platinum-subtle">
+            <span class="flex items-center gap-2 text-xs font-mono text-platinum-dim"><span class="w-3 h-0.5 bg-emerald-accent inline-block rounded"></span>Composite</span>
+            <span class="flex items-center gap-2 text-xs font-mono text-platinum-dim"><span class="w-3 h-0.5 bg-platinum-dim inline-block rounded"></span>Benchmark</span>
+            <span class="ml-auto text-xs font-mono text-platinum-dim data-pulse" id="chartTimestamp">--:--:--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Métricas AUM -->
+    <div class="hero-metrics grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+      <div class="glass rounded-lg p-5 reveal reveal-delay-1">
+        <p class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-2">AUM Total</p>
+        <p class="font-mono text-2xl text-white font-500"><span class="counter" data-target="4.2" data-prefix="R$ " data-suffix=" bi">R$ 0 bi</span></p>
+      </div>
+      <div class="glass rounded-lg p-5 reveal reveal-delay-2">
+        <p class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-2">Rentabilidade YTD</p>
+        <p class="font-mono text-2xl text-emerald-accent font-500"><span class="counter" data-target="24.83" data-prefix="+" data-suffix="%">+0%</span></p>
+      </div>
+      <div class="glass rounded-lg p-5 reveal reveal-delay-3">
+        <p class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-2">Investidores Qualificados</p>
+        <p class="font-mono text-2xl text-white font-500"><span class="counter" data-target="847" data-prefix="" data-suffix="">0</span></p>
+      </div>
+      <div class="glass rounded-lg p-5 reveal reveal-delay-4">
+        <p class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-2">Sharpe Ratio (12m)</p>
+        <p class="font-mono text-2xl text-white font-500"><span class="counter" data-target="2.14" data-prefix="" data-suffix="x">0x</span></p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="platinum-divider max-w-7xl mx-auto"></div>
+
+<!-- ==================== TESSES DE INVESTIMENTO ==================== -->
+<section id="portfolio" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <p class="reveal text-xs font-mono text-emerald-accent tracking-widest uppercase mb-4">Classes de Ativos</p>
+      <h2 class="reveal reveal-delay-1 font-editorial text-3xl sm:text-4xl font-600 text-white leading-tight">
+        Teses de investimento<br>em mercados fechados
+      </h2>
+      <p class="reveal reveal-delay-2 text-platinum-dim font-body mt-4 leading-relaxed">
+        Cada classe de ativo é selecionada por sua capacidade de gerar alfa não correlacionado,
+        com processos rigorosos de due diligence e estruturação institucional.
+      </p>
+    </div>
+
+    <div class="asset-grid grid grid-cols-1 md:grid-cols-2 gap-5" style="grid-template-columns:repeat(2,1fr);">
+
+      <!-- Private Equity -->
+      <div class="asset-card glass rounded-lg p-6 reveal" data-asset="pe">
+        <div class="sparkline-popup glass-strong rounded-lg p-4" style="width:240px;">
+          <p class="text-xs font-mono text-platinum-dim mb-2">Projeção de Retorno — 5 anos</p>
+          <svg id="sparkline-pe" viewBox="0 0 200 60" class="w-full h-auto"></svg>
+          <div class="flex justify-between text-xs font-mono mt-2">
+            <span class="text-platinum-dim">Vol: 8.2%</span>
+            <span class="text-emerald-accent">Alpha: +4.1%</span>
+          </div>
+        </div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-emerald-glow flex items-center justify-center">
+              <i class="fas fa-building-columns text-emerald-accent text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-editorial text-xl font-500 text-white">Private Equity</h3>
+              <p class="text-xs font-mono text-platinum-dim mt-0.5">FIDC / FIP Estruturados</p>
+            </div>
+          </div>
+          <span class="font-mono text-emerald-accent text-sm font-500">+18.4% a.a.</span>
+        </div>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Operações de buyout e growth em empresas brasileiras com faturamento acima de R$200M.
+          Foco em setores defensivos: saúde, infraestrutura e tecnologia B2B.
+        </p>
+        <div class="grid grid-cols-3 gap-3 pt-4 border-t border-platinum-subtle">
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Yield Esperado</p><p class="font-mono text-sm text-white">18.4%</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Liquidez</p><p class="font-mono text-sm text-platinum-light">5–7 anos</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Risco</p><p class="font-mono text-sm text-amber-400">Mediano-Alto</p></div>
+        </div>
+      </div>
+
+      <!-- Credit -->
+      <div class="asset-card glass rounded-lg p-6 reveal reveal-delay-1" data-asset="credit">
+        <div class="sparkline-popup glass-strong rounded-lg p-4" style="width:240px;">
+          <p class="text-xs font-mono text-platinum-dim mb-2">Projeção de Retorno — 3 anos</p>
+          <svg id="sparkline-credit" viewBox="0 0 200 60" class="w-full h-auto"></svg>
+          <div class="flex justify-between text-xs font-mono mt-2">
+            <span class="text-platinum-dim">Vol: 3.1%</span>
+            <span class="text-emerald-accent">Alpha: +2.8%</span>
+          </div>
+        </div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-emerald-glow flex items-center justify-center">
+              <i class="fas fa-file-invoice-dollar text-emerald-accent text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-editorial text-xl font-500 text-white">Crédito Estruturado</h3>
+              <p class="text-xs font-mono text-platinum-dim mt-0.5">Debêntures / CRA / FIDC NP</p>
+            </div>
+          </div>
+          <span class="font-mono text-emerald-accent text-sm font-500">+14.2% a.a.</span>
+        </div>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Papéis de crédito privado com garantias reais e estruturas senior. Alocação em
+          veículos com rating equivalente AA-BBB e taxa de inadimplência histórica inferior a 0.5%.
+        </p>
+        <div class="grid grid-cols-3 gap-3 pt-4 border-t border-platinum-subtle">
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Yield Esperado</p><p class="font-mono text-sm text-white">14.2%</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Liquidez</p><p class="font-mono text-sm text-platinum-light">2–4 anos</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Risco</p><p class="font-mono text-sm text-emerald-accent">Baixo-Mediano</p></div>
+        </div>
+      </div>
+
+      <!-- Venture Capital -->
+      <div class="asset-card glass rounded-lg p-6 reveal reveal-delay-2" data-asset="vc">
+        <div class="sparkline-popup glass-strong rounded-lg p-4" style="width:240px;">
+          <p class="text-xs font-mono text-platinum-dim mb-2">Projeção de Retorno — 8 anos</p>
+          <svg id="sparkline-vc" viewBox="0 0 200 60" class="w-full h-auto"></svg>
+          <div class="flex justify-between text-xs font-mono mt-2">
+            <span class="text-platinum-dim">Vol: 22.7%</span>
+            <span class="text-emerald-accent">Alpha: +8.3%</span>
+          </div>
+        </div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-emerald-glow flex items-center justify-center">
+              <i class="fas fa-rocket text-emerald-accent text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-editorial text-xl font-500 text-white">Venture Capital</h3>
+              <p class="text-xs font-mono text-platinum-dim mt-0.5">Seed → Series B</p>
+            </div>
+          </div>
+          <span class="font-mono text-emerald-accent text-sm font-500">+28.6% a.a.</span>
+        </div>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Acesso a rodadas de startups em estágios de tração comunitária, foco em
+          fintechs, SaaS enterprise e deep tech. Co-investimento com fundos top-tier globais.
+        </p>
+        <div class="grid grid-cols-3 gap-3 pt-4 border-t border-platinum-subtle">
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Yield Esperado</p><p class="font-mono text-sm text-white">28.6%</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Liquidez</p><p class="font-mono text-sm text-platinum-light">7–10 anos</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Risco</p><p class="font-mono text-sm text-red-400">Alto</p></div>
+        </div>
+      </div>
+
+      <!-- Real Estate -->
+      <div class="asset-card glass rounded-lg p-6 reveal reveal-delay-3" data-asset="re">
+        <div class="sparkline-popup glass-strong rounded-lg p-4" style="width:240px;">
+          <p class="text-xs font-mono text-platinum-dim mb-2">Projeção de Retorno — 5 anos</p>
+          <svg id="sparkline-re" viewBox="0 0 200 60" class="w-full h-auto"></svg>
+          <div class="flex justify-between text-xs font-mono mt-2">
+            <span class="text-platinum-dim">Vol: 5.4%</span>
+            <span class="text-emerald-accent">Alpha: +3.2%</span>
+          </div>
+        </div>
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-emerald-glow flex items-center justify-center">
+              <i class="fas fa-city text-emerald-accent text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-editorial text-xl font-500 text-white">Real Estate</h3>
+              <p class="text-xs font-mono text-platinum-dim mt-0.5">FII / Desenvolvimento</p>
+            </div>
+          </div>
+          <span class="font-mono text-emerald-accent text-sm font-500">+15.8% a.a.</span>
+        </div>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Fundos de desenvolvimento imobiliário em logística premium, data centers e
+          ativos corporativos AAA em capitais. Renda mensal via dividendos com valorização patrimonial.
+        </p>
+        <div class="grid grid-cols-3 gap-3 pt-4 border-t border-platinum-subtle">
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Yield Esperado</p><p class="font-mono text-sm text-white">15.8%</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Liquidez</p><p class="font-mono text-sm text-platinum-light">4–8 anos</p></div>
+          <div><p class="text-xs font-mono text-platinum-dim mb-1">Risco</p><p class="font-mono text-sm text-amber-400">Mediano</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="platinum-divider max-w-7xl mx-auto"></div>
+
+<!-- ==================== GOVERNANÇA & ALGORITMOS ==================== -->
+<section id="governance" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <p class="reveal text-xs font-mono text-emerald-accent tracking-widest uppercase mb-4">Infraestrutura de Gestão</p>
+      <h2 class="reveal reveal-delay-1 font-editorial text-3xl sm:text-4xl font-600 text-white leading-tight">
+        Governança, tecnologia<br>e auditoria independente
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+      <!-- Gestão de Risco -->
+      <div class="glass rounded-lg p-6 reveal">
+        <div class="w-12 h-12 rounded bg-emerald-glow flex items-center justify-center mb-5">
+          <i class="fas fa-shield-halved text-emerald-accent text-lg"></i>
+        </div>
+        <h3 class="font-editorial text-xl font-500 text-white mb-3">Gestão de Risco</h3>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Modelo VaR paramétrico e histórico com stress testing diário. Limites de exposição por
+          classe, contraparte e correlação. Monitoramento 24/7 com alertas em múltiplos níveis.
+        </p>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-mono text-platinum-dim">VaR (95%, 1 dia)</span>
+            <span class="text-xs font-mono text-white">0.87%</span>
+          </div>
+          <div class="w-full h-1.5 bg-navy-700 rounded-full overflow-hidden">
+            <div class="h-full bg-emerald-accent rounded-full" style="width:14%;transition:width 1.5s ease;"></div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-mono text-platinum-dim">Max Drawdown (12m)</span>
+            <span class="text-xs font-mono text-white">-3.2%</span>
+          </div>
+          <div class="w-full h-1.5 bg-navy-700 rounded-full overflow-hidden">
+            <div class="h-full bg-amber-400 rounded-full" style="width:32%;transition:width 1.5s ease;"></div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-mono text-platinum-dim">Correlação c/ Ibovespa</span>
+            <span class="text-xs font-mono text-white">0.34</span>
+          </div>
+          <div class="w-full h-1.5 bg-navy-700 rounded-full overflow-hidden">
+            <div class="h-full bg-platinum-dim rounded-full" style="width:34%;transition:width 1.5s ease;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tecnologia de Execução -->
+      <div class="glass rounded-lg p-6 reveal reveal-delay-1">
+        <div class="w-12 h-12 rounded bg-emerald-glow flex items-center justify-center mb-5">
+          <i class="fas fa-microchip text-emerald-accent text-lg"></i>
+        </div>
+        <h3 class="font-editorial text-xl font-500 text-white mb-3">Tecnologia de Execução</h3>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Engine de alocação baseada em otimização de média-variância com ajustes de Black-Litterman.
+          Execução via smart order routing com análise de impacto e custo de transação.
+        </p>
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center gap-3 p-3 rounded bg-navy-900/50 border border-platinum-subtle">
+            <div class="w-2 h-2 rounded-full bg-emerald-accent data-pulse"></div>
+            <span class="text-xs font-mono text-platinum-dim flex-1">Optimization Engine</span>
+            <span class="text-xs font-mono text-emerald-accent">ONLINE</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded bg-navy-900/50 border border-platinum-subtle">
+            <div class="w-2 h-2 rounded-full bg-emerald-accent data-pulse"></div>
+            <span class="text-xs font-mono text-platinum-dim flex-1">Order Router</span>
+            <span class="text-xs font-mono text-emerald-accent">ONLINE</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded bg-navy-900/50 border border-platinum-subtle">
+            <div class="w-2 h-2 rounded-full bg-emerald-accent data-pulse"></div>
+            <span class="text-xs font-mono text-platinum-dim flex-1">Risk Monitor</span>
+            <span class="text-xs font-mono text-emerald-accent">ONLINE</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded bg-navy-900/50 border border-platinum-subtle">
+            <div class="w-2 h-2 rounded-full bg-amber-400 data-pulse"></div>
+            <span class="text-xs font-mono text-platinum-dim flex-1">Data Ingestion Pipeline</span>
+            <span class="text-xs font-mono text-amber-400">DEGRADED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auditoria Independente -->
+      <div class="glass rounded-lg p-6 reveal reveal-delay-2">
+        <div class="w-12 h-12 rounded bg-emerald-glow flex items-center justify-center mb-5">
+          <i class="fas fa-check-double text-emerald-accent text-lg"></i>
+        </div>
+        <h3 class="font-editorial text-xl font-500 text-white mb-3">Auditoria Independente</h3>
+        <p class="text-sm text-platinum-dim leading-relaxed mb-5">
+          Compliance tripla com auditoria externa trimestral, administração fiduciária independente
+          e processo de valuation por terceiros certificados.
+        </p>
+        <div class="space-y-4 pt-2">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-certificate text-platinum-dim text-xs mt-1.5"></i>
+            <div>
+              <p class="text-sm text-white font-500">Auditor Externo</p>
+              <p class="text-xs text-platinum-dim mt-0.5">Big Four — Relatório Trimestral</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <i class="fas fa-building text-platinum-dim text-xs mt-1.5"></i>
+            <div>
+              <p class="text-sm text-white font-500">Administrador Fiduciário</p>
+              <p class="text-xs text-platinum-dim mt-0.5">Banco de investimento independente</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <i class="fas fa-scale-balanced text-platinum-dim text-xs mt-1.5"></i>
+            <div>
+              <p class="text-sm text-white font-500">Regulação</p>
+              <p class="text-xs text-platinum-dim mt-0.5">CVM — ANBIMA — SEC (Form D)</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <i class="fas fa-lock text-platinum-dim text-xs mt-1.5"></i>
+            <div>
+              <p class="text-sm text-white font-500">Custódia</p>
+              <p class="text-xs text-platinum-dim mt-0.5">Entidade segregada — Ativos sem risco contraparte</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="platinum-divider max-w-7xl mx-auto"></div>
+
+<!-- ==================== LIDERANÇA ==================== -->
+<section id="leadership" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <p class="reveal text-xs font-mono text-emerald-accent tracking-widest uppercase mb-4">Equipe de Gestão</p>
+      <h2 class="reveal reveal-delay-1 font-editorial text-3xl sm:text-4xl font-600 text-white leading-tight">
+        Profissionais com<br>trajetória comprovada
+      </h2>
+    </div>
+
+    <div class="leaders-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" style="grid-template-columns:repeat(4,1fr);">
+
+      <div class="leader-card glass rounded-lg overflow-hidden reveal">
+        <div class="h-56 overflow-hidden">
+          <img src="https://picsum.photos/seed/exec-ricardo/400/500.jpg" alt="Ricardo Mendes - CEO" class="leader-img w-full h-full object-cover object-top">
+        </div>
+        <div class="p-5">
+          <h3 class="font-editorial text-lg font-500 text-white">Ricardo Mendes</h3>
+          <p class="text-xs font-mono text-emerald-accent mt-1">CEO & CIO</p>
+          <p class="text-xs text-platinum-dim mt-3 leading-relaxed">Ex-Diretor de Alternativos do BTG Pactual. 22 anos em gestão de ativos. MBA Wharton.</p>
+          <p class="text-xs font-mono text-platinum-dim mt-3 pt-3 border-t border-platinum-subtle">CVM · ANBIMA CPA-20</p>
+        </div>
+      </div>
+
+      <div class="leader-card glass rounded-lg overflow-hidden reveal reveal-delay-1">
+        <div class="h-56 overflow-hidden">
+          <img src="https://picsum.photos/seed/exec-mariana/400/500.jpg" alt="Mariana Costa - CRO" class="leader-img w-full h-full object-cover object-top">
+        </div>
+        <div class="p-5">
+          <h3 class="font-editorial text-lg font-500 text-white">Mariana Costa</h3>
+          <p class="text-xs font-mono text-emerald-accent mt-1">CRO & Partner</p>
+          <p class="text-xs text-platinum-dim mt-3 leading-relaxed">Ex-Head of Risk do Itaú Unibanco. PhD em Finanças Quantitativas pela USP. 18 anos de mercado.</p>
+          <p class="text-xs font-mono text-platinum-dim mt-3 pt-3 border-t border-platinum-subtle">CVM · FRM · CFA Charterholder</p>
+        </div>
+      </div>
+
+      <div class="leader-card glass rounded-lg overflow-hidden reveal reveal-delay-2">
+        <div class="h-56 overflow-hidden">
+          <img src="https://picsum.photos/seed/exec-felipe/400/500.jpg" alt="Felipe Andrade - Head de PE" class="leader-img w-full h-full object-cover object-top">
+        </div>
+        <div class="p-5">
+          <h3 class="font-editorial text-lg font-500 text-white">Felipe Andrade</h3>
+          <p class="text-xs font-mono text-emerald-accent mt-1">Head of Private Equity</p>
+          <p class="text-xs text-platinum-dim mt-3 leading-relaxed">Ex-MDP da 3G Capital. Liderou operações de R$2B+ em buyout. 15 anos em PE.</p>
+          <p class="text-xs font-mono text-platinum-dim mt-3 pt-3 border-t border-platinum-subtle">CVM · Harvard Business School</p>
+        </div>
+      </div>
+
+      <div class="leader-card glass rounded-lg overflow-hidden reveal reveal-delay-3">
+        <div class="h-56 overflow-hidden">
+          <img src="https://picsum.photos/seed/exec-isabel/400/500.jpg" alt="Isabela Nogueira - CTO" class="leader-img w-full h-full object-cover object-top">
+        </div>
+        <div class="p-5">
+          <h3 class="font-editorial text-lg font-500 text-white">Isabela Nogueira</h3>
+          <p class="text-xs font-mono text-emerald-accent mt-1">CTO & Partner</p>
+          <p class="text-xs text-platinum-dim mt-3 leading-relaxed">Ex-VP de Engenharia da Nubank. Arquiteta dos sistemas de execução algorítmica da Vertex.</p>
+          <p class="text-xs font-mono text-platinum-dim mt-3 pt-3 border-t border-platinum-subtle">CVM · MSc Computer Science MIT</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="platinum-divider max-w-7xl mx-auto"></div>
+
+<!-- ==================== CONVERSÃO / AGENDAMENTO ==================== -->
+<section id="schedule" class="relative py-24">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-emerald-accent/3 rounded-full blur-[150px] pointer-events-none"></div>
+  <div class="max-w-3xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-12">
+      <p class="reveal text-xs font-mono text-emerald-accent tracking-widest uppercase mb-4">Acesso Exclusivo</p>
+      <h2 class="reveal reveal-delay-1 font-editorial text-3xl sm:text-4xl font-600 text-white leading-tight">
+        Solicite sua reunião<br>de alocação privada
+      </h2>
+      <p class="reveal reveal-delay-2 text-platinum-dim font-body mt-4 max-w-lg mx-auto leading-relaxed">
+        Nosso processo de qualificação garante que cada reunião seja relevante para seu perfil de investimento.
+      </p>
+    </div>
+
+    <!-- Indicadores de etapa -->
+    <div class="reveal reveal-delay-2 flex items-center justify-center gap-0 mb-10">
+      <div class="step-indicator active w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-xs font-mono text-white" data-step="1">1</div>
+      <div class="step-connector w-16 h-0.5 bg-navy-700"></div>
+      <div class="step-indicator w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-xs font-mono text-platinum-dim" data-step="2">2</div>
+      <div class="step-connector w-16 h-0.5 bg-navy-700"></div>
+      <div class="step-indicator w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-xs font-mono text-platinum-dim" data-step="3">3</div>
+    </div>
+
+    <div class="glass rounded-lg p-8 reveal reveal-delay-2 emerald-glow">
+      <form id="qualificationForm" novalidate>
+
+        <!-- Etapa 1: Patrimônio -->
+        <div class="form-step active" data-step="1">
+          <h3 class="font-editorial text-xl font-500 text-white mb-2">Patrimônio disponível para alocação</h3>
+          <p class="text-sm text-platinum-dim mb-8">Selecione o valor aproximado que pretende alocar em investimentos alternativos.</p>
+
+          <div class="mb-8">
+            <div class="flex justify-between mb-3">
+              <span class="text-xs font-mono text-platinum-dim">R$ 500 mil</span>
+              <span class="text-lg font-mono text-white font-500" id="sliderValue">R$ 5.000.000</span>
+              <span class="text-xs font-mono text-platinum-dim">R$ 50M+</span>
+            </div>
+            <input type="range" class="metal-slider" id="patrimonySlider" min="0" max="6" step="1" value="3"
+              aria-label="Patrimônio disponível para alocação">
+            <div class="flex justify-between mt-2">
+              <div class="flex gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-platinum-dim/30"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="tierInfo" class="glass rounded-lg p-5 mb-6" style="background:rgba(0,212,116,0.04); border-color:rgba(0,212,116,0.15);">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-accent"></div>
+              <span class="text-sm font-500 text-white" id="tierName">Vertex Private</span>
+            </div>
+            <p class="text-xs text-platinum-dim leading-relaxed" id="tierDesc">
+              Atendimento dedicado com Private Banker sênior. Acesso ao portfólio completo com alocação customizada e relatórios mensais personalizados.
+            </p>
+          </div>
+
+          <div class="flex justify-end">
+            <button type="button" class="btn-primary text-sm" onclick="nextStep(2)">Continuar <i class="fas fa-arrow-right ml-2 text-xs"></i></button>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Perfil de Risco -->
+        <div class="form-step" data-step="2">
+          <h3 class="font-editorial text-xl font-500 text-white mb-2">Perfil de risco e objetivos</h3>
+          <p class="text-sm text-platinum-dim mb-8">Nos ajude a entender sua tolerância a risco e horizonte de investimento.</p>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Tolerância a Risco</label>
+              <div class="grid grid-cols-3 gap-3" id="riskOptions">
+                <button type="button" class="risk-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-risk="conservador">
+                  <i class="fas fa-shield text-platinum-dim text-lg mb-2 block"></i>
+                  <span class="text-sm text-white block">Conservador</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Preservação</span>
+                </button>
+                <button type="button" class="risk-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-risk="moderado">
+                  <i class="fas fa-balance-scale text-platinum-dim text-lg mb-2 block"></i>
+                  <span class="text-sm text-white block">Moderado</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Equilíbrio</span>
+                </button>
+                <button type="button" class="risk-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-risk="agressivo">
+                  <i class="fas fa-bolt text-platinum-dim text-lg mb-2 block"></i>
+                  <span class="text-sm text-white block">Agressivo</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Max. Retorno</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Horizonte de Investimento</label>
+              <div class="grid grid-cols-3 gap-3" id="horizonOptions">
+                <button type="button" class="horizon-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-horizon="curto">
+                  <span class="text-sm text-white block">2–4 anos</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Curto prazo</span>
+                </button>
+                <button type="button" class="horizon-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-horizon="medio">
+                  <span class="text-sm text-white block">5–7 anos</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Médio prazo</span>
+                </button>
+                <button type="button" class="horizon-opt glass rounded-lg p-4 text-center cursor-pointer transition-all hover:border-emerald-accent/30 focus:outline-none focus:ring-1 focus:ring-emerald-accent" data-horizon="longo">
+                  <span class="text-sm text-white block">8–10+ anos</span>
+                  <span class="text-xs text-platinum-dim block mt-1">Longo prazo</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Objetivo Primário</label>
+              <select id="objectiveSelect" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors" aria-label="Objetivo primário de investimento">
+                <option value="" class="text-navy-900">Selecione seu objetivo</option>
+                <option value="preservacao">Preservação de patrimônio com renda</option>
+                <option value="crescimento">Crescimento patrimonial consistente</option>
+                <option value="maximizacao">Maximização de retorno de longo prazo</option>
+                <option value="diversificacao">Diversificação fora de renda variável</option>
+                <option value="sucessao">Planejamento sucessório</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button type="button" class="btn-outline text-sm" onclick="prevStep(1)"><i class="fas fa-arrow-left mr-2 text-xs"></i> Voltar</button>
+            <button type="button" class="btn-primary text-sm" onclick="nextStep(3)">Continuar <i class="fas fa-arrow-right ml-2 text-xs"></i></button>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Dados e Agendamento -->
+        <div class="form-step" data-step="3">
+          <h3 class="font-editorial text-xl font-500 text-white mb-2">Dados pessoais e agendamento</h3>
+          <p class="text-sm text-platinum-dim mb-8">Informações confidenciais. Seus dados são protegidos por criptografia de ponta a ponta.</p>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Nome Completo</label>
+              <input type="text" id="fullName" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors placeholder:text-platinum-dim/50" placeholder="Seu nome completo" required>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">E-mail Corporativo</label>
+              <input type="email" id="email" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors placeholder:text-platinum-dim/50" placeholder="nome@empresa.com" required>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Telefone</label>
+              <input type="tel" id="phone" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors placeholder:text-platinum-dim/50" placeholder="+55 (11) 99999-9999" required>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Preferência de Reunião</label>
+              <select id="meetingType" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors" aria-label="Formato da reunião">
+                <option value="presencial">Presencial — SP (Faria Lima)</option>
+                <option value="presencial-rj">Presencial — RJ (Rio Branco)</option>
+                <option value="video">Videoconferência segura</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-mono text-platinum-dim mb-2 tracking-wider uppercase">Observações</label>
+            <textarea id="notes" rows="3" class="w-full bg-navy-900 border border-platinum-subtle rounded-lg px-4 py-3 text-sm text-white font-body focus:outline-none focus:border-emerald-accent/50 transition-colors placeholder:text-platinum-dim/50 resize-none" placeholder="Contexto adicional sobre seus objetivos de investimento (opcional)"></textarea>
+          </div>
+
+          <div class="flex items-start gap-3 mb-6">
+            <input type="checkbox" id="consent" class="mt-1 accent-emerald-accent cursor-pointer" required>
+            <label for="consent" class="text-xs text-platinum-dim leading-relaxed cursor-pointer">
+              Declaro que sou investidor qualificado conforme Instrução CVM 539 e concordo com a
+              <a href="#" class="text-emerald-accent hover:underline">Política de Privacidade</a> e os
+              <a href="#" class="text-emerald-accent hover:underline">Termos de Uso</a>.
+            </label>
+          </div>
+
+          <div class="flex justify-between">
+            <button type="button" class="btn-outline text-sm" onclick="prevStep(2)"><i class="fas fa-arrow-left mr-2 text-xs"></i> Voltar</button>
+            <button type="submit" class="btn-primary text-sm emerald-glow-strong">
+              <i class="fas fa-calendar-check mr-2 text-xs"></i> Solicitar Reunião Privada
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="border-t border-platinum-subtle py-16">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L26 26H2L14 2Z" stroke="#00d474" stroke-width="1.5" fill="none"/>
+            <path d="M14 10L20 24H8L14 10Z" stroke="#a8b2c1" stroke-width="1" fill="rgba(0,212,116,0.06)"/>
+          </svg>
+          <span class="font-editorial text-base font-500 text-platinum-light">VERTEX CAPITAL</span>
+        </div>
+        <p class="text-xs text-platinum-dim leading-relaxed">
+          Wealthtech de investimentos alternativos para investidores qualificados.
+          Gestão de patrimônio com tecnologia e governança institucional.
+        </p>
+      </div>
+      <div>
+        <h4 class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-4">Navigação</h4>
+        <div class="space-y-2">
+          <a href="#portfolio" class="block text-sm text-platinum-dim hover:text-platinum-light transition-colors">Portfólio</a>
+          <a href="#governance" class="block text-sm text-platinum-dim hover:text-platinum-light transition-colors">Governança</a>
+          <a href="#leadership" class="block text-sm text-platinum-dim hover:text-platinum-light transition-colors">Liderança</a>
+          <a href="#schedule" class="block text-sm text-platinum-dim hover:text-platinum-light transition-colors">Acesso Privado</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-4">Regulação</h4>
+        <div class="space-y-2">
+          <p class="text-sm text-platinum-dim">CVM Registrada</p>
+          <p class="text-sm text-platinum-dim">ANBIMA Associada</p>
+          <p class="text-sm text-platinum-dim">SEC Form D Filed</p>
+          <a href="#" class="block text-sm text-platinum-dim hover:text-platinum-light transition-colors">Documentos Legais</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-xs font-mono text-platinum-dim tracking-wider uppercase mb-4">Contato</h4>
+        <div class="space-y-2">
+          <p class="text-sm text-platinum-dim"><i class="fas fa-map-marker-alt mr-2 text-platinum-dim/50 text-xs"></i>Av. Faria Lima, 3477 — São Paulo</p>
+          <p class="text-sm text-platinum-dim"><i class="fas fa-phone mr-2 text-platinum-dim/50 text-xs"></i>+55 (11) 3042-8800</p>
+          <p class="text-sm text-platinum-dim"><i class="fas fa-envelope mr-2 text-platinum-dim/50 text-xs"></i>acesso@vertexcapital.com</p>
+        </div>
+      </div>
+    </div>
+    <div class="platinum-divider mb-6"></div>
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="text-xs text-platinum-dim/60">
+        Este site não constitui oferta ou solicitação de investimento. Investimentos alternativos envolvem riscos, incluindo perda parcial ou total do capital. Destinado exclusivamente a investidores qualificados (CVM 539).
+      </p>
+      <p class="text-xs text-platinum-dim/40">2025 Vertex Capital. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== STICKY BAR ==================== -->
+<div id="stickyBar" class="sticky-bar fixed bottom-0 left-0 right-0 z-40 glass-strong" role="complementary" aria-label="Barra de informações dos fundos">
+  <div class="max-w-7xl mx-auto px-6 h-12 flex items-center justify-between">
+    <div class="flex items-center gap-6 overflow-x-auto">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="text-xs font-mono text-platinum-dim">VERTEX PE</span>
+        <span class="text-xs font-mono text-emerald-accent" id="stickyPE">+0.32%</span>
+      </div>
+      <div class="w-px h-4 bg-platinum-subtle hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="text-xs font-mono text-platinum-dim">VERTEX CR</span>
+        <span class="text-xs font-mono text-emerald-accent" id="stickyCR">+0.08%</span>
+      </div>
+      <div class="w-px h-4 bg-platinum-subtle hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="text-xs font-mono text-platinum-dim">VERTEX VC</span>
+        <span class="text-xs font-mono text-red-400" id="stickyVC">-0.14%</span>
+      </div>
+      <div class="w-px h-4 bg-platinum-subtle hidden sm:block"></div>
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="text-xs font-mono text-platinum-dim">VERTEX RE</span>
+        <span class="text-xs font-mono text-emerald-accent" id="stickyRE">+0.21%</span>
+      </div>
+    </div>
+    <a href="#schedule" class="btn-primary text-xs py-2 px-4 whitespace-nowrap ml-4">Solicitar Acesso Privado</a>
+  </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+(function() {
+  'use strict';
+
+  // ============ DADOS FINANCEIROS SIMULADOS ============
+
+  // Dados do gráfico hero (índice composto ao longo de 12 meses)
+  const chartBaseData = [
+    1480, 1510, 1495, 1530, 1560, 1545, 1590, 1625, 1610, 1655, 1700, 1740,
+    1725, 1760, 1790, 1775, 1800, 1830, 1815, 1850, 1835, 1870, 1900, 1920,
+    1910, 1940, 1960, 1935, 1970, 1990, 1965, 2000, 2020, 2010, 2040, 2070,
+    2055, 2080, 2100, 2085, 2110, 2140, 2125, 2150, 2180, 2165, 2200, 2230,
+    2215, 2240, 2260, 2245, 2280, 2310, 2290, 2320, 2350, 2335, 2360, 2390,
+    2370, 2400, 2430, 2410, 2440, 2460, 2445, 2470, 2500, 2485, 2510, 2540,
+    2520, 2550, 2570, 2555, 2580, 2600, 2585, 2610, 2640, 2620, 2650, 2680,
+    2660, 2690, 2710, 2695, 2720, 2740, 2725, 2750, 2780, 2760, 2790, 2810
+  ];
+  // Dados do benchmark
+  const benchmarkData = [
+    1480, 1485, 1478, 1490, 1500, 1495, 1510, 1520, 1515, 1530, 1540, 1550,
+    1545, 1555, 1565, 1560, 1570, 1580, 1575, 1590, 1585, 1595, 1605, 1615,
+    1610, 1620, 1630, 1625, 1635, 1645, 1640, 1650, 1660, 1655, 1665, 1675,
+    1670, 1680, 1690, 1685, 1695, 1705, 1700, 1710, 1720, 1715, 1725, 1735,
+    1730, 1740, 1750, 1745, 1755, 1765, 1760, 1770, 1780, 1775, 1785, 1795,
+    1790, 1800, 1810, 1805, 1815, 1825, 1820, 1830, 1840, 1835, 1845, 1855,
+    1850, 1860, 1870, 1865, 1875, 1885, 1880, 1890, 1900, 1895, 1905, 1915,
+    1910, 1920, 1930, 1925, 1935, 1945, 1940, 1950, 1960, 1955, 1965, 1975
+  ];
+
+  let currentChartIndex = [...chartBaseData];
+  let currentBenchmarkIndex = [...benchmarkData];
+
+  // Faixas do slider de patrimônio
+  const patrimonyTiers = [
+    { value: 500000, label: 'R$ 500.000', name: 'Vertex Select', desc: 'Acesso ao fundo de crédito estruturado com relatórios trimestrais e atendimento via equipe de relacionamento dedicada.' },
+    { value: 1000000, label: 'R$ 1.000.000', name: 'Vertex Select Plus', desc: 'Portfólio ampliado com crédito e real estate. Relatórios mensais e acesso ao portal de performance em tempo real.' },
+    { value: 2500000, label: 'R$ 2.500.000', name: 'Vertex Private', desc: 'Atendimento dedicado com Private Banker sênior. Acesso ao portfólio completo com alocação customizada e relatórios mensais personalizados.' },
+    { value: 5000000, label: 'R$ 5.000.000', name: 'Vertex Private', desc: 'Atendimento dedicado com Private Banker sênior. Acesso ao portfólio completo com alocação customizada e relatórios mensais personalizados.' },
+    { value: 10000000, label: 'R$ 10.000.000', name: 'Vertex Family Office', desc: 'Multi-Family Office com Comitê de Investimentos personalizado, co-investimento direto em operações e planejamento sucessório integrado.' },
+    { value: 25000000, label: 'R$ 25.000.000', name: 'Vertex Family Office', desc: 'Multi-Family Office com Comitê de Investimentos personalizado, co-investimento direto em operações e planejamento sucessório integrado.' },
+    { value: 50000000, label: 'R$ 50M+', name: 'Vertex Institutional', desc: 'Acesso institucional total: fee structure customizada, capacidade de co-investimento exclusiva, governança com assento no Comitê Consultivo e due diligence compartilhada.' }
+  ];
+
+  // Dados dos sparklines por classe de ativo
+  const sparklineData = {
+    pe: [100, 102, 101, 104, 106, 105, 108, 112, 110, 114, 118, 122, 120, 124, 128, 132, 130, 135, 140, 145],
+    credit: [100, 101, 102, 103, 102, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 118, 120],
+    vc: [100, 95, 98, 105, 100, 110, 108, 115, 112, 120, 125, 118, 128, 135, 130, 140, 145, 150, 148, 155],
+    re: [100, 101, 103, 102, 104, 106, 108, 107, 109, 111, 113, 112, 114, 116, 118, 117, 119, 121, 123, 125]
+  };
+
+  // Variações diárias dos fundos (para sticky bar)
+  const fundDailyChanges = { pe: 0.32, cr: 0.08, vc: -0.14, re: 0.21 };
+
+  // ============ GRÁFICO HERO ============
+
+  function initHeroChart() {
+    const svg = document.getElementById('heroChart');
+    const gridGroup = document.getElementById('chartGrid');
+    const linePath = document.getElementById('chartLine');
+    const areaPath = document.getElementById('chartArea');
+    const dot = document.getElementById('chartDot');
+    const dotGlow = document.getElementById('chartDotGlow');
+    const W = 700, H = 220, padX = 10, padY = 10;
+    const dataW = W - padX * 2, dataH = H - padY * 2;
+
+    // Desenhar linhas de grade
+    for (let i = 0; i <= 4; i++) {
+      const y = padY + (dataH / 4) * i;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', padX); line.setAttribute('y1', y);
+      line.setAttribute('x2', W - padX); line.setAttribute('y2', y);
+      gridGroup.appendChild(line);
+    }
+    for (let i = 0; i <= 12; i++) {
+      const x = padX + (dataW / 12) * i;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x); line.setAttribute('y1', padY);
+      line.setAttribute('x2', x); line.setAttribute('y2', H - padY);
+      gridGroup.appendChild(line);
+    }
+
+    // Linha do benchmark (estática, sem animação)
+    const benchPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const benchMin = Math.min(...benchmarkData) - 20;
+    const benchMax = Math.max(...benchmarkData) + 20;
+    let benchD = '';
+    benchmarkData.forEach((v, i) => {
+      const x = padX + (dataW / (benchmarkData.length - 1)) * i;
+      const y = padY + dataH - ((v - benchMin) / (benchMax - benchMin)) * dataH;
+      benchD += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    });
+    benchPath.setAttribute('d', benchD);
+    benchPath.setAttribute('fill', 'none');
+    benchPath.setAttribute('stroke', 'rgba(168,178,193,0.25)');
+    benchPath.setAttribute('stroke-width', '1');
+    benchPath.setAttribute('stroke-dasharray', '4,4');
+    gridGroup.parentNode.insertBefore(benchPath, linePath);
+
+    // Construir path da linha principal
+    function buildChartPath(data) {
+      const min = Math.min(...data) - 30;
+      const max = Math.max(...data) + 30;
+      const range = Math.max(max - min, 1);
+      let d = '';
+      const points = [];
+      data.forEach((v, i) => {
+        const x = padX + (dataW / (data.length - 1)) * i;
+        const y = padY + dataH - ((v - min) / range) * dataH;
+        points.push({ x, y });
+        d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+      });
+      // Área
+      const lastPt = points[points.length - 1];
+      const firstPt = points[0];
+      const areaD = d + ' L' + lastPt.x.toFixed(1) + ' ' + (H - padY) + ' L' + firstPt.x.toFixed(1) + ' ' + (H - padY) + ' Z';
+      return { lineD: d, areaD, lastPoint: lastPt };
+    }
+
+    const chart = buildChartPath(currentChartIndex);
+    linePath.setAttribute('d', chart.lineD);
+    areaPath.setAttribute('d', chart.areaD);
+
+    // Posicionar ponto no final
+    dot.setAttribute('cx', chart.lastPoint.x);
+    dot.setAttribute('cy', chart.lastPoint.y);
+    dotGlow.setAttribute('cx', chart.lastPoint.x);
+    dotGlow.setAttribute('cy', chart.lastPoint.y);
+
+    // Atualizar timestamp
+    function updateTimestamp() {
+      const now = new Date();
+      const ts = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('chartTimestamp').textContent = ts;
+    }
+    updateTimestamp();
+
+    // Atualização periódica com novos dados
+    setInterval(() => {
+      // Adicionar novo ponto e remover o primeiro
+      const last = currentChartIndex[currentChartIndex.length - 1];
+      const newVal = last + (Math.random() - 0.45) * 15; // Leve tendência de alta
+      currentChartIndex.push(newVal);
+      currentChartIndex.shift();
+
+      const bLast = currentBenchmarkIndex[currentBenchmarkIndex.length - 1];
+      const newBVal = bLast + (Math.random() - 0.48) * 5;
+      currentBenchmarkIndex.push(newBVal);
+      currentBenchmarkIndex.shift();
+
+      // Atualizar paths sem reanimar
+      const updated = buildChartPath(currentChartIndex);
+      linePath.style.transition = 'none';
+      areaPath.style.transition = 'none';
+      linePath.setAttribute('d', updated.lineD);
+      areaPath.setAttribute('d', updated.areaD);
+      dot.setAttribute('cx', updated.lastPoint.x);
+      dot.setAttribute('cy', updated.lastPoint.y);
+      dotGlow.setAttribute('cx', updated.lastPoint.x);
+      dotGlow.setAttribute('cy', updated.lastPoint.y);
+
+      // Atualizar valor do índice
+      const idx = newVal;
+      document.getElementById('heroIndex').textContent = idx.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      // Atualizar variação
+      const change = idx - chartBaseData[0];
+      const changePct = (change / chartBaseData[0] * 100);
+      const sign = change >= 0 ? '+' : '';
+      document.getElementById('heroChange').textContent = sign + change.toFixed(2) + ' (' + sign + changePct.toFixed(2) + '%)';
+
+      updateTimestamp();
+    }, 3000);
+  }
+
+  // ============ SPARKLINES ============
+
+  function createSparkline(svgId, data) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const W = 200, H = 60, pad = 4;
+    const dataW = W - pad * 2, dataH = H - pad * 2;
+    const min = Math.min(...data) - 2;
+    const max = Math.max(...data) + 2;
+    const range = Math.max(max - min, 0.01);
+
+    let lineD = '', areaD = '';
+    const points = [];
+    data.forEach((v, i) => {
+      const x = pad + (dataW / (data.length - 1)) * i;
+      const y = pad + dataH - ((v - min) / range) * dataH;
+      points.push({ x, y });
+      lineD += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    });
+    const last = points[points.length - 1];
+    const first = points[0];
+    areaD = lineD + ' L' + last.x.toFixed(1) + ' ' + (H - pad) + ' L' + first.x.toFixed(1) + ' ' + (H - pad) + ' Z';
+
+    // Defs para gradiente
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    grad.setAttribute('id', svgId + '-grad');
+    grad.setAttribute('x1', '0'); grad.setAttribute('y1', '0');
+    grad.setAttribute('x2', '0'); grad.setAttribute('y2', '1');
+    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#00d474'); stop1.setAttribute('stop-opacity', '0.2');
+    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', '#00d474'); stop2.setAttribute('stop-opacity', '0');
+    grad.appendChild(stop1); grad.appendChild(stop2); defs.appendChild(grad); svg.appendChild(defs);
+
+    // Área
+    const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    area.setAttribute('d', areaD); area.setAttribute('fill', 'url(#' + svgId + '-grad)');
+    svg.appendChild(area);
+
+    // Linha
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('d', lineD); line.setAttribute('fill', 'none');
+    line.setAttribute('stroke', '#00d474'); line.setAttribute('stroke-width', '1.5');
+    line.setAttribute('stroke-linecap', 'round'); line.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(line);
+
+    // Ponto final
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', last.x); dot.setAttribute('cy', last.y);
+    dot.setAttribute('r', '2.5'); dot.setAttribute('fill', '#00d474');
+    svg.appendChild(dot);
+  }
+
+  // ============ CONTADORES ODOMETER ============
+
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const duration = 2000;
+    const startTime = performance.now();
+    const isDecimal = target % 1 !== 0;
+    const isLargeInt = target > 100;
+
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Easing: ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+
+      let display;
+      if (isDecimal) {
+        display = current.toFixed(2);
+      } else if (isLargeInt) {
+        display = Math.round(current).toLocaleString('pt-BR');
+      } else {
+        display = Math.round(current).toString();
+      }
+
+      el.textContent = prefix + display + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
+  // ============ SCROLL REVEAL + COUNTER TRIGGER ============
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Se contém contadores, animar
+        const counters = entry.target.querySelectorAll('.counter');
+        counters.forEach(c => {
+          if (!c.dataset.animated) {
+            c.dataset.animated = 'true';
+            animateCounter(c);
+          }
+        });
+
+        // Se é o próprio elemento um counter
+        if (entry.target.classList.contains('counter') && !entry.target.dataset.animated) {
+          entry.target.dataset.animated = 'true';
+          animateCounter(entry.target);
+        }
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  // ============ SLIDER DE PATRIMÔNIO ============
+
+  function initPatrimonySlider() {
+    const slider = document.getElementById('patrimonySlider');
+    const valueDisplay = document.getElementById('sliderValue');
+    const tierName = document.getElementById('tierName');
+    const tierDesc = document.getElementById('tierDesc');
+    const tierInfo = document.getElementById('tierInfo');
+
+    if (!slider) return;
+
+    function updateSlider() {
+      const idx = parseInt(slider.value);
+      const tier = patrimonyTiers[idx];
+      valueDisplay.textContent = tier.label;
+      tierName.textContent = tier.name;
+      tierDesc.textContent = tier.desc;
+
+      // Ajustar glow baseado no nível
+      if (idx >= 5) {
+        tierInfo.style.borderColor = 'rgba(0,212,116,0.3)';
+        tierInfo.style.background = 'rgba(0,212,116,0.06)';
+      } else if (idx >= 3) {
+        tierInfo.style.borderColor = 'rgba(0,212,116,0.15)';
+        tierInfo.style.background = 'rgba(0,212,116,0.04)';
+      } else {
+        tierInfo.style.borderColor = 'rgba(168,178,193,0.15)';
+        tierInfo.style.background = 'rgba(168,178,193,0.04)';
+      }
+    }
+
+    slider.addEventListener('input', updateSlider);
+    updateSlider();
+  }
+
+  // ============ FORMULÁRIO EM ETAPAS ============
+
+  let currentStep = 1;
+  let selectedRisk = '';
+  let selectedHorizon = '';
+
+  window.nextStep = function(step) {
+    // Validações
+    if (step === 2 && currentStep === 1) {
+      // Sem validação especial na etapa 1
+    }
+    if (step === 3 && currentStep === 2) {
+      if (!selectedRisk) {
+        showToast('Selecione seu perfil de tolerância a risco.', 'warning');
+        return;
+      }
+      if (!selectedHorizon) {
+        showToast('Selecione seu horizonte de investimento.', 'warning');
+        return;
+      }
+      const obj = document.getElementById('objectiveSelect').value;
+      if (!obj) {
+        showToast('Selecione seu objetivo primário de investimento.', 'warning');
+        return;
+      }
+    }
+
+    currentStep = step;
+    updateFormSteps();
+  };
+
+  window.prevStep = function(step) {
+    currentStep = step;
+    updateFormSteps();
+  };
+
+  function updateFormSteps() {
+    // Atualizar visibilidade das etapas
+    document.querySelectorAll('.form-step').forEach(el => {
+      el.classList.remove('active');
+      if (parseInt(el.dataset.step) === currentStep) {
+        el.classList.add('active');
+      }
+    });
+
+    // Atualizar indicadores
+    document.querySelectorAll('.step-indicator').forEach(ind => {
+      const s = parseInt(ind.dataset.step);
+      ind.classList.remove('active', 'completed');
+      if (s === currentStep) {
+        ind.classList.add('active');
+        ind.style.color = 'var(--navy-950)';
+      } else if (s < currentStep) {
+        ind.classList.add('completed');
+        ind.style.color = 'var(--navy-950)';
+        ind.innerHTML = '<i class="fas fa-check text-xs"></i>';
+      } else {
+        ind.style.color = '';
+        ind.textContent = s;
+      }
+    });
+
+    // Atualizar conectores
+    document.querySelectorAll('.step-connector').forEach((conn, i) => {
+      if (i + 1 < currentStep) {
+        conn.classList.add('active');
+      } else {
+        conn.classList.remove('active');
+      }
+    });
+  }
+
+  // Seleção de risco
+  document.querySelectorAll('.risk-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.risk-opt').forEach(b => {
+        b.style.borderColor = '';
+        b.style.background = '';
+      });
+      this.style.borderColor = 'rgba(0,212,116,0.4)';
+      this.style.background = 'rgba(0,212,116,0.06)';
+      selectedRisk = this.dataset.risk;
+    });
+  });
+
+  // Seleção de horizonte
+  document.querySelectorAll('.horizon-opt').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.horizon-opt').forEach(b => {
+        b.style.borderColor = '';
+        b.style.background = '';
+      });
+      this.style.borderColor = 'rgba(0,212,116,0.4)';
+      this.style.background = 'rgba(0,212,116,0.06)';
+      selectedHorizon = this.dataset.horizon;
+    });
+  });
+
+  // Submissão do formulário
+  document.getElementById('qualificationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const consent = document.getElementById('consent').checked;
+
+    if (!name) { showToast('Informe seu nome completo.', 'warning'); return; }
+    if (!email || !email.includes('@')) { showToast('Informe um e-mail corporativo válido.', 'warning'); return; }
+    if (!phone) { showToast('Informe seu telefone de contato.', 'warning'); return; }
+    if (!consent) { showToast('E necessário aceitar os termos para prosseguir.', 'warning'); return; }
+
+    // Sucesso
+    showToast('Solicitacao enviada com sucesso. Sua reunião será agendada em até 24 horas por um Private Banker.', 'success');
+
+    // Resetar formulário
+    setTimeout(() => {
+      this.reset();
+      currentStep = 1;
+      selectedRisk = '';
+      selectedHorizon = '';
+      document.querySelectorAll('.risk-opt, .horizon-opt').forEach(b => {
+        b.style.borderColor = '';
+        b.style.background = '';
+      });
+      updateFormSteps();
+    }, 1000);
+  });
+
+  // ============ TOAST ============
+
+  function showToast(message, type) {
+    const toast = document.getElementById('toast');
+    const p = toast.querySelector('p');
+    p.textContent = message;
+
+    toast.style.borderLeft = '3px solid ' + (type === 'success' ? 'var(--emerald)' : '#f59e0b');
+    toast.classList.add('show');
+
+    setTimeout(() => { toast.classList.remove('show'); }, 4500);
+  }
+
+  // ============ STICKY BAR ============
+
+  function initStickyBar() {
+    const bar = document.getElementById('stickyBar');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 600) {
+        bar.classList.add('visible');
+      } else {
+        bar.classList.remove('visible');
+      }
+      lastScroll = scrollY;
+    }, { passive: true });
+
+    // Atualizar variações periodicamente
+    setInterval(() => {
+      ['pe', 'cr', 'vc', 're'].forEach(fund => {
+        const el = document.getElementById('sticky' + fund.toUpperCase());
+        if (!el) return;
+        fundDailyChanges[fund] += (Math.random() - 0.5) * 0.04;
+        fundDailyChanges[fund] = Math.max(-0.5, Math.min(0.5, fundDailyChanges[fund]));
+        const val = fundDailyChanges[fund];
+        const sign = val >= 0 ? '+' : '';
+        el.textContent = sign + val.toFixed(2) + '%';
+        el.style.color = val >= 0 ? 'var(--emerald)' : '#f87171';
+      });
+    }, 5000);
+  }
+
+  // ============ MENU MOBILE ============
+
+  function initMobileMenu() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const menu = document.getElementById('mobileMenu');
+    let open = false;
+
+    btn.addEventListener('click', () => {
+      open = !open;
+      menu.classList.toggle('hidden', !open);
+      btn.innerHTML = open ? '<i class="fas fa-times text-lg"></i>' : '<i class="fas fa-bars text-lg"></i>';
+    });
+
+    // Fechar ao clicar em link
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        open = false;
+        menu.classList.add('hidden');
+        btn.innerHTML = '<i class="fas fa-bars text-lg"></i>';
+      });
+    });
+  }
+
+  // ============ NAVEGAÇÃO ATIVA ============
+
+  function initActiveNav() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + id) {
+              link.style.color = 'var(--platinum-light)';
+            } else {
+              link.style.color = '';
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  }
+
+  // ============ INICIALIZAÇÃO ============
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Observar elementos com classe .reveal
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Iniciar gráfico hero
+    initHeroChart();
+
+    // Iniciar sparklines
+    Object.keys(sparklineData).forEach(key => {
+      createSparkline('sparkline-' + key, sparklineData[key]);
+    });
+
+    // Slider de patrimônio
+    initPatrimonySlider();
+
+    // Sticky bar
+    initStickyBar();
+
+    // Menu mobile
+    initMobileMenu();
+
+    // Nav ativa
+    initActiveNav();
+  });
+
+})();
+</script>
+
+</body>
+</html>
