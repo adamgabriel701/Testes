@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* FORÇA O TAILWIND V4 A USAR A CLASSE .dark NO HTML */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-background: var(--bg-color);
+  --color-surface: var(--surface-color);
+  --color-muted: var(--muted-color);
+  --radius-default: var(--border-radius);
+}
+
+:root {
+  /* Tema Padrão (Light Mode) */
+  --primary-color: #ff4500;
+  --secondary-color: #1a1a1a;
+  --bg-color: #f9fafb; 
+  --surface-color: #ffffff; 
+  --muted-color: #6b7280;
+  --border-radius: 16px;
+}
+
+[data-theme='pizzaria'] {
+  --primary-color: #00875a;
+  --secondary-color: #d9381e;
+  --bg-color: #fff8f0;
+  --surface-color: #ffffff;
+  --muted-color: #92847a;
+  --border-radius: 24px;
+}
+
+/* Dark Mode Global */
+.dark {
+  --primary-color: #ff4500;
+  --secondary-color: #f9fafb; 
+  --bg-color: #121212; 
+  --surface-color: #1e1e1e; 
+  --muted-color: #9ca3af;
+}
+
+.dark[data-theme='pizzaria'] {
+  --primary-color: #00d68f;
+  --secondary-color: #ffab91;
+  --bg-color: #0f0d05;
+  --surface-color: #1e1c10;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--secondary-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
