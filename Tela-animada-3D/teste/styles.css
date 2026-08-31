@@ -1,0 +1,267 @@
+@import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+@import url('https://fonts.cdnfonts.com/css/poppins');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f0f0f0;
+    background-image:
+        repeating-linear-gradient(to right, transparent 0 100px, #25283b22 100px 101px),
+        repeating-linear-gradient(to bottom, transparent 0 100px, #25283b22 100px 101px);
+    font-family: 'Poppins', sans-serif;
+}
+
+body::before {
+    position: absolute;
+    width: min(1400px, 90vw);
+    top: 10%;
+    left: 50%;
+    height: 90%;
+    transform: translateX(-50%);
+    content: '';
+    background-image: url('images/bg.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: top center;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.banner {
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.banner .slider {
+    position: absolute;
+    width: 170px;
+    height: 250px;
+    top: 10%;
+    left: calc(50% - 85px);
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+    animation: autoRun 20s linear infinite;
+    z-index: 2;
+}
+
+.banner:hover .slider {
+    animation-play-state: paused;
+}
+
+@keyframes autoRun {
+    from {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+    }
+    to {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(360deg);
+    }
+}
+
+.banner .slider .item {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transform: 
+        rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+        translateZ(510px);
+}
+
+.banner .slider .item img {
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.banner .slider .item:hover img,
+.banner .slider .item:focus-visible img {
+    transform: scale(1.08);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.banner .content {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1400px, 100vw);
+    height: max-content;
+    padding-bottom: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.banner .content h1 {
+    font-family: 'ICA Rubrik';
+    font-size: 16em;
+    line-height: 1em;
+    color: #25283B;
+    position: relative;
+    left: 110px;
+}
+
+.banner .content h1::after {
+    position: absolute;
+    inset: 0;
+    content: attr(data-content);
+    z-index: 2;
+    -webkit-text-stroke: 2px #d2d2d2;
+    color: transparent;
+}
+
+.banner .content .author {
+    font-family: 'Poppins', sans-serif;
+    text-align: right;
+    max-width: 200px;
+    position: fixed;
+    bottom: 20px;  
+    right: 10px; 
+}
+
+.banner .content h2 { font-size: 1.6em; padding: 0 20px; } 
+.banner .content p { padding: 0 20px; }
+
+.banner .content .model {
+    background-image: url('images/model.png');
+    width: 100%;
+    height: 75vh;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-size: auto 130%;
+    background-repeat: no-repeat;
+    background-position: top center;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 10;
+}
+
+.controls button {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #25283b;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.controls button:hover,
+.controls button:focus-visible {
+    background: #25283b;
+    color: #fff;
+}
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-conteudo {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    animation: subir 0.3s ease;
+}
+
+@keyframes subir {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-topo {
+    height: 15px;
+    width: 100%;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 20px;
+}
+
+.modal-conteudo h2 { margin-bottom: 5px; color: #25283b; }
+.modal-conteudo h3 { color: #555; font-weight: normal; margin-bottom: 15px; }
+.modal-conteudo .preco { font-size: 1.5em; font-weight: bold; color: #25283b; margin-bottom: 15px; }
+.modal-conteudo p { color: #666; margin-bottom: 25px; }
+
+.fechar-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.8em;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.fechar-modal:hover { color: #000; }
+
+.btn-comprar {
+    background: #25283b;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.btn-comprar:hover { background: #000; }
+
+@media screen and (max-width: 1023px) {
+    .banner .slider { width: 160px; height: 200px; left: calc(50% - 80px); }
+    .banner .slider .item { transform: rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(300px); }
+    .banner .content h1 { text-align: center; width: 100%; text-shadow: 0 10px 20px #000; font-size: 7em; left: 0; }
+    .banner .content .author { color: #fff; text-shadow: 0 10px 20px #000; z-index: 2; max-width: unset; width: 100%; text-align: center; padding: 0 30px; }
+}
+
+@media screen and (max-width: 767px) {
+    .banner .slider { width: 100px; height: 150px; left: calc(50% - 50px); }
+    .banner .slider .item { transform: rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(180px); }
+    .banner .content h1 { font-size: 5em; }
+    .controls button { padding: 8px 12px; font-size: 0.8em; }
+}

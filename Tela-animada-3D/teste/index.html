@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bebidas Naturais - Catálogo 3D</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="banner">
+        <div class="slider" id="slider" style="--quantity: 5">
+            <button class="item" style="--position: 1" data-id="1" aria-label="Ver detalhes de Laranja">
+                <img src="images/bebida_laranja.jpg" alt="Suco de Laranja em copo de vidro com fatias de laranja ao lado">
+            </button>
+            <button class="item" style="--position: 2" data-id="2" aria-label="Ver detalhes de Morango">
+                <img src="images/bebida_morango.jpg" alt="Milkshake de Morango com pedaços da fruta">
+            </button>
+            <button class="item" style="--position: 3" data-id="3" aria-label="Ver detalhes de Limão">
+                <img src="images/bebida_limao.jpg" alt="Limonada com folhas de hortelã e gelo">
+            </button>
+            <button class="item" style="--position: 4" data-id="4" aria-label="Ver detalhes de Uva">
+                <img src="images/bebida_uva.jpg" alt="Suco integral de uva em taça">
+            </button>
+            <button class="item" style="--position: 5" data-id="5" aria-label="Ver detalhes de Maracujá">
+                <img src="images/bebida_maracuja.jpg" alt="Suco de maracujá com sementes e polpa fresca">
+            </button>
+        </div>
+
+        <div class="content">
+            <h1 data-content="FRUTAS">FRUTAS</h1>
+            <div class="author">
+                <h2>NATUREZA</h2>
+                <p><b>Catálogo de Bebidas</b></p>
+                <p>Clique nas bebidas para saber mais detalhes</p>
+            </div>
+            <div class="model"></div>
+        </div>
+
+        <div class="controls">
+            <button id="btnAnterior" aria-label="Item anterior">⏮ Anterior</button>
+            <button id="btnPlayPause" aria-label="Pausar carrossel">⏸ Pausar</button>
+            <button id="btnProximo" aria-label="Próximo item">Próximo ⏭</button>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="modalDetalhes" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="modal-conteudo">
+            <button class="fechar-modal" id="btnFecharModal" aria-label="Fechar detalhes">&times;</button>
+            <div id="modalCorTopo" class="modal-topo"></div>
+            <h2 id="modalTitulo"></h2>
+            <h3 id="modalSubtitulo"></h3>
+            <p id="modalPreco" class="preco"></p>
+            <p id="modalDescricao"></p>
+            <button class="btn-comprar">Adicionar ao Carrinho</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
