@@ -2,6 +2,8 @@
 
 import { useCart } from '@/lib/store';
 import { menuData } from '@/lib/products';
+import { pitzariaMenu } from '@/lib/products-pitzaria';
+import { xpiuMenu } from '@/lib/products-xpiu'; // NOVO IMPORT
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useMemo } from 'react';
@@ -13,11 +15,12 @@ export default function GlobalSearch() {
   const setSearchQuery = useCart((state) => state.setSearchQuery);
   const openProductModal = useCart((state) => state.openProductModal);
 
-  // Filtra todos os produtos de todas as seções baseado na busca
+  const allMenus = useMemo(() => [...menuData, ...pitzariaMenu, ...xpiuMenu], []);
+
   const results = useMemo(() => {
     if (!searchQuery || !isSearchOpen) return [];
     
-    return menuData.flatMap(section => 
+    return allMenus.flatMap(section => 
       section.products
         .filter(p => 
           p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -25,7 +28,7 @@ export default function GlobalSearch() {
         )
         .map(p => ({ ...p, section: section.category }))
     );
-  }, [searchQuery, isSearchOpen]);
+  }, [searchQuery, isSearchOpen, allMenus]);
 
   return (
     <AnimatePresence>

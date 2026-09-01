@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* Forçar Dark Mode com classe no HTML */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-background: var(--bg-color);
+  --color-surface: var(--surface-color);
+  --color-muted: var(--muted-color);
+}
+
+/* --- TEMA PADRÃO (Hamburgueria Premium) --- */
+:root {
+  --primary-color: #ff4500;
+  --secondary-color: #1a1a1a;
+  --bg-color: #f9fafb;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark {
+  --primary-color: #ff4500;
+  --secondary-color: #f9fafb;
+  --bg-color: #121212;
+  --surface-color: #1e1e1e;
+  --muted-color: #9ca3af;
+}
+
+/* --- PIZZARIA DO REI --- */
+[data-theme='pitzaria-do-rei'] {
+  --primary-color: #00875a;
+  --secondary-color: #d9381e;
+  --bg-color: #fff8f0;
+  --surface-color: #ffffff;
+  --muted-color: #92847a;
+}
+
+:root.dark[data-theme='pitzaria-do-rei'] {
+  --primary-color: #00d68f;
+  --secondary-color: #ffab91;
+  --bg-color: #0f0d05;
+  --surface-color: #1e1c10;
+  --muted-color: #a8a29e;
+}
+
+/* --- X PIU HAMBURGUERIA --- */
+[data-theme='x-piu'] {
+  --primary-color: #facc15; /* Amarelo */
+  --secondary-color: #1f2937; /* Cinza Escuro */
+  --bg-color: #f9fafb;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark[data-theme='x-piu'] {
+  --primary-color: #fde047;
+  --secondary-color: #f9fafb;
+  --bg-color: #0a0a0a;
+  --surface-color: #1c1c1c;
+  --muted-color: #9ca3af;
+}
+
+/* --- LOJA URBANA (Roupas) --- */
+[data-theme='loja-urbana'] {
+  --primary-color: #111111;
+  --secondary-color: #111111;
+  --bg-color: #fafafa;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark[data-theme='loja-urbana'] {
+  --primary-color: #ffffff;
+  --secondary-color: #ffffff;
+  --bg-color: #0a0a0a;
+  --surface-color: #161616;
+  --muted-color: #9ca3af;
+}
+
+/* --- FARMÁCIA SAÚDE --- */
+[data-theme='farmacia-saude'] {
+  --primary-color: #0d9488; /* Teal */
+  --secondary-color: #1f2937; /* Cinza Escuro */
+  --bg-color: #f0fdf4;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark[data-theme='farmacia-saude'] {
+  --primary-color: #2dd4bf;
+  --secondary-color: #f9fafb;
+  --bg-color: #0f1614;
+  --surface-color: #1a2421;
+  --muted-color: #9ca3af;
+}
+
+/* --- PETSHOP PATINHAS --- */
+[data-theme='petshop-patinhas'] {
+  --primary-color: #7c3aed; /* Roxo */
+  --secondary-color: #1f2937; /* Cinza Escuro */
+  --bg-color: #faf5ff;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark[data-theme='petshop-patinhas'] {
+  --primary-color: #a78bfa;
+  --secondary-color: #f9fafb;
+  --bg-color: #0f0a14;
+  --surface-color: #1a1521;
+  --muted-color: #9ca3af;
+}
+
+/* --- BASE STYLES --- */
+body {
+  background-color: var(--bg-color);
+  color: var(--secondary-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }

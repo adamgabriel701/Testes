@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 
 // Componente interno que carrega o modelo
 function Model({ url }: { url: string }) {
-  const { scene } = useGLTF(url);
+  const { scene } = useGLTF(url || '');
   return <primitive object={scene} scale={1.5} />;
 }
 
@@ -51,7 +51,7 @@ export default function Product3DViewer({ modelUrl, imageUrl }: Product3DViewerP
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
         <ambientLight intensity={0.7} />
         <directionalLight position={[10, 10, 5]} intensity={1.5} />
-        <Model url={modelUrl} />
+        <Model url={modelUrl || ''} /> 
         <OrbitControls 
           enableZoom={false} 
           autoRotate 

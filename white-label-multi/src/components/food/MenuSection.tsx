@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from '@/lib/store';
-import Product3DCarousel from '@/components/menu/Product3DCarousel'; // Mudou de './Product3DCarousel'
+import Product3DCarousel from '@/components/food/Product3DCarousel'; // Mudou de './Product3DCarousel'
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MenuSection as MenuSectionType } from '@/lib/products';
 
