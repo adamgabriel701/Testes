@@ -6,6 +6,17 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
+export interface PostData {
+  slug: string;
+  contentHtml: string;
+  title?: string;
+  date?: string;
+  tags?: string[];
+  readTime?: string;
+  excerpt?: string;
+  id?: string;
+}
+
 export function getAllPosts() {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPosts = fileNames.map((fileName) => {
@@ -15,11 +26,11 @@ export function getAllPosts() {
     const matterResult = matter(fileContents);
 
     return {
-      slug,
-      ...matterResult.data,
+      ...(matterResult.data as PostData),
+      slug, // slug vem depois para garantir que seja o valor gerado pelo nome do arquivo
     };
   });
-  return allPosts.sort((a, b) => (a.date < b.date ? 1 : -1));
+  return allPosts.sort((a, b) => (a.date! < b.date! ? 1 : -1));
 }
 
 export async function getPostBySlug(slug: string) {
@@ -30,8 +41,8 @@ export async function getPostBySlug(slug: string) {
   const contentHtml = processedContent.toString();
 
   return {
-    slug,
-    contentHtml,
-    ...matterResult.data,
+    ...(matterResult.data as PostData),
+    slug,           // sobrescreve caso exista no frontmatter
+    contentHtml,    // sobrescreve caso exista no frontmatter
   };
 }

@@ -1,95 +1,99 @@
-import Terminal from '@/components/Terminal';
+import ThemeAndEffects from '@/components/ThemeAndEffects';
 import { getAllPosts } from '@/lib/posts';
-import { useState } from 'react';
+import { SNIPPETS, SITE_CONFIG } from '@/data/site';
 
-export default function Home({ posts }: { posts: any[] }) {
-  const [coffeeCount, setCoffeeCount] = useState(0x400); // 1024 em Hexadecimal
-  
+export default async function Home() {
+  const posts = getAllPosts();
+
   return (
-    <>
-      {/* HEADER COM NOMENCLATURA GEEK */}
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/10 border-b border-[rgba(240,234,214,0.08)]">
-        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between font-mono text-sm">
-          <a href="/" className="font-bold text-lg"><span className="text-[#f59e0b]">/</span>dev<span className="text-[#8a8275]">/</span>log</a>
-          <div className="hidden md:flex gap-9 text-[#c9c1ad]">
-            <a href="#notes" className="hover:text-[#f0ead6] transition-colors">noticias</a>
-            <a href="#snippets" className="hover:text-[#f0ead6] transition-colors">snippets</a>
-            <a href="#archive" className="hover:text-[#f0ead6] transition-colors">arquivo</a>
-          </div>
-        </nav>
-      </header>
+    <main>
+      {/* Renderiza Header, Hero, Terminal, Themes e Marquee */}
+      <ThemeAndEffects />
 
-      {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-24 pb-20 bg-[#0c0b09] bg-grid">
-        <div className="max-w-7xl mx-auto px-6 w-full z-10 flex flex-col lg:flex-row gap-12 items-center">
-          <div className="flex-1 max-w-2xl text-[#f0ead6]">
-            <h1 className="font-mono font-bold text-4xl mb-8">
-              <span className="text-[#8a8275]">$</span> <span className="text-[#f59e0b]">console.log('bem-vindo.');</span>
-            </h1>
-            <p className="text-xl mb-5 text-[#f0ead6]">Notas da mesa de um programador.</p>
-            
-            {/* BOTÃO CAFÉ */}
-            <button 
-              onClick={() => setCoffeeCount(c => c + 1)}
-              className="btn-primary bg-[#f59e0b] text-black p-3 rounded font-mono text-xs mt-4 hover:scale-105 transition-transform"
-              title={`Cafés atuais: ${coffeeCount.toString(16)} (Hex)`}
-            >
-              ☕ Oferecer +1 café (Total: 0x{coffeeCount.toString(16)})
-            </button>
-          </div>
-
-          {/* TERMINAL */}
-          <div className="flex-1 w-full max-w-xl mt-10 lg:mt-0">
-            <Terminal />
-          </div>
-        </div>
-      </section>
-
-      {/* NOTÍCIAS RECENTES (NAMESPACE CATEGORIES) */}
-      <section className="py-24 px-6 bg-[#0c0b09]" id="notes">
+      {/* Notícias Recentes */}
+      <section className="py-24 md:py-32 px-6" id="notes">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
-            <div className="font-mono text-xs uppercase tracking-widest mb-4 text-[#f59e0b]">// namespace Categories</div>
-            <h2 className="text-5xl font-bold text-[#f0ead6]">Últimas <span className="italic font-normal">publicações</span></h2>
+          <div className="flex items-end justify-between mb-16 flex-wrap gap-6">
+            <div>
+              <div className="font-mono text-xs uppercase tracking-widest mb-4 accent">// namespace Categories</div>
+              <h2 className="text-5xl md:text-7xl section-title">Últimas <span>publicações</span></h2>
+            </div>
             {/* Busca Geek */}
-            <div className="mt-4 font-mono text-sm text-[#8a8275]">
-              <span className="text-[#06b6d4]">const</span> result = <span className="text-[#f59e0b]">search</span>(query) =&gt; {'{'} 
-              <input type="text" placeholder="buscar..." className="bg-transparent border-b border-[#8a8275] outline-none focus:border-[#f59e0b] ml-2" />
+            <div className="font-mono text-sm text-(--muted)">
+              <span className="text-(--accent-2)">const</span> result = <span className="accent">search</span>(query) =&gt; {'{'} 
+              <input type="text" placeholder="buscar..." className="bg-transparent border-b border-(--muted) outline-none focus:border-(--accent) ml-2 text-foreground" />
               {'}'}
             </div>
           </div>
-          
           <div className="grid md:grid-cols-3 gap-6">
             {posts.map((post: any) => (
-              <a key={post.slug} href={`/blog/${post.slug}`} className="article-card bg-[#15130e] border border-[rgba(240,234,214,0.08)] p-7 rounded hover:border-[#f59e0b] transition-all block">
-                <div className="text-[#f59e0b] opacity-20 text-5xl font-mono font-bold mb-4">{post.id}</div>
-                <div className="font-mono text-xs mb-4 text-[#8a8275]">{post.date} — {post.readTime}</div>
-                <h3 className="text-2xl font-bold mb-4">{post.title}</h3>
-                <p className="text-sm text-[#8a8275]">{post.excerpt}</p>
-                <div className="mt-6 text-[#f59e0b] font-mono text-xs uppercase tracking-widest">ler artigo →</div>
+              <a key={post.slug} href={`/blog/${post.slug}`} className="article-card">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="card-num">{post.id}</div>
+                  <span className="tag">{post.tags?.[0]}</span>
+                </div>
+                <div className="font-mono text-xs mb-4 muted">{post.date} — {post.readTime}</div>
+                <h3 className="font-bold text-2xl mb-4 leading-tight">{post.title}</h3>
+                <p className="text-sm mb-8 muted">{post.excerpt}</p>
+                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest accent">
+                  <span>ler artigo</span><span>→</span>
+                </div>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* RODAPÉ GEEK */}
-      <footer className="py-12 px-6 border-t border-[rgba(240,234,214,0.08)] bg-[#0c0b09]">
-        <div className="max-w-7xl mx-auto text-center font-mono text-sm text-[#8a8275]">
-          <p>while(alive) {'{'} code(); {'}'} — © {new Date().getFullYear()} Adam Gabriel</p>
-          <p className="mt-2 text-xs">Se você está lendo isso no DevTools, deveria estar revisando PRs.</p>
+      {/* Snippets */}
+      <section className="py-24 md:py-32 px-6" id="snippets" style={{ background: 'var(--bg-elev)' }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <div className="font-mono text-xs uppercase tracking-widest mb-4 accent">// trechos de código</div>
+            <h2 className="text-5xl md:text-7xl section-title">Snippets <span>úteis</span></h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {SNIPPETS.map((snippet, index) => (
+              <div key={index} className="bg-(--bg-elev-2) border border-(--border-strong) rounded-lg overflow-hidden">
+                <div className="bg-[rgba(255,255,255,0.03)] border-b border-(--border) p-4 flex justify-between items-center">
+                  <span className="font-mono text-xs muted">{snippet.title}</span>
+                  <button className="text-xs border border-(--border-strong) text-(--muted) px-2 py-1 rounded">copiar</button>
+                </div>
+                <pre className="p-4 overflow-x-auto text-sm font-mono"><code>{snippet.code}</code></pre>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Setup */}
+      <section className="py-24 md:py-32 px-6" id="setup">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-16">
+            <div className="font-mono text-xs uppercase tracking-widest mb-4 accent">// ferramentas</div>
+            <h2 className="text-5xl md:text-7xl section-title">Meu <span>setup</span></h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {SITE_CONFIG.setup.map(tool => (
+              <div key={tool.name} className="setup-item">
+                <i className={tool.icon}></i>
+                <div className="font-mono text-sm">{tool.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="font-mono text-sm muted">while(alive) {'{'} code(); {'}'} — © {new Date().getFullYear()} {SITE_CONFIG.author}</div>
+          <div className="flex items-center gap-5">
+            {SITE_CONFIG.socials.map(s => (
+              <a key={s.url} href={s.url} className="hover-link text-lg"><i className={s.icon}></i></a>
+            ))}
+          </div>
         </div>
       </footer>
-    </>
+    </main>
   );
-}
-
-// Lê os posts no server-side
-export async function getStaticProps() {
-  const posts = getAllPosts();
-  return {
-    props: {
-      posts,
-    },
-  };
 }

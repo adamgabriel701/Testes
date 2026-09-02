@@ -1,9 +1,8 @@
-import { getAllPosts, getPostBySlug } from '@/lib/posts';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { getAllPosts, getPostBySlug, PostData } from '@/lib/posts';
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug);
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post: PostData = await getPostBySlug(slug);
 
   return (
     <article className="min-h-screen bg-[#0c0b09] text-[#f0ead6] pt-32 pb-20 px-6">
@@ -15,7 +14,6 @@ export default async function PostPage({ params }: { params: { slug: string } })
         </div>
         
         <div className="prose prose-invert max-w-none">
-          {/* Se você converter o content para HTML no lib/posts.ts, use dangerouslySetInnerHTML */}
           <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
         </div>
       </div>
