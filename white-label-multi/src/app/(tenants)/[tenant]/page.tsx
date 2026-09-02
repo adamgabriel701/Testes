@@ -2,7 +2,8 @@ import { getTenantConfig } from '@/lib/tenants';
 import FoodAdapter from '@/components/adapters/FoodAdapter';
 import FashionAdapter from '@/components/adapters/FashionAdapter';
 import PharmacyAdapter from '@/components/adapters/PharmacyAdapter';
-import PetshopAdapter from '@/components/adapters/PetshopAdapter'; // NOVO
+import PetshopAdapter from '@/components/adapters/PetshopAdapter';
+import FloristAdapter from '@/components/adapters/FloristAdapter'; // NOVO
 
 export default async function Home({ params }: { params: Promise<{ tenant: string }> }) {
   const resolvedParams = await params;
@@ -13,7 +14,8 @@ export default async function Home({ params }: { params: Promise<{ tenant: strin
       {config.type === 'food' && <FoodAdapter tenantName={config.name} />}
       {config.type === 'fashion' && <FashionAdapter tenantName={config.name} />}
       {config.type === 'pharmacy' && <PharmacyAdapter tenantName={config.name} />}
-      {config.type === 'petshop' && <PetshopAdapter tenantName={config.name} />} {/* NOVO */}
+      {config.type === 'petshop' && <PetshopAdapter tenantName={config.name} />}
+      {config.type === 'florist' && <FloristAdapter tenantName={config.name} />} {/* NOVO */}
     </main>
   );
 }

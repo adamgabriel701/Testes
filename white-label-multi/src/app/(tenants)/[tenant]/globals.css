@@ -113,6 +113,23 @@
   --muted-color: #9ca3af;
 }
 
+/* --- FLORICULTURA JARDIM --- */
+[data-theme='floricultura-jardim'] {
+  --primary-color: #db2777; /* Rosa Choque */
+  --secondary-color: #1f2937; /* Cinza Escuro */
+  --bg-color: #fdf2f8;
+  --surface-color: #ffffff;
+  --muted-color: #6b7280;
+}
+
+:root.dark[data-theme='floricultura-jardim'] {
+  --primary-color: #ec4899;
+  --secondary-color: #f9fafb;
+  --bg-color: #0f0a10;
+  --surface-color: #1a1521;
+  --muted-color: #9ca3af;
+}
+
 /* --- BASE STYLES --- */
 body {
   background-color: var(--bg-color);

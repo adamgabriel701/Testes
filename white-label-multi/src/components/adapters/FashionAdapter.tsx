@@ -2,10 +2,10 @@
 
 import { useCart } from '@/lib/store';
 import { fashionData } from '@/lib/products-fashion';
-import ThemeToggle from '@/components/core/ThemeToggle';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import FashionModal from '@/components/fashion/FashionModal';
-import CartDrawer from '@/components/food/CartDrawer'; // Reaproveitando o Carrinho
-import FloatingCart from '@/components/food/FloatingCart'; // Reaproveitando o Botão Flutuante
+import CartDrawer from '@/components/ui/CartDrawer';
+import FloatingCart from '@/components/ui/FloatingCart';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -55,7 +55,12 @@ export default function FashionAdapter({ tenantName }: { tenantName: string }) {
             <button 
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${filter === cat ? 'bg-primary text-white' : 'bg-surface text-muted hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+              // CORRIGIDO: Forçando preto/branco direto no Tailwind
+              className={`px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors border ${
+                filter === cat 
+                  ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' 
+                  : 'bg-white dark:bg-gray-800 text-black dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
             >
               {cat}
             </button>
@@ -96,8 +101,6 @@ export default function FashionAdapter({ tenantName }: { tenantName: string }) {
 
       {/* Componentes Globais (Reaproveitados) */}
       <FashionModal />
-      <CartDrawer />
-      <FloatingCart />
     </main>
   );
 }

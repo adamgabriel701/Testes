@@ -2,9 +2,9 @@
 
 import { useCart } from '@/lib/store';
 import { petshopMenu } from '@/lib/products-petshop';
-import ThemeToggle from '@/components/core/ThemeToggle';
-import CartDrawer from '@/components/food/CartDrawer'; // Reaproveita o Carrinho
-import FloatingCart from '@/components/food/FloatingCart'; // Reaproveita o Botão Flutuante
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import CartDrawer from '@/components/ui/CartDrawer'; // Reaproveita o Carrinho
+import FloatingCart from '@/components/ui/FloatingCart'; // Reaproveita o Botão Flutuante
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -88,10 +88,6 @@ export default function PetshopAdapter({ tenantName }: { tenantName: string }) {
           </section>
         ))}
       </div>
-
-      {/* Componentes Globais Reaproveitados */}
-      <CartDrawer />
-      <FloatingCart />
     </main>
   );
 }

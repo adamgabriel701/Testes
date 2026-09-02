@@ -1,9 +1,9 @@
 'use client';
 
 import Product3DCarousel from '@/components/food/Product3DCarousel';
-import CartDrawer from '@/components/food/CartDrawer';
+import CartDrawer from '@/components/ui/CartDrawer';
 import ProductModal from '@/components/food/ProductModal';
-import FloatingCart from '@/components/food/FloatingCart';
+import FloatingCart from '@/components/ui/FloatingCart';
 import OrderTracker from '@/components/food/OrderTracker';
 import BottomNav from '@/components/food/BottomNav';
 import HomeHero from '@/components/food/HomeHero';
@@ -12,7 +12,7 @@ import MenuSection from '@/components/food/MenuSection';
 import Testimonials from '@/components/food/Testimonials';
 import GlobalSearch from '@/components/food/GlobalSearch';
 import CheckoutView from '@/components/food/CheckoutView';
-import ThemeToggle from '@/components/core/ThemeToggle';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { menuData } from '@/lib/products';
 import { pitzariaMenu } from '@/lib/products-pitzaria';
 import { xpiuMenu } from '@/lib/products-xpiu';
@@ -71,8 +71,6 @@ export default function FoodAdapter({ tenantName }: { tenantName: string }) {
 
       {/* Componentes Globais */}
       <ProductModal />
-      <CartDrawer />
-      <FloatingCart />
       <BottomNav />
     </main>
   );

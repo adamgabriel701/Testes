@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { getTenantConfig } from '@/lib/tenants';
+import AppShell from '@/components/ui/AppShell';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,7 +34,6 @@ export default async function TenantLayout({
     <html lang="pt-BR" data-theme={config.slug} suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
-        {/* Script corrigido para ler a chave 'multi-tenant-cart' */}
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
@@ -46,7 +46,9 @@ export default async function TenantLayout({
         }} />
       </head>
       <body className={`${inter.className} min-h-screen bg-background text-secondary`}>
-        {children}
+        <AppShell>
+          {children}
+        </AppShell>
       </body>
     </html>
   );

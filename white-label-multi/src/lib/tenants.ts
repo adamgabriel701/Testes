@@ -1,4 +1,4 @@
-export type TenantType = 'food' | 'fashion' | 'pharmacy' | 'petshop'; // ADICIONADO petshop
+export type TenantType = 'food' | 'fashion' | 'pharmacy' | 'petshop' | 'florist'; // ADICIONADO florist
 
 export interface TenantConfig {
   slug: string;
@@ -9,6 +9,7 @@ export interface TenantConfig {
     secondary: string;
     bg: string;
     surface: string;
+    muted?: string; // ADICIONADO AQUI
   };
 }
 
@@ -26,33 +27,38 @@ export const tenantsDB: TenantConfig[] = [
     theme: { primary: '#00875a', secondary: '#d9381e', bg: '#fff8f0', surface: '#ffffff' }
   },
   {
-    slug: 'x-piu', // A NOVA LOJA
+    slug: 'x-piu',
     name: 'X Piu Hamburgueria Artesanal',
     type: 'food',
-    theme: { primary: '#facc15', secondary: '#1f2937', bg: '#f9fafb', surface: '#ffffff' } // Amarelo e Cinza Escuro
+    theme: { primary: '#facc15', secondary: '#1f2937', bg: '#f9fafb', surface: '#ffffff' }
   },
   {
     slug: 'loja-urbana',
     name: 'Loja Urbana',
     type: 'fashion',
-    theme: { primary: '#111111', secondary: '#ffffff', bg: '#fafafa', surface: '#ffffff' }
+    theme: { primary: '#111111', secondary: '#111111', bg: '#ffffff', surface: '#ffffff', muted: '#6b7280' }
   },
   {
     slug: 'farmacia-saude',
     name: 'Farmácia Saúde 24h',
-    type: 'pharmacy', // NOVO TIPO
-    theme: { primary: '#0d9488', secondary: '#1f2937', bg: '#f0fdf4', surface: '#ffffff' } // Verde claro e Cinza escuro
+    type: 'pharmacy',
+    theme: { primary: '#0d9488', secondary: '#1f2937', bg: '#f0fdf4', surface: '#ffffff' }
   },
   {
     slug: 'petshop-patinhas',
     name: 'Petshop Patinhas',
-    type: 'petshop', // NOVO TIPO
-    theme: { primary: '#7c3aed', secondary: '#1f2937', bg: '#faf5ff', surface: '#ffffff' } // Roxo e Cinza Escuro
+    type: 'petshop',
+    theme: { primary: '#7c3aed', secondary: '#1f2937', bg: '#faf5ff', surface: '#ffffff' }
+  },
+  {
+    slug: 'floricultura-jardim',
+    name: 'Floricultura Jardim',
+    type: 'florist', // NOVO TIPO
+    theme: { primary: '#db2777', secondary: '#1f2937', bg: '#fdf2f8', surface: '#ffffff' } // Rosa Choque e Cinza Escuro
   },
 ];
 
 export function getTenantConfig(slug: string): TenantConfig {
   const config = tenantsDB.find(t => t.slug === slug);
-  // Fallback para hamburgueria se não achar
   return config || tenantsDB[0];
 }
