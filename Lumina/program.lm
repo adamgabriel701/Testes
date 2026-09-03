@@ -1,0 +1,25 @@
+/* Teste Final: Lista Ligada e Encadeamento */
+struct No:
+    valor: int
+    proximo: No
+
+fn main() -> int:
+    # Alocando o primeiro nó no Heap
+    mut cabeca: No
+    cabeca.valor = 1
+    
+    # Alocando o segundo nó e encadeando
+    let no2 = alloc(1)
+    *no2 = 2
+    cabeca.proximo = no2
+    
+    # Acessando o valor encadeado
+    let val1 = cabeca.valor
+    let val2 = cabeca.proximo.valor
+    
+    print("Valores da lista ligada:")
+    print(val1)
+    print(val2)
+    
+    # Múltiplos retornos (sintaxe aceita, mas só retorna o primeiro)
+    return 0, 1

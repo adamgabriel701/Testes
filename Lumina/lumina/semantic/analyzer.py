@@ -1,0 +1,163 @@
+from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr
+from ..ast import ReturnStmt, Function, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MatchStmt, StructDecl, ImplBlock
+
+class SemanticAnalyzer:
+    def __init__(self):
+        self.scopes = [{}]
+        self.functions = set()
+        self.structs = set()
+        self.struct_defs = {}
+
+    def analyze(self, declarations):
+        for decl in declarations:
+            if isinstance(decl, Function):
+                self.functions.add(decl.name)
+            elif isinstance(decl, StructDecl):
+                self.structs.add(decl.name)
+                self.struct_defs[decl.name] = decl
+            elif isinstance(decl, ImplBlock):
+                for method in decl.methods:
+                    self.functions.add(method.name)
+                    
+        for decl in declarations:
+            if isinstance(decl, Function):
+                self.analyze_function(decl)
+
+    def push_scope(self): self.scopes.append({})
+    def pop_scope(self): self.scopes.pop()
+    def declare_var(self, name, var_type, is_mutable): 
+        self.scopes[-1][name] = {'type': var_type, 'mutable': is_mutable}
+    def get_var_info(self, name):
+        for scope in reversed(self.scopes):
+            if name in scope: return scope[name]
+        return None
+
+    def analyze_function(self, node: Function):
+        self.scopes = [{}]
+        for p_name, p_type in node.params:
+            self.declare_var(p_name, p_type, True)
+        for stmt in node.body:
+            self.analyze_stmt(stmt)
+
+    def analyze_stmt(self, node):
+        if isinstance(node, VarDecl):
+            if node.var_type is not None and node.var_type not in ("int", "float", "bool") and node.var_type not in self.structs:
+                raise Exception(f"Erro Semântico: Tipo '{node.var_type}' não declarado.")
+            if node.value: self.analyze_expr(node.value)
+            self.declare_var(node.name, node.var_type, node.is_mutable)
+            
+        elif isinstance(node, AssignStmt):
+            if isinstance(node.target, MemberExpr):
+                info = self.get_var_info(node.target.obj.name)
+                if not info: raise Exception(f"Erro Semântico: Variável '{node.target.obj.name}' não declarada.")
+                if not info['mutable']: raise Exception(f"Erro Semântico: Não pode modificar variável imutável '{node.target.obj.name}'.")
+                if info['type'] not in self.struct_defs: raise Exception(f"Erro Semântico: Variável '{node.target.obj.name}' não é uma Struct.")
+                struct_def = self.struct_defs[info['type']]
+                if node.target.member not in struct_def.fields:
+                    raise Exception(f"Erro Semântico: Campo '{node.target.member}' não existe na Struct '{info['type']}'.")
+            elif isinstance(node.target, DerefExpr):
+                pass 
+            elif isinstance(node.target, IndexExpr):
+                self.analyze_expr(node.target)
+            else:
+                info = self.get_var_info(node.target.name)
+                if not info: raise Exception(f"Erro Semântico: Variável '{node.target.name}' não declarada.")
+                if not info['mutable']: raise Exception(f"Erro Semântico: Não pode reatribuir à variável imutável '{node.target.name}'.")
+            self.analyze_expr(node.value)
+            
+        elif isinstance(node, ReturnStmt):
+            # CORREÇÃO: Agora retorna uma lista de valores
+            for val in node.values:
+                self.analyze_expr(val)
+            
+        elif isinstance(node, IfStmt):
+            self.analyze_expr(node.condition)
+            self.push_scope()
+            for stmt in node.then_body: self.analyze_stmt(stmt)
+            self.pop_scope()
+            if node.else_body:
+                self.push_scope()
+                for stmt in node.else_body: self.analyze_stmt(stmt)
+                self.pop_scope()
+                
+        elif isinstance(node, WhileStmt):
+            self.analyze_expr(node.condition)
+            self.push_scope()
+            for stmt in node.body: self.analyze_stmt(stmt)
+            self.pop_scope()
+            
+        elif isinstance(node, ForStmt):
+            self.analyze_expr(node.start)
+            self.analyze_expr(node.end)
+            self.push_scope()
+            self.declare_var(node.var_name, "int", False)
+            for stmt in node.body: self.analyze_stmt(stmt)
+            self.pop_scope()
+            
+        elif isinstance(node, MatchStmt):
+            self.analyze_expr(node.condition)
+            for val, body in node.cases:
+                self.analyze_expr(val)
+                self.push_scope()
+                for stmt in body: self.analyze_stmt(stmt)
+                self.pop_scope()
+            if node.default:
+                self.push_scope()
+                for stmt in node.default: self.analyze_stmt(stmt)
+                self.pop_scope()
+        else:
+            self.analyze_expr(node)
+
+    def analyze_expr(self, node):
+        if isinstance(node, (NumberExpr, BoolExpr, StringExpr)): return
+        elif isinstance(node, VariableExpr):
+            if not self.get_var_info(node.name):
+                raise Exception(f"Erro Semântico: Variável '{node.name}' não declarada.")
+        elif isinstance(node, BinaryExpr):
+            self.analyze_expr(node.left)
+            self.analyze_expr(node.right)
+        elif isinstance(node, CallExpr):
+            if node.is_method:
+                obj_node = node.args[0]
+                if isinstance(obj_node, VariableExpr):
+                    info = self.get_var_info(obj_node.name)
+                    if not info: raise Exception(f"Erro Semântico: Variável '{obj_node.name}' não declarada.")
+                    struct_name = info['type']
+                    real_method_name = f"{struct_name}_{node.name}"
+                    if real_method_name not in self.functions:
+                        raise Exception(f"Erro Semântico: Método '{node.name}' não declarado na struct '{struct_name}'.")
+            elif node.name not in ("print", "input", "atoi", "len", "alloc", "free") and node.name not in self.functions:
+                raise Exception(f"Erro Semântico: Função '{node.name}' não declarada.")
+            for arg in node.args: self.analyze_expr(arg)
+        elif isinstance(node, ArrayExpr):
+            for el in node.elements: self.analyze_expr(el)
+        elif isinstance(node, IndexExpr):
+            if isinstance(node.array, VariableExpr):
+                info = self.get_var_info(node.array.name)
+                if not info: raise Exception(f"Erro Semântico: Variável '{node.array.name}' não declarada.")
+            else:
+                self.analyze_expr(node.array)
+            self.analyze_expr(node.index)
+        elif isinstance(node, MemberExpr):
+            # NOVO: Validação recursiva para suportar encadeamento (ex: a.b.c)
+            if isinstance(node.obj, VariableExpr):
+                info = self.get_var_info(node.obj.name)
+                if not info: raise Exception(f"Erro Semântico: Variável '{node.obj.name}' não declarada.")
+                current_type = info['type']
+            else:
+                # Se for encadeado, chama a análise do objeto interno para descobrir o tipo
+                current_type = self.analyze_expr(node.obj)
+                
+            if current_type not in self.struct_defs: 
+                raise Exception(f"Erro Semântico: Tipo '{current_type}' não é uma Struct.")
+                
+            struct_def = self.struct_defs[current_type]
+            if node.member not in struct_def.fields:
+                raise Exception(f"Erro Semântico: Campo '{node.member}' não existe na Struct '{current_type}'.")
+                
+            # Retorna o tipo do campo para que o próximo encadeamento possa usar
+            return struct_def.fields[node.member]
+        elif isinstance(node, AddressOfExpr):
+            self.analyze_expr(node.val)
+        elif isinstance(node, DerefExpr):
+            self.analyze_expr(node.val)
