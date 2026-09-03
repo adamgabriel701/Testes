@@ -1,0 +1,884 @@
+Aqui está a estrutura completa, revisada, limpa e pronta para uso. Organizei tudo como se fosse uma **"Pasta Base de Arquitetura"** (Boilerplate). 
+
+Você pode simplesmente copiar esses arquivos e colar na raiz do seu repositório (ou em um repositório central da sua organização) para que todos os projetos sigam exatamente o mesmo padrão.
+
+---
+
+# 📂 Estrutura Base de Arquitetura (Boilerplate)
+
+Antes de começar, crie a seguinte estrutura de pastas no seu projeto:
+```text
+.
+├── .github/
+│   └── workflows/
+├── README.md
+├── CONTRIBUTING.md
+├── ARCHITECTURE.md
+├── API_STANDARDS.md
+├── DESIGN_TOKENS.md
+├── .gitignore
+├── .eslintrc.json
+├── .prettierrc
+├── docker-compose.yml
+└── Dockerfile
+```
+
+Abaixo estão os arquivos para preencher cada um deles:
+
+---
+
+### 📄 `README.md`
+*(Coloque na raiz do projeto)*
+
+```markdown
+# 🚀 Nome do Projeto
+
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-informational)](#)
+
+> **Descrição Curta:** Uma breve frase explicando o propósito principal deste repositório e o problema que ele resolve.
+
+---
+
+## 📋 Índice
+
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [🚀 Começando](#-começando)
+  - [Pré-requisitos](#-pré-requisitos)
+  - [Instalação](#-instalação)
+  - [Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [💻 Como Executar](#-como-executar)
+- [🧪 Executando os Testes](#-executando-os-testes)
+- [📦 Deploy e Build](#-deploy-e-build)
+- [🤝 Contribuição](#-contribuição)
+- [📄 Licença](#-licença)
+
+---
+
+## 🧐 Sobre o Projeto
+
+Forneça um contexto mais detalhado sobre o projeto. Explique os objetivos do software, quem é o público-alvo, os desafios arquiteturais que ele resolve e por que ele foi desenvolvido.
+
+---
+
+## ✨ Funcionalidades
+
+- [x] **Autenticação:** Login, cadastro e recuperação de senha.
+- [x] **Dashboard:** Visualização de dados analíticos em tempo real.
+- [x] **Gerenciamento de Usuários:** Controle de acesso baseado em funções (RBAC).
+- [ ] **Integração com Pagamentos:** (Em desenvolvimento) Suporte a Stripe e Pix.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### **Frontend / UI**
+- [React](https://reactjs.org/) / [Next.js](https://nextjs.org/) — Framework Web
+- [Tailwind CSS](https://tailwindcss.com/) — Estilização e Design System
+
+### **Backend & Banco de Dados**
+- [Node.js](https://nodejs.org/) / [TypeScript](https://www.typescriptlang.org/) — Runtime e Linguagem
+- [PostgreSQL](https://www.postgresql.org/) — Banco de Dados Relacional
+- [Prisma ORM](https://www.prisma.io/) — Mapeamento Objeto-Relacional
+
+### **Infraestrutura & Ferramentas**
+- [Docker](https://www.docker.com/) — Conteinerização
+- [GitHub Actions](https://github.com/features/actions) — CI/CD Pipeline
+
+---
+
+## 🚀 Começando
+
+Siga as instruções abaixo para obter uma cópia local do projeto executável em sua máquina.
+
+### **Pré-requisitos**
+
+Certifique-se de ter as seguintes ferramentas instaladas:
+* [Node.js](https://nodejs.org/) `>= 18.x`
+* [Docker](https://www.docker.com/) & Docker Compose `>= 2.x`
+* [Git](https://git-scm.com/)
+
+### **Instalação**
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/nome-do-projeto.git
+   cd nome-do-projeto
+   ```
+
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   # ou
+   yarn install
+   # ou
+   pnpm install
+   ```
+
+3. **Configure as Variáveis de Ambiente:**
+   Copie o arquivo de exemplo e preencha as suas credenciais:
+   ```bash
+   cp .env.example .env
+   ```
+
+---
+
+### 🔑 Variáveis de Ambiente
+
+O arquivo `.env` deve conter as seguintes chaves configuradas:
+
+| Variável | Descrição | Exemplo Padrão |
+| --- | --- | --- |
+| `PORT` | Porta onde o servidor irá rodar | `3000` |
+| `DATABASE_URL` | String de conexão com o PostgreSQL | `postgresql://user:pass@localhost:5432/db` |
+| `JWT_SECRET` | Chave secreta para geração de tokens | `sua_chave_secreta_aqui` |
+| `ENVIRONMENT` | Ambiente de execução (`dev`, `staging`, `prod`) | `development` |
+
+---
+
+## 💻 Como Executar
+
+### **Modo de Desenvolvimento**
+
+Para rodar a aplicação localmente com suporte a *Hot Reloading*:
+
+```bash
+# Subir os serviços de banco de dados via Docker
+docker-compose up -d
+
+# Executar a aplicação
+npm run dev
+```
+
+Acesse no navegador: `http://localhost:3000`
+
+---
+
+## 🧪 Executando os Testes
+
+Execute a suíte de testes para garantir a integridade do código:
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes de integração
+npm run test:integration
+
+# Cobertura de testes (Coverage)
+npm run test:cov
+```
+
+---
+
+## 📦 Deploy e Build
+
+Para gerar a versão de produção otimizada:
+
+```bash
+npm run build
+npm run start
+```
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são super bem-vindas! Siga os passos abaixo:
+
+1. Faça um **Fork** do projeto.
+2. Crie uma nova **Branch** para sua funcionalidade (`git checkout -b feat/minha-nova-funcionalidade`).
+3. Faça os **Commits** seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m "feat: adiciona autenticação via OAuth2"
+   ```
+4. Envie as alterações para o repositório remoto (`git push origin feat/minha-nova-funcionalidade`).
+5. Abra um **Pull Request**.
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para obter mais detalhes.
+```
+
+---
+
+### 📄 `.github/PULL_REQUEST_TEMPLATE.md`
+*(Coloque dentro da pasta `.github`)*
+
+```markdown
+## 📌 Tipo de Alteração
+
+Marque com um **X** as opções que se aplicam a este Pull Request:
+
+- [ ] 🐛 **Fix:** Correção de um erro/bug.
+- [ ] ✨ **Feat:** Nova funcionalidade.
+- [ ] ♻️ **Refactor:** Refatoração de código sem alterar regra de negócio.
+- [ ] 🎨 **Style:** Alterações de formatação, CSS ou estilo visual (sem alteração lógica).
+- [ ] ⚡ **Perf:** Melhoria de desempenho.
+- [ ] 🧪 **Test:** Adição ou correção de testes.
+- [ ] 📝 **Docs:** Alteração na documentação.
+- [ ] 🔧 **Chore:** Configurações, dependências ou automações de build/CI.
+
+---
+
+## 📝 Descrição Detalhada
+
+Descreva de forma clara e objetiva o que este PR faz. Explique o motivo da alteração, o contexto e o problema que ele resolve.
+
+> *Exemplo:* Este PR implementa a validação do campo CPF no formulário de cadastro e adiciona mensagens de erro estilizadas quando os dados inseridos forem inválidos.
+
+---
+
+## 🔗 Card / Issue Relacionada
+
+- Resolve: # (Insira o número da Issue, ex: `#42`)
+- Link no Trello/Jira: [CARD-123](https://seu-jira-ou-trello.com)
+
+---
+
+## 🧪 Como Isso Foi Testado?
+
+Descreva os passos necessários para testar as alterações efetuadas:
+
+1. Acesse a tela de cadastro `/register`.
+2. Tente submeter o formulário com um CPF inválido (`123.456.789-00`).
+3. Verifique se a mensagem de erro "CPF inválido" é exibida abaixo do campo.
+4. Insira um CPF válido e confirme se a submissão ocorre com sucesso.
+
+- [ ] Testes unitários executados e aprovados (`npm run test`).
+- [ ] Testes manuais realizados no ambiente local.
+
+---
+
+## 📸 Screenshots / GIFs (Se aplicável)
+
+Se este PR inclui alterações visuais na interface (UI/UX), adicione capturas de tela ou gravações antes e depois da alteração.
+
+| Antes | Depois |
+| :---: | :---: |
+| *Imagem/GIF do Estado Anterior* | *Imagem/GIF do Estado Atual* |
+
+---
+
+## ⚠️ Checklist do Autor
+
+Antes de solicitar a revisão deste PR, garanta que você atendeu aos seguintes requisitos:
+
+- [ ] O título do PR segue a convenção de [Conventional Commits](https://www.conventionalcommits.org/) (ex: `feat(auth): adiciona fluxo de login`).
+- [ ] O código foi testado localmente e passa sem erros de linter (`npm run lint`).
+- [ ] Não adicionei credenciais, chaves de API ou segredos no código.
+- [ ] Atualizei a documentação e os arquivos de configuração (se necessário).
+- [ ] Escrevi testes para cobrir as novas alterações de código.
+
+---
+
+## 💬 Notas Adicionais para o Revisor
+
+Insira observações específicas, dúvidas sobre a implementação ou pontos de atenção para quem for revisar o código.
+```
+
+---
+
+### 📄 `CONTRIBUTING.md`
+*(Coloque na raiz do projeto)*
+
+```markdown
+# 🛠️ Guia de Contribuição e Padrões de Desenvolvimento
+
+Para manter a consistência e a qualidade do código em todos os projetos, siga as diretrizes abaixo.
+
+---
+
+## 📌 Padrão de Commits (Conventional Commits)
+
+Todos os commits devem seguir a estrutura do [Conventional Commits](https://www.conventionalcommits.org/):
+
+```text
+<tipo>(<escopo opcional>): <descrição no imperativo e em letras minúsculas>
+```
+
+### **Tipos de Commit Permitidos:**
+
+* **`feat`**: Adição de uma nova funcionalidade.
+  * *Exemplo:* `feat(auth): adiciona autenticação por email e senha`
+* **`fix`**: Correção de um bug.
+  * *Exemplo:* `fix(checkout): corrige erro no cálculo de frete`
+* **`refactor`**: Alteração de código sem mudar a regra de negócio ou adicionar funcionalidades.
+  * *Exemplo:* `refactor(api): otimiza consulta de usuários no banco`
+* **`style`**: Alterações de formatação (espaços, ponto e vírgula, CSS) sem mudar lógica.
+  * *Exemplo:* `style(button): ajusta espaçamento interno do componente`
+* **`perf`**: Mudança no código focada em melhorar o desempenho.
+  * *Exemplo:* `perf(images): adiciona lazy loading nas imagens da home`
+* **`test`**: Adição ou correção de testes automatizados.
+  * *Exemplo:* `test(user): adiciona testes unitários para criação de perfil`
+* **`docs`**: Alterações na documentação (ex: README, comentários).
+  * *Exemplo:* `docs(readme): atualiza instruções de instalação local`
+* **`chore`**: Atualização de tarefas de build, configurações ou dependências.
+  * *Exemplo:* `chore(deps): atualiza versão do React para 18.2.0`
+
+---
+
+## 🌿 Estratégia de Branches (Git Workflow)
+
+Utilizamos uma variação simplificada do **GitHub Flow**:
+
+1. **`main`**: Branch de produção. O código aqui deve estar sempre estável e testado.
+2. **Branches de Funcionalidade / Correção**:
+   * Para novas funcionalidades: `feat/nome-da-funcionalidade`
+   * Para correção de bugs: `fix/nome-do-bug`
+   * Para refatorações: `refactor/descricao-da-mudanca`
+   * Para tarefas gerais: `chore/descricao-da-tarefa`
+
+---
+
+## 🔄 Fluxo de Trabalho (Passo a Passo)
+
+1. Atualize a branch principal localmente:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+2. Crie uma nova branch a partir da `main`:
+   ```bash
+   git checkout -b feat/login-google
+   ```
+
+3. Faça alterações no código e execute o linter/testes localmente:
+   ```bash
+   npm run lint
+   npm run test
+   ```
+
+4. Faça o commit seguindo o padrão:
+   ```bash
+   git commit -m "feat(auth): adiciona suporte a login com Google"
+   ```
+
+5. Envie a branch para o repositório remoto:
+   ```bash
+   git push origin feat/login-google
+   ```
+
+6. Abra um **Pull Request** para a branch `main` utilizando o modelo padrão do repositório.
+```
+
+---
+
+### 📄 `.gitignore`
+*(Coloque na raiz do projeto)*
+
+```gitignore
+# =========================================
+# Dependências de Pacotes
+# =========================================
+node_modules/
+.pnpm-store/
+vendor/
+
+# =========================================
+# Arquivos de Build e Compilação
+# =========================================
+dist/
+build/
+.next/
+out/
+*.so
+*.dll
+
+# =========================================
+# Variáveis de Ambiente e Credenciais Sensíveis (NUNCA ENVIAR PARA O GIT)
+# =========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# =========================================
+# Logs e Arquivos Temporários
+# =========================================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# =========================================
+# Cobertura de Testes
+# =========================================
+coverage/
+.nyc_output/
+
+# =========================================
+# Arquivos de Sistema Operacional e IDEs
+# =========================================
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+# IDEs (VSCode, JetBrains, etc)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# =========================================
+# Cache
+# =========================================
+.cache/
+.eslintcache
+```
+
+---
+
+### 📄 `docker-compose.yml`
+*(Coloque na raiz do projeto)*
+
+```yaml
+# A versão '3.8' é recomendada para uso com Docker Compose V2+
+version: '3.8'
+
+services:
+  # Serviço da Aplicação (Backend / Frontend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev # Sobrescreve o target padrão para apontar para o estágio de desenvolvimento
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-app_db}?schema=public
+    volumes:
+      - .:/app
+      - /app/node_modules # Evita que a pasta node_modules local sobrescreva a do container
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+```
+
+---
+
+### 📄 `Dockerfile`
+*(Coloque na raiz do projeto)*
+
+```dockerfile
+# ==========================================
+# 1. Estágio Base
+# ==========================================
+FROM node:18-alpine AS base
+WORKDIR /app
+COPY package*.json ./
+
+# ==========================================
+# 2. Estágio de Dependências
+# ==========================================
+FROM base AS dependencies
+RUN npm ci
+
+# ==========================================
+# 3. Estágio de Desenvolvimento
+# ==========================================
+FROM dependencies AS dev
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+# ==========================================
+# 4. Estágio de Build (Compilação)
+# ==========================================
+FROM dependencies AS build
+COPY . .
+RUN npm run build
+
+# ==========================================
+# 5. Estágio de Produção (Imagem Leve e Otimizada)
+# ==========================================
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copia apenas os arquivos necessários do estágio de build
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+
+EXPOSE 3000
+CMD ["node", "dist/main.js"]
+```
+
+---
+
+### 📄 `.github/workflows/ci.yml`
+*(Coloque dentro da pasta `.github/workflows`)*
+
+```yaml
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: 🚀 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Instalar Dependências
+        run: npm ci
+
+      - name: 🔍 Executar Linter (Verificação de Estilo)
+        run: npm run lint --if-present
+
+      - name: 🧪 Executar Testes Automatizados
+        run: npm test --if-present
+
+      - name: 🏗️ Validar Build do Projeto
+        run: npm run build --if-present
+```
+
+---
+
+### 📄 `ARCHITECTURE.md`
+*(Coloque na raiz do projeto)*
+
+```markdown
+# 🏛️ Guia de Arquitetura e Estrutura de Pastas
+
+Para manter a previsibilidade, adotamos o padrão **Feature-First** (baseado em recursos/módulos) e separação clara de responsabilidades.
+
+---
+
+## 💻 Estrutura Frontend (React / Next.js)
+
+```text
+src/
+├── assets/          # Imagens, fontes e arquivos estáticos importáveis
+├── components/      # Componentes globais de UI (Botões, Modais, Cards)
+│   └── ui/          # Componentes reutilizáveis do Design System
+├── config/          # Configurações globais (instância de API, constantes)
+├── hooks/           # Custom React Hooks globais
+├── layouts/         # Templates de layout de páginas (Header, Sidebar, Footer)
+├── modules/         # Módulos da aplicação organizados por funcionalidade
+│   └── auth/
+│       ├── components/  # Componentes exclusivos do módulo auth
+│       ├── hooks/       # Hooks exclusivos do módulo auth
+│       ├── services/    # Chamadas de API exclusivas do módulo auth
+│       └── types/       # Tipagens TypeScript exclusivas do módulo auth
+├── pages/           # Rotas da aplicação (ou app/ para Next.js App Router)
+├── services/        # Cliente HTTP centralizado (Axios/Fetch)
+├── store/           # Gerenciamento de estado global (Zustand, Redux)
+├── styles/          # Estilos globais e configurações de temas
+├── types/           # Tipagens TypeScript globais
+└── utils/           # Funções utilitárias e formatadores puras
+```
+
+---
+
+## ⚙️ Estrutura Backend (Node.js / Express / NestJS)
+
+```text
+src/
+├── config/          # Configurações do ambiente, banco e serviços terceiros
+├── modules/         # Módulos de domínio da aplicação (Domain-Driven / Feature-First)
+│   └── users/
+│       ├── controllers/ # Camada de transporte (recebe requisição / envia resposta)
+│       ├── dtos/        # Data Transfer Objects (validação de entrada de dados)
+│       ├── entities/    # Modelos do banco de dados / domínio
+│       ├── repositories/# Interface com o banco de dados (Prisma, TypeORM)
+│       ├── useCases/    # Regras de negócio da funcionalidade
+│       └── users.module.ts
+├── shared/          # Recursos compartilhados entre múltiplos módulos
+│   ├── errors/      # Tratamento de exceções e erros customizados
+│   ├── http/        # Middlewares de autenticação, validação e taxa limite
+│   ├── providers/   # Serviços genéricos (envio de e-mail, upload de arquivos)
+│   └── utils/       # Funções utilitárias puras
+├── database/        # Migrations, seeds e configurações do ORM
+└── main.ts          # Ponto de entrada da aplicação
+```
+```
+
+---
+
+### 📄 `API_STANDARDS.md`
+*(Coloque na raiz do projeto)*
+
+```markdown
+# 🌐 Padrão de Design e Resposta de APIs REST
+
+Todas as APIs da nossa organização seguem o formato de payload padronizado abaixo.
+
+---
+
+## 📥 Respostas de Sucesso (`200 OK`, `201 Created`)
+
+Todas as respostas devem retornar os dados dentro de uma chave envelope `data`.
+
+### **1. Objeto Único ou Ação Sem Retorno**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "usr_123456",
+    "name": "Maria Silva",
+    "email": "maria@email.com",
+    "createdAt": "2026-09-03T09:10:00Z"
+  }
+}
+```
+
+### **2. Listas Paginadas**
+
+Utilize query params padrão: `?page=1&limit=10`.
+
+```json
+{
+  "success": true,
+  "data": [
+    { "id": "usr_123456", "name": "Maria Silva" },
+    { "id": "usr_789012", "name": "João Souza" }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "totalItems": 42,
+    "totalPages": 5
+  }
+}
+```
+
+---
+
+## 🚨 Respostas de Erro (`4xx`, `5xx`)
+
+Respostas de erro **nunca** devem retornar formatos aleatórios. Devem incluir código do erro e detalhes legíveis.
+
+### **1. Erro de Validação de Formulário (`400 Bad Request`)**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Um ou mais campos inseridos são inválidos.",
+    "details": [
+      {
+        "field": "email",
+        "message": "O campo deve ser um endereço de e-mail válido."
+      },
+      {
+        "field": "password",
+        "message": "A senha deve conter no mínimo 8 caracteres."
+      }
+    ]
+  }
+}
+```
+
+### **2. Erro de Recurso Não Encontrado ou Regra de Negócio (`404 / 422`)**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "USER_NOT_FOUND",
+    "message": "Não foi encontrado nenhum usuário com o ID fornecido."
+  }
+}
+```
+
+---
+
+## 🔑 Regras de Nomenclatura nas APIs
+
+* **Rotas:** Sempre no plural, em minúsculas e separadas por hífen (`kebab-case`).
+  * `GET /api/v1/user-profiles`
+  * `POST /api/v1/orders`
+* **Payloads (JSON):** Chaves no padrão `camelCase`.
+* **Datas:** Sempre no formato **ISO 8601** UTC (`YYYY-MM-DDTHH:mm:ssZ`).
+```
+
+---
+
+### 📄 `.eslintrc.json`
+*(Coloque na raiz do projeto)*
+
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"]
+  }
+}
+```
+
+---
+
+### 📄 `.prettierrc`
+*(Coloque na raiz do projeto)*
+
+```json
+{
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf"
+}
+```
+
+---
+
+### 📄 `DESIGN_TOKENS.md`
+*(Coloque na raiz do projeto)*
+
+```markdown
+# 🎨 Guia de Design Tokens e Sistema Visual
+
+Para garantir consistência entre aplicações web, mobile e landing pages, utilize os tokens centrais de design listados abaixo.
+
+---
+
+## 🎨 Cores (Color Palette)
+
+### **Marca & Primárias**
+- `color-primary-50`: `#F0F5FF`
+- `color-primary-500`: `#3B82F6` *(Cor de ação principal, botões, links)*
+- `color-primary-700`: `#1D4ED8` *(Estado de Hover/Active)*
+
+### **Neutras (Texto & Superfície)**
+- `color-gray-50`: `#F9FAFB` *(Fundos de telas/cards)*
+- `color-gray-200`: `#E5E7EB` *(Bordas e divisores)*
+- `color-gray-700`: `#374151` *(Texto secundário)*
+- `color-gray-900`: `#111827` *(Texto principal e títulos)*
+
+### **Semânticas (Feedback)**
+- `color-success`: `#10B981` *(Sucesso, confirmação)*
+- `color-warning`: `#F59E0B` *(Alertas e avisos)*
+- `color-danger`: `#EF4444` *(Erros e ações destrutivas)*
+
+---
+
+## 📐 Espaçamento (Spacing Grid)
+
+Adotamos a escala de **base 8px** para componentes e **base 4px** para ajustes finos.
+
+| Token | Valor em Pixel | Uso Recomendado |
+| :--- | :--- | :--- |
+| `spacing-1` | `4px` | Espaçamento interno de badges/tags |
+| `spacing-2` | `8px` | Gap entre ícone e texto |
+| `spacing-4` | `16px` | Padding interno de cards e botões |
+| `spacing-6` | `24px` | Distância entre seções de um formulário |
+| `spacing-8` | `32px` | Margem externa entre blocos da página |
+
+---
+
+## 🔤 Tipografia (Typography)
+
+- **Família Tipográfica Principal:** `Inter`, `system-ui`, `-apple-system`, `sans-serif`
+- **Código / Monospaced:** `JetBrains Mono`, `Fira Code`, `monospace`
+
+### **Tamanhos de Fonte**
+- `font-xs`: `12px` *(Legendas, captions)*
+- `font-sm`: `14px` *(Labels, textos secundários)*
+- `font-base`: `16px` *(Corpo do texto padrão)*
+- `font-lg`: `18px` *(Subtítulos)*
+- `font-xl`: `24px` *(Títulos de seções)*
+- `font-2xl`: `32px` *(Títulos de páginas/H1)*
+
+---
+
+## 📱 Pontos de Quebra (Breakpoints)
+
+- **`sm`**: `640px` *(Smartphones em modo paisagem)*
+- **`md`**: `768px` *(Tablets)*
+- **`lg`**: `1024px` *(Laptops e Desktops pequenos)*
+- **`xl`**: `1280px` *(Monitores padrão)*
+```
+
+---
+
+### 🗺️ Visão Geral do Ecossistema de Padrões
+
+Com essa estrutura implementada, seus projetos contam com uma esteira completa e profissional cobrindo todas as etapas:
+
+1. **Apresentação e Onboarding:** `README.md`
+2. **Qualidade e Processo no GitHub:** `PULL_REQUEST_TEMPLATE.md`, `CONTRIBUTING.md`, `ci.yml`
+3. **Ambiente Local e Isolamento:** `docker-compose.yml`, `Dockerfile`, `.gitignore`
+4. **Organização do Código:** `ARCHITECTURE.md`, `.eslintrc.json`, `.prettierrc`
+5. **Integração e Design:** `API_STANDARDS.md`, `DESIGN_TOKENS.md`

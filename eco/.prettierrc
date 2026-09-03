@@ -1,0 +1,14 @@
+### 📄 `.prettierrc`
+*(Coloque na raiz do projeto)*
+
+```json
+{
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf"
+}
+```

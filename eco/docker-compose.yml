@@ -1,0 +1,47 @@
+### 📄 `docker-compose.yml`
+*(Coloque na raiz do projeto)*
+
+```yaml
+# A versão '3.8' é recomendada para uso com Docker Compose V2+
+version: '3.8'
+
+services:
+  # Serviço da Aplicação (Backend / Frontend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev # Sobrescreve o target padrão para apontar para o estágio de desenvolvimento
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-app_db}?schema=public
+    volumes:
+      - .:/app
+      - /app/node_modules # Evita que a pasta node_modules local sobrescreva a do container
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+```
