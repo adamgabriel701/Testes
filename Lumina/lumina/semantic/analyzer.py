@@ -66,7 +66,6 @@ class SemanticAnalyzer:
             self.analyze_expr(node.value)
             
         elif isinstance(node, ReturnStmt):
-            # CORREÇÃO: Agora retorna uma lista de valores
             for val in node.values:
                 self.analyze_expr(val)
             
@@ -126,7 +125,7 @@ class SemanticAnalyzer:
                     real_method_name = f"{struct_name}_{node.name}"
                     if real_method_name not in self.functions:
                         raise Exception(f"Erro Semântico: Método '{node.name}' não declarado na struct '{struct_name}'.")
-            elif node.name not in ("print", "input", "atoi", "len", "alloc", "free") and node.name not in self.functions:
+            elif node.name not in ("print", "input", "atoi", "len", "alloc", "free", "read_file", "write_file") and node.name not in self.functions:
                 raise Exception(f"Erro Semântico: Função '{node.name}' não declarada.")
             for arg in node.args: self.analyze_expr(arg)
         elif isinstance(node, ArrayExpr):
@@ -139,13 +138,11 @@ class SemanticAnalyzer:
                 self.analyze_expr(node.array)
             self.analyze_expr(node.index)
         elif isinstance(node, MemberExpr):
-            # NOVO: Validação recursiva para suportar encadeamento (ex: a.b.c)
             if isinstance(node.obj, VariableExpr):
                 info = self.get_var_info(node.obj.name)
                 if not info: raise Exception(f"Erro Semântico: Variável '{node.obj.name}' não declarada.")
                 current_type = info['type']
             else:
-                # Se for encadeado, chama a análise do objeto interno para descobrir o tipo
                 current_type = self.analyze_expr(node.obj)
                 
             if current_type not in self.struct_defs: 
@@ -155,8 +152,8 @@ class SemanticAnalyzer:
             if node.member not in struct_def.fields:
                 raise Exception(f"Erro Semântico: Campo '{node.member}' não existe na Struct '{current_type}'.")
                 
-            # Retorna o tipo do campo para que o próximo encadeamento possa usar
             return struct_def.fields[node.member]
+            
         elif isinstance(node, AddressOfExpr):
             self.analyze_expr(node.val)
         elif isinstance(node, DerefExpr):

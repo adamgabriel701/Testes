@@ -1,43 +1,97 @@
 import sys
+import os
+import ctypes
+import ctypes.util
+from llvmlite import binding as llvm
 from lumina.lexer import Lexer
 from lumina.parser import Parser
 from lumina.semantic import SemanticAnalyzer
 from lumina.codegen import LLVMCodegen
+from lumina.ast import ImportStmt
 
-def compile_lumina(source_code, output_file="output.ll"):
-    print("--- 1. Análise Léxica (Lexer) ---")
-    lexer = Lexer(source_code)
+def parse_module(filename):
+    with open(filename, "r") as f:
+        code = f.read()
+        
+    lexer = Lexer(code)
     tokens = lexer.tokenize()
-    print("Tokens gerados com sucesso!")
-    
-    print("\n--- 2. Análise Sintática (Parser) ---")
     parser = Parser(tokens)
     ast = parser.parse()
-    print(f"AST gerada com sucesso! ({len(ast)} declarações encontradas)")
     
-    print("\n--- 3. Análise Semântica (Scopes & Types) ---")
+    resolved_ast = []
+    for node in ast:
+        if isinstance(node, ImportStmt):
+            base_dir = os.path.dirname(filename)
+            if not base_dir: base_dir = "."
+            imported_path = os.path.join(base_dir, node.filename)
+            
+            print(f"--> Importando módulo: {node.filename}")
+            imported_ast = parse_module(imported_path)
+            resolved_ast.extend(imported_ast)
+        else:
+            resolved_ast.append(node)
+    return resolved_ast
+
+def compile_lumina(filename, output_file="output.ll"):
+    print("--- 1. Análise Léxica e Sintática (com Imports) ---")
+    ast = parse_module(filename)
+    print(f"AST gerada com sucesso! ({len(ast)} declarações no total)")
+    
+    print("\n--- 2. Análise Semântica (Scopes & Types) ---")
     analyzer = SemanticAnalyzer()
     try:
         analyzer.analyze(ast)
         print("Análise semântica aprovada! Nenhum erro de escopo encontrado.")
     except Exception as e:
         print(e)
-        return
+        return None
     
-    print("\n--- 4. Geração de Código (LLVM IR) ---")
+    print("\n--- 3. Geração de Código (LLVM IR) ---")
     codegen = LLVMCodegen()
     llvm_ir = codegen.generate_module(ast)
-    print(llvm_ir)
     
     with open(output_file, "w") as f:
         f.write(llvm_ir)
     print(f"Arquivo '{output_file}' salvo com sucesso!")
+    
+    return llvm_ir
+
+def run_jit(llvm_ir):
+    print("\n--- 4. Execução JIT (Just-In-Time) ---")
+    try:
+        llvm.initialize_native_target()
+        llvm.initialize_native_asmprinter()
+    except Exception:
+        pass
+    
+    lib_c_path = ctypes.util.find_library('c')
+    if lib_c_path:
+        llvm.load_library_permanently(lib_c_path)
+
+    mod = llvm.parse_assembly(llvm_ir)
+    mod.verify()
+
+    target = llvm.Target.from_default_triple()
+    tm = target.create_target_machine()
+    engine = llvm.create_mcjit_compiler(mod, tm)
+    engine.finalize_object()
+    engine.run_static_constructors()
+
+    func_ptr = engine.get_function_address("main")
+    cfunc = ctypes.CFUNCTYPE(ctypes.c_int64)(func_ptr)
+    
+    print("Executando código nativo na memória...\n")
+    ret = cfunc()
+    ctypes.CDLL(None).fflush(None)
+    print(f"\n[JIT] Programa finalizado com exit code: {ret}")
 
 if __name__ == "__main__":
-    filename = sys.argv[1] if len(sys.argv) > 1 else "program.lm"
+    args = sys.argv[1:]
+    filename = args[0] if args and not args[0].startswith('--') else "program.lm"
+    
     try:
-        with open(filename, "r") as f:
-            code = f.read()
-        compile_lumina(code)
+        llvm_ir = compile_lumina(filename)
+        if '--run' in args and llvm_ir:
+            run_jit(llvm_ir)
     except FileNotFoundError:
         print(f"Erro: Arquivo '{filename}' não encontrado.")

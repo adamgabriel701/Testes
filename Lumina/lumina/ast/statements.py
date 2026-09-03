@@ -13,10 +13,9 @@ class AssignStmt:
     target: any
     value: any
 
-# NOVO RETORNO AGORA ACEITA LISTA DE VALORES
 @dataclass
 class ReturnStmt:
-    values: List[any] # Agora é uma lista
+    values: List[any]
 
 @dataclass
 class IfStmt:
@@ -58,3 +57,8 @@ class Function:
 class ImplBlock:
     struct_name: str
     methods: List[Function]
+
+# NOVO NÓ DE IMPORTAÇÃO
+@dataclass
+class ImportStmt:
+    filename: str

@@ -52,6 +52,25 @@ class ExpressionCodegen:
             left = self.codegen_expr(node.left)
             right = self.codegen_expr(node.right)
             
+            # NOVO: Concatenação de String (Apenas se um dos lados for StringExpr na AST)
+            # Isso evita que o compilador confunda com aritmética de ponteiros (ptr + int)
+            if node.op == '+' and (isinstance(node.left, StringExpr) or isinstance(node.right, StringExpr)):
+                buf = self.builder.alloca(ir.ArrayType(self.i8_ty, 256), name="str_concat_buf")
+                buf_ptr = self.builder.bitcast(buf, self.voidptr_ty, name="buf_ptr")
+                
+                if left.type == self.voidptr_ty and right.type == self.i64_ty:
+                    fmt_str = self.create_global_string("%s%d")
+                    self.builder.call(self.sprintf, [buf_ptr, fmt_str, left, right], name="sprintf_str_int")
+                elif left.type == self.i64_ty and right.type == self.voidptr_ty:
+                    fmt_str = self.create_global_string("%d%s")
+                    self.builder.call(self.sprintf, [buf_ptr, fmt_str, left, right], name="sprintf_int_str")
+                else:
+                    fmt_str = self.create_global_string("%s%s")
+                    self.builder.call(self.sprintf, [buf_ptr, fmt_str, left, right], name="sprintf_str_str")
+                    
+                return buf_ptr
+            
+            # Aritmética de Ponteiros (ptr + int)
             if isinstance(left.type, ir.PointerType) and right.type == self.i64_ty:
                 if node.op == '+':
                     return self.builder.gep(left, [right], name="ptr_add_tmp")
@@ -73,7 +92,7 @@ class ExpressionCodegen:
                 elif node.op == '*': return self.builder.mul(left, right, name="mul_tmp")
                 elif node.op == '/': return self.builder.sdiv(left, right, name="div_tmp")
                 elif node.op in ('==', '!=', '<', '>', '<=', '>='): return self.builder.icmp_signed(node.op, left, right, name="cmp_tmp")
-                
+
         elif isinstance(node, IndexExpr):
             if isinstance(node.array, VariableExpr):
                 if node.array.name in self.array_sizes:
@@ -162,5 +181,32 @@ class ExpressionCodegen:
                     if func_type.args[i] == self.f64_ty and arg_val.type == self.i64_ty: arg_val = self.to_float_if_needed(arg_val)
                     args.append(arg_val)
                 return self.builder.call(func, args, name=node.name + "_call")
+            
+            # NOVO: Lê um arquivo do disco
+            elif node.name == "read_file":
+                filename_ptr = self.codegen_expr(node.args[0])
+                mode_str = self.create_global_string("r")
+                
+                fp = self.builder.call(self.fopen, [filename_ptr, mode_str], name="file_ptr")
+                
+                buf = self.builder.alloca(ir.ArrayType(self.i8_ty, 4096), name="read_buf")
+                buf_ptr = self.builder.bitcast(buf, self.voidptr_ty, name="buf_ptr")
+                
+                self.builder.call(self.fgets, [buf_ptr, ir.Constant(self.i32_ty, 4096), fp])
+                self.builder.call(self.fclose, [fp])
+                
+                return buf_ptr
+                
+            # NOVO: Escreve em um arquivo do disco
+            elif node.name == "write_file":
+                filename_ptr = self.codegen_expr(node.args[0])
+                content_ptr = self.codegen_expr(node.args[1])
+                mode_str = self.create_global_string("w")
+                
+                fp = self.builder.call(self.fopen, [filename_ptr, mode_str], name="file_ptr_w")
+                self.builder.call(self.fputs, [content_ptr, fp])
+                self.builder.call(self.fclose, [fp])
+                
+                return ir.Constant(self.i64_ty, 0)
                 
         raise Exception(f"Nó não suportado no Codegen: {type(node)}")

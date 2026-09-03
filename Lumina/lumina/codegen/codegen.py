@@ -16,7 +16,7 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         self.array_sizes = {} 
         
         # NOVO: Registra todas as builtins
-        self.printf, self.scanf, self.atoi, self.malloc, self.free = BuiltinManager.setup_builtins(self.module)
+        self.printf, self.scanf, self.atoi, self.sprintf, self.malloc, self.free, self.fopen, self.fgets, self.fputs, self.fclose = BuiltinManager.setup_builtins(self.module)
         
         self.i64_ty = ir.IntType(64)
         self.f64_ty = ir.DoubleType()
@@ -44,6 +44,8 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
     def get_llvm_type(self, type_name):
         if type_name == "int": return self.i64_ty
         elif type_name == "float": return self.f64_ty
+        # NOVO: str é um ponteiro para i8 (texto)
+        elif type_name == "str": return self.voidptr_ty 
         elif type_name in self.struct_types: return self.struct_types[type_name]
         return self.i64_ty
 

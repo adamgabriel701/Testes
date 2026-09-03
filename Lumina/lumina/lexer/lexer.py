@@ -13,7 +13,7 @@ class Lexer:
         lines = self.code.split('\n')
         
         for line_num, line in enumerate(lines, 1):
-            # NOVO: Remove comentários inline (#) que não estão dentro de strings
+            # Remove comentários inline (#) que não estão dentro de strings
             in_string = False
             clean_line = ""
             for c in line:
@@ -25,7 +25,6 @@ class Lexer:
             if not stripped or stripped.startswith('#'):
                 continue
             
-            # CORREÇÃO AQUI:
             indent = len(clean_line) - len(stripped)
             if indent > self.indent_stack[-1]:
                 self.tokens.append(Token(TokenType.INDENT, '', line_num, indent))
@@ -62,7 +61,7 @@ class Lexer:
                     j = i
                     while j < len(stripped) and (stripped[j].isalnum() or stripped[j] == '_'): j += 1
                     word = stripped[i:j]
-                    if word in ('fn', 'let', 'mut', 'if', 'elif', 'else', 'while', 'for', 'in', 'struct', 'impl', 'return', 'print', 'true', 'false', 'match', 'case', 'default'):
+                    if word in ('fn', 'let', 'mut', 'if', 'elif', 'else', 'while', 'for', 'in', 'struct', 'impl', 'import', 'return', 'print', 'true', 'false', 'match', 'case', 'default'):
                         self.tokens.append(Token(TokenType.KEYWORD, word, line_num, col))
                     else:
                         self.tokens.append(Token(TokenType.IDENT, word, line_num, col))

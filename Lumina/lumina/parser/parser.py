@@ -1,7 +1,7 @@
 from ..lexer.tokens import TokenType
 from .expressions import ExpressionParser
 from .statements import StatementParser
-from ..ast import StructDecl, ImplBlock
+from ..ast import StructDecl, ImplBlock, ImportStmt
 
 class Parser(ExpressionParser, StatementParser):
     def __init__(self, tokens):
@@ -31,9 +31,11 @@ class Parser(ExpressionParser, StatementParser):
                 declarations.append(self.parse_function())
             elif self.current_token().type == TokenType.KEYWORD and self.current_token().value == 'struct':
                 declarations.append(self.parse_struct())
-            # NOVO: Captura impls no escopo global
             elif self.current_token().type == TokenType.KEYWORD and self.current_token().value == 'impl':
                 declarations.append(self.parse_impl())
+            # NOVO: Captura imports no escopo global
+            elif self.current_token().type == TokenType.KEYWORD and self.current_token().value == 'import':
+                declarations.append(self.parse_statement())
             else:
                 self.consume()
         return declarations
