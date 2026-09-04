@@ -1,3 +1,3 @@
 python main.py program.lm
-clang output.ll -o programa_final
+clang -O2 output.ll -o programa_final
 ./programa_final

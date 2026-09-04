@@ -56,7 +56,7 @@ def compile_lumina(filename, output_file="output.ll"):
     
     return llvm_ir
 
-def run_jit(llvm_ir):
+def run_jit(llvm_ir, cli_args):
     print("\n--- 4. Execução JIT (Just-In-Time) ---")
     try:
         llvm.initialize_native_target()
@@ -78,10 +78,15 @@ def run_jit(llvm_ir):
     engine.run_static_constructors()
 
     func_ptr = engine.get_function_address("main")
-    cfunc = ctypes.CFUNCTYPE(ctypes.c_int64)(func_ptr)
+    cfunc = ctypes.CFUNCTYPE(ctypes.c_int64, ctypes.c_int32, ctypes.POINTER(ctypes.c_char_p))(func_ptr)
+    
+    # NOVO: Inclui o nome do arquivo como argv[0], exatamente como no C
+    full_args = ["lumina_program"] + cli_args
+    argc = len(full_args)
+    argv = [arg.encode('utf-8') for arg in full_args]
     
     print("Executando código nativo na memória...\n")
-    ret = cfunc()
+    ret = cfunc(argc, (ctypes.c_char_p * len(argv))(*argv))
     ctypes.CDLL(None).fflush(None)
     print(f"\n[JIT] Programa finalizado com exit code: {ret}")
 
@@ -89,9 +94,12 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     filename = args[0] if args and not args[0].startswith('--') else "program.lm"
     
+    # NOVO: Captura os argumentos passados para o programa (ignorando o --run)
+    cli_args = [a for a in args[1:] if a != '--run']
+    
     try:
         llvm_ir = compile_lumina(filename)
         if '--run' in args and llvm_ir:
-            run_jit(llvm_ir)
+            run_jit(llvm_ir, cli_args)
     except FileNotFoundError:
         print(f"Erro: Arquivo '{filename}' não encontrado.")

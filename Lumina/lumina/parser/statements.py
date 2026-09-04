@@ -1,4 +1,4 @@
-from ..ast import VarDecl, AssignStmt, ReturnStmt, Function, IfStmt, WhileStmt, ForStmt, StructDecl, VariableExpr, MatchStmt, ImplBlock, DerefExpr, MemberExpr, IndexExpr, ImportStmt
+from ..ast import VarDecl, AssignStmt, ReturnStmt, Function, IfStmt, WhileStmt, ForStmt, StructDecl, VariableExpr, MatchStmt, ImplBlock, DerefExpr, MemberExpr, IndexExpr, ImportStmt, BinaryExpr, CallExpr, AddressOfExpr, ArrayExpr, UnaryExpr
 from ..lexer import TokenType
 
 class StatementParser:
@@ -54,11 +54,15 @@ class StatementParser:
             self.consume(TokenType.NEWLINE)
             return node
 
-        elif token.type == TokenType.IDENT and self.peek() and self.peek().type == TokenType.OP and self.peek().value == '=':
+        # NOVO: Aceita =, +=, -=, *=, /=
+        elif token.type == TokenType.IDENT and self.peek() and self.peek().type == TokenType.OP and self.peek().value in ('=', '+=', '-=', '*=', '/='):
             name = self.consume(TokenType.IDENT).value
-            self.consume(TokenType.OP)
+            op = self.consume().value
             expr = self.parse_expression()
             self.consume(TokenType.NEWLINE)
+            # Se for composto, embrulhamos em um BinaryExpr para o Codegen entender
+            if op != '=':
+                expr = BinaryExpr(op, VariableExpr(name), expr)
             return AssignStmt(VariableExpr(name), expr)
             
         elif token.type == TokenType.IDENT and self.peek() and self.peek().type == TokenType.OP and self.peek().value in ('[', '.'):

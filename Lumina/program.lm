@@ -1,11 +1,28 @@
-# program.lm
 import "util.lm"
 
-fn main() -> int:
-    saudacao("Universo")
-    criar_log()
+fn main(argc: int, argv: str) -> int:
+    print("Argumentos da linha de comando:")
+    if argc > 1:
+        let nome = argv(1)
+        print("Ola " + nome)
+    else:
+        print("Nenhum argumento extra.")
+        
+    # MUDANÇA AQUI: let para mut
+    mut x = 10
+    x += 5
+    print("X somado 5:", x)
+    x *= 2
+    print("X multiplicado por 2:", x)
     
-    let dados = read_file("log.txt")
-    print("Conteudo do arquivo:")
-    print(dados)
+    let str_num = "42"
+    let num = int(str_num)
+    print("String convertida para int:", num)
+    print("Int convertido para float:", float(num))
+    
+    let ativo = true
+    let logado = false
+    if ativo and not logado:
+        print("Usuario ativo mas nao logado.")
+        
     return 0

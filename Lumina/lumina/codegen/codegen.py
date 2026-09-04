@@ -26,6 +26,11 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         self.struct_types = {}
         self.struct_fields = {} 
 
+        # NOVO: Variável global para guardar os argumentos da linha de comando (argv)
+        self.argv_global = ir.GlobalVariable(self.module, self.voidptr_ty.as_pointer(), name="__lumina_argv")
+        self.argv_global.linkage = 'internal'
+        self.argv_global.initializer = ir.Constant(self.voidptr_ty.as_pointer(), None)
+
     def create_global_string(self, text):
         name = f"str_{self.string_counter}"
         self.string_counter += 1
@@ -83,26 +88,53 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         self.struct_fields[node.name] = {name: i for i, name in enumerate(node.fields.keys())}
 
     def create_function(self, func_node: Function):
-        ret_ty = self.get_llvm_type(func_node.return_type)
-        param_types = [self.get_llvm_param_type(p_type) for _, p_type in func_node.params]
-        func_type = ir.FunctionType(ret_ty, param_types)
-        func = ir.Function(self.module, func_type, name=func_node.name)
-        block = func.append_basic_block(name="entry")
-        self.builder = ir.IRBuilder(block)
-        self.symbol_table = {}
-        self.var_types = {}
-        
-        for i, (p_name, p_type) in enumerate(func_node.params):
-            p_ty = self.get_llvm_param_type(p_type)
-            if isinstance(p_ty, ir.PointerType) and isinstance(p_ty.pointee, ir.IdentifiedStructType):
-                self.symbol_table[p_name] = func.args[i]
-                self.var_types[p_name] = p_ty
-            else:
-                ptr = self.builder.alloca(p_ty, name=p_name)
-                self.builder.store(func.args[i], ptr)
+        # NOVO: Se for a função main, ela deve ter a assinatura do C (int argc, char** argv)
+        if func_node.name == "main":
+            ret_ty = self.i64_ty
+            param_types = [self.i32_ty, self.i8_ty.as_pointer().as_pointer()]
+            func_type = ir.FunctionType(ret_ty, param_types)
+            func = ir.Function(self.module, func_type, name="main")
+            block = func.append_basic_block(name="entry")
+            self.builder = ir.IRBuilder(block)
+            self.symbol_table = {}
+            self.var_types = {}
+            
+            # Mapeia os parâmetros argc e argv para as variáveis da Lumina
+            if len(func_node.params) >= 1:
+                p_name = func_node.params[0][0]
+                ptr = self.builder.alloca(self.i32_ty, name=p_name)
+                self.builder.store(func.args[0], ptr)
                 self.symbol_table[p_name] = ptr
-                self.var_types[p_name] = p_ty
+                self.var_types[p_name] = self.i32_ty
                 
+            if len(func_node.params) >= 2:
+                p_name = func_node.params[1][0]
+                ptr = self.builder.alloca(self.i8_ty.as_pointer().as_pointer(), name=p_name)
+                self.builder.store(func.args[1], ptr)
+                self.symbol_table[p_name] = ptr
+                self.var_types[p_name] = self.i8_ty.as_pointer().as_pointer()
+                
+        else:
+            ret_ty = self.get_llvm_type(func_node.return_type)
+            param_types = [self.get_llvm_param_type(p_type) for _, p_type in func_node.params]
+            func_type = ir.FunctionType(ret_ty, param_types)
+            func = ir.Function(self.module, func_type, name=func_node.name)
+            block = func.append_basic_block(name="entry")
+            self.builder = ir.IRBuilder(block)
+            self.symbol_table = {}
+            self.var_types = {}
+            
+            for i, (p_name, p_type) in enumerate(func_node.params):
+                p_ty = self.get_llvm_param_type(p_type)
+                if isinstance(p_ty, ir.PointerType) and isinstance(p_ty.pointee, ir.IdentifiedStructType):
+                    self.symbol_table[p_name] = func.args[i]
+                    self.var_types[p_name] = p_ty
+                else:
+                    ptr = self.builder.alloca(p_ty, name=p_name)
+                    self.builder.store(func.args[i], ptr)
+                    self.symbol_table[p_name] = ptr
+                    self.var_types[p_name] = p_ty
+                    
         self.functions_table[func_node.name] = (func, func_type)
         for stmt in func_node.body:
             self.codegen_stmt(stmt)

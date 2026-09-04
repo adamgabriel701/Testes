@@ -56,3 +56,8 @@ class DerefExpr:
 @dataclass
 class TupleExpr:
     elements: List[any]
+
+@dataclass
+class UnaryExpr:
+    op: str
+    val: any

@@ -1,4 +1,4 @@
-from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr
+from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr, UnaryExpr
 from ..ast import ReturnStmt, Function, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MatchStmt, StructDecl, ImplBlock
 
 class SemanticAnalyzer:
@@ -125,7 +125,7 @@ class SemanticAnalyzer:
                     real_method_name = f"{struct_name}_{node.name}"
                     if real_method_name not in self.functions:
                         raise Exception(f"Erro Semântico: Método '{node.name}' não declarado na struct '{struct_name}'.")
-            elif node.name not in ("print", "input", "atoi", "len", "alloc", "free", "read_file", "write_file") and node.name not in self.functions:
+            elif node.name not in ("print", "input", "atoi", "len", "alloc", "free", "read_file", "write_file", "int", "float", "str", "argv") and node.name not in self.functions:
                 raise Exception(f"Erro Semântico: Função '{node.name}' não declarada.")
             for arg in node.args: self.analyze_expr(arg)
         elif isinstance(node, ArrayExpr):
@@ -157,4 +157,6 @@ class SemanticAnalyzer:
         elif isinstance(node, AddressOfExpr):
             self.analyze_expr(node.val)
         elif isinstance(node, DerefExpr):
+            self.analyze_expr(node.val)
+        elif isinstance(node, UnaryExpr):
             self.analyze_expr(node.val)

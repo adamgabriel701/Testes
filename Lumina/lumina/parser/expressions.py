@@ -1,8 +1,22 @@
-from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr, TupleExpr
+from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr, TupleExpr, UnaryExpr
 from ..lexer import TokenType
 
 class ExpressionParser:
     def parse_expression(self):
+        # Operadores lógicos têm a menor precedência
+        node = self.parse_logical()
+        return node
+
+    def parse_logical(self):
+        node = self.parse_comparison()
+        while self.current_token() and self.current_token().type == TokenType.KEYWORD and self.current_token().value in ('and', 'or'):
+            op = self.consume().value
+            right = self.parse_comparison()
+            node = BinaryExpr(op, node, right)
+        return node
+
+    # NOVO: Método restaurado para cuidar do >, <, ==, etc
+    def parse_comparison(self):
         node = self.parse_additive()
         while self.current_token() and self.current_token().type == TokenType.OP and self.current_token().value in ('==', '!=', '<', '>', '<=', '>='):
             op = self.consume().value
@@ -29,6 +43,11 @@ class ExpressionParser:
     def parse_factor(self):
         token = self.current_token()
         
+        # NOVO: Operador NOT
+        if token.type == TokenType.KEYWORD and token.value == 'not':
+            self.consume()
+            return UnaryExpr('not', self.parse_factor())
+            
         if token.type == TokenType.OP and token.value == '&':
             self.consume()
             return AddressOfExpr(self.parse_factor())
@@ -80,7 +99,6 @@ class ExpressionParser:
                 
             node = VariableExpr(name)
             
-            # NOVO: Loop encadeado para suportar matriz[i][j] e obj.metodo()
             while True:
                 if self.current_token() and self.current_token().type == TokenType.OP and self.current_token().value == '[':
                     self.consume()
@@ -90,7 +108,6 @@ class ExpressionParser:
                 elif self.current_token() and self.current_token().type == TokenType.OP and self.current_token().value == '.':
                     self.consume()
                     member_name = self.consume(TokenType.IDENT).value
-                    # Se houver parênteses, é uma chamada de método
                     if self.current_token() and self.current_token().type == TokenType.OP and self.current_token().value == '(':
                         self.consume()
                         args = [node]

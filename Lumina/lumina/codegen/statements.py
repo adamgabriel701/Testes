@@ -1,5 +1,5 @@
 from llvmlite import ir
-from ..ast import ReturnStmt, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MemberExpr, ArrayExpr, MatchStmt, DerefExpr, IndexExpr, VariableExpr
+from ..ast import ReturnStmt, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MemberExpr, ArrayExpr, MatchStmt, DerefExpr, IndexExpr, VariableExpr, BinaryExpr, CallExpr, AddressOfExpr, UnaryExpr
 
 class StatementCodegen:
     def codegen_stmt(self, node):
@@ -74,14 +74,29 @@ class StatementCodegen:
                     
                 self.builder.store(val, obj_ptr)
                 
-            # 4. Atribuição em Variável Simples (x = val)
+            # 4. Atribuição em Variável Simples (x = val ou x += val)
             else:
                 ptr = self.symbol_table.get(node.target.name)
                 if not ptr: raise Exception(f"Variável '{node.target.name}' não declarada.")
-                val = self.codegen_expr(node.value)
-                var_ty = self.var_types[node.target.name]
-                if var_ty == self.f64_ty and val.type == self.i64_ty: val = self.to_float_if_needed(val)
-                self.builder.store(val, ptr)
+                
+                # NOVO: Se for atribuição composta (+=, -=, etc)
+                if isinstance(node.value, BinaryExpr) and node.value.op in ('+=', '-=', '*=', '/='):
+                    old_val = self.builder.load(ptr, name=node.target.name + "_old")
+                    right_val = self.codegen_expr(node.value.right)
+                    
+                    # Descobre a operação real
+                    op = node.value.op[0] # Pega só o '+', '-', etc
+                    if op == '+': new_val = self.builder.add(old_val, right_val, name="add_assign")
+                    elif op == '-': new_val = self.builder.sub(old_val, right_val, name="sub_assign")
+                    elif op == '*': new_val = self.builder.mul(old_val, right_val, name="mul_assign")
+                    elif op == '/': new_val = self.builder.sdiv(old_val, right_val, name="div_assign")
+                    
+                    self.builder.store(new_val, ptr)
+                else:
+                    val = self.codegen_expr(node.value)
+                    var_ty = self.var_types[node.target.name]
+                    if var_ty == self.f64_ty and val.type == self.i64_ty: val = self.to_float_if_needed(val)
+                    self.builder.store(val, ptr)
 
         elif isinstance(node, ReturnStmt):
             # Agora retorna uma lista de valores. Retornamos apenas o primeiro por enquanto.
