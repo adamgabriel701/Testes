@@ -16,6 +16,33 @@ Lumina é uma linguagem de programação de sistemas de propósito geral, focada
 - **Ergonomia (DX):** CLI completa (`lumina_cli.py`), erros amigáveis estilo Rust (com seta `^` apontando o erro), auto-documentador (`lumina doc`) e extensão do VS Code.
 - **Alta Performance:** Compila para LLVM IR otimizável com `clang -O2` ou executa instantaneamente via **Motor JIT** embutido.
 
+## 🏎️ Benchmarks de Performance
+
+A Lumina foi testada contra as principais linguagens do mercado. Os testes foram realizados com otimização máxima (`-O2` para C/C++/Lumina, `-O` para Rust, nativo para Go).
+
+### Teste 1: Fibonacci Recursivo (N=35) - Estresse de CPU e Chamadas de Função
+| Linguagem | Tempo (s) |
+|-----------|-----------|
+| C++       | 0.0239    |
+| C         | 0.0264    |
+| Rust      | 0.0318    |
+| **Lumina**| **0.0393**|
+| Go        | 0.0683    |
+| Node.js   | 0.4414    |
+| Python    | 1.5887    |
+
+### Teste 2: Loop Matemático (100 Milhões) - Estresse de Memória e Loops
+| Linguagem | Tempo (s) |
+|-----------|-----------|
+| **Lumina**| **0.0026**|
+| C         | 0.0027    |
+| Rust      | 0.0028    |
+| C++       | 0.0035    |
+| Go        | 0.0974    |
+| Node.js   | 0.1691    |
+
+*Resultado: A Lumina compete de igual para igual com C, C++ e Rust, sendo dramaticamente mais rápida que linguagens interpretadas ou com Garbage Collector (Go, Node.js, Python).*
+
 ## 🚀 Como Usar (CLI)
 
 A Lumina possui uma ferramenta de linha de comando (CLI) que gerencia todo o ciclo de vida do projeto, do scaffolding à publicação.
@@ -119,6 +146,7 @@ fn main() -> int:
 Lumina/
 ├── lumina_cli.py            # CLI, Build System e Package Manager
 ├── std/                     # Standard Library nativa (math.lm, fs.lm, etc)
+├── benchmarks/              # Suíte de testes de performance (Lumina, C, Rust, Go)
 ├── program.lm               # Código-fonte de teste principal
 ├── lumina/                  # Código-fonte do Compilador
 │   ├── errors.py            # Classe de erros amigáveis (Rust-style)
@@ -127,7 +155,7 @@ Lumina/
 │   ├── semantic/            # Analisador Semântico (Escopos, Mutabilidade, Tipos)
 │   ├── codegen/             # Geração de Código LLVM IR (RAII, Enums, FFI)
 │   └── ast/                 # Definição da Árvore de Sintaxe Abstrata
-└── tests/                   # Suíte de testes da linguagem
+└── tests/                   # Suíte de testes funcionais da linguagem
 ```
 
 ## 🎨 Extensão do VS Code
@@ -139,3 +167,6 @@ Para instalar:
 2. No VS Code, vá para a aba de Extensões (`Ctrl+Shift+X`).
 3. Clique nos três pontos `...` no canto superior direito > **Instalar do VSIX...**.
 4. Selecione o arquivo `.vsix` gerado e recarregue a janela.
+
+## 📜 Licença
+Este projeto é open-source e está sob a licença MIT.
