@@ -1,28 +1,22 @@
-import "util.lm"
+import "std/math"
+import "std/fs"
 
-fn main(argc: int, argv: str) -> int:
-    print("Argumentos da linha de comando:")
-    if argc > 1:
-        let nome = argv(1)
-        print("Ola " + nome)
-    else:
-        print("Nenhum argumento extra.")
-        
-    # MUDANÇA AQUI: let para mut
-    mut x = 10
-    x += 5
-    print("X somado 5:", x)
-    x *= 2
-    print("X multiplicado por 2:", x)
+fn main() -> int:
+    print("Testando a Standard Library:")
     
-    let str_num = "42"
-    let num = int(str_num)
-    print("String convertida para int:", num)
-    print("Int convertido para float:", float(num))
+    let base = 2.0
+    let exp = 10.0
+    let res = potencia(base, exp)
+    print("2 elevado a 10 é:", res)
     
-    let ativo = true
-    let logado = false
-    if ativo and not logado:
-        print("Usuario ativo mas nao logado.")
-        
+    let raiz = raiz_quadrada(144.0)
+    print("Raiz de 144 é:", raiz)
+    
+    print("Criando um arquivo...")
+    write_file("teste.txt", "Conteudo da stdlib!")
+    
+    print("Deletando o arquivo...")
+    let ret = deletar_arquivo("teste.txt")
+    print("Código de retorno do delete:", ret)
+    
     return 0

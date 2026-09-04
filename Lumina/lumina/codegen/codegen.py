@@ -1,5 +1,5 @@
 from llvmlite import ir
-from ..ast import Function, StructDecl, ArrayExpr, ImplBlock
+from ..ast import Function, StructDecl, ArrayExpr, ImplBlock, CallExpr, ExternDecl, EnumDecl
 from .builtins import BuiltinManager
 from .expressions import ExpressionCodegen
 from .statements import StatementCodegen
@@ -15,7 +15,10 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         self.functions_table = {}
         self.array_sizes = {} 
         
-        # NOVO: Registra todas as builtins
+        # NOVO: Pilha de escopos para auto-free (RAII)
+        self.cleanup_vars = [set()]
+        self.freed_vars = set()
+        
         self.printf, self.scanf, self.atoi, self.sprintf, self.malloc, self.free, self.fopen, self.fgets, self.fputs, self.fclose = BuiltinManager.setup_builtins(self.module)
         
         self.i64_ty = ir.IntType(64)
@@ -26,10 +29,17 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         self.struct_types = {}
         self.struct_fields = {} 
 
-        # NOVO: Variável global para guardar os argumentos da linha de comando (argv)
-        self.argv_global = ir.GlobalVariable(self.module, self.voidptr_ty.as_pointer(), name="__lumina_argv")
-        self.argv_global.linkage = 'internal'
-        self.argv_global.initializer = ir.Constant(self.voidptr_ty.as_pointer(), None)
+        self.variant_defs = {} # NOVO: Mapeia nome do construtor -> (nome_enum, indice, tipo_payload)
+
+    # MÉTODO PARA CRIAR ENUMS ATUALIZADO
+    def create_enum(self, node: EnumDecl):
+        # Usa IdentifiedStructType para ser compatível com a checagem do VariableExpr
+        enum_ty = self.module.context.get_identified_type(node.name)
+        enum_ty.set_body(self.i32_ty, self.i64_ty)
+        self.struct_types[node.name] = enum_ty
+        
+        for i, (var_name, payload_type) in enumerate(node.variants):
+            self.variant_defs[var_name] = (node.name, i, payload_type)
 
     def create_global_string(self, text):
         name = f"str_{self.string_counter}"
@@ -46,19 +56,23 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
             return self.builder.sitofp(val, self.f64_ty, name="int_to_float")
         return val
 
+    # NOVO: Método para limpar variáveis de um escopo
+    def cleanup_block(self, vars_set):
+        for var_name in list(vars_set):
+            if var_name not in self.freed_vars:
+                ptr = self.symbol_table.get(var_name)
+                if ptr:
+                    val = self.builder.load(ptr, name=var_name + "_cleanup_val")
+                    self.builder.call(self.free, [val], name="auto_free_" + var_name)
+                    self.freed_vars.add(var_name)
+        vars_set.clear()
+
     def get_llvm_type(self, type_name):
         if type_name == "int": return self.i64_ty
         elif type_name == "float": return self.f64_ty
-        # NOVO: str é um ponteiro para i8 (texto)
         elif type_name == "str": return self.voidptr_ty 
         elif type_name in self.struct_types: return self.struct_types[type_name]
         return self.i64_ty
-
-    # NOVO: Tipos dos campos da Struct (Structs viram ponteiros!)
-    def get_llvm_field_type(self, type_name):
-        if type_name in self.struct_types: 
-            return self.struct_types[type_name].as_pointer()
-        return self.get_llvm_type(type_name)
 
     def get_llvm_param_type(self, type_name):
         if type_name in self.struct_types: 
@@ -68,27 +82,32 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
     def generate_module(self, declarations):
         for decl in declarations:
             if isinstance(decl, StructDecl): self.create_struct(decl)
+            # NOVO: Cria Enums
+            elif isinstance(decl, EnumDecl): self.create_enum(decl)
+            
         for decl in declarations:
             if isinstance(decl, Function): self.create_function(decl)
-            # NOVO: Métodos de ImplBlock são apenas funções renomeadas
             elif isinstance(decl, ImplBlock):
-                for method in decl.methods:
-                    self.create_function(method)
+                for method in decl.methods: self.create_function(method)
+            elif isinstance(decl, ExternDecl): self.create_extern(decl)
         return str(self.module)
+
+    # NOVO MÉTODO PARA FUNÇÕES EXTERNAS
+    def create_extern(self, node: ExternDecl):
+        ret_ty = self.get_llvm_type(node.return_type)
+        param_types = [self.get_llvm_param_type(p_type) for _, p_type in node.params]
+        func_type = ir.FunctionType(ret_ty, param_types)
+        func = ir.Function(self.module, func_type, name=node.name)
+        self.functions_table[node.name] = (func, func_type)
 
     def create_struct(self, node: StructDecl):
         struct_ty = self.module.context.get_identified_type(node.name)
-        
-        # CORREÇÃO: Registrar a Struct ANTES de mapear os campos.
-        # Isso permite que ela tenha ponteiros para si mesma (Listas Ligadas).
         self.struct_types[node.name] = struct_ty
-        
         field_tys = [self.get_llvm_field_type(t) for t in node.fields.values()]
         struct_ty.set_body(*field_tys)
         self.struct_fields[node.name] = {name: i for i, name in enumerate(node.fields.keys())}
 
     def create_function(self, func_node: Function):
-        # NOVO: Se for a função main, ela deve ter a assinatura do C (int argc, char** argv)
         if func_node.name == "main":
             ret_ty = self.i64_ty
             param_types = [self.i32_ty, self.i8_ty.as_pointer().as_pointer()]
@@ -98,8 +117,9 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
             self.builder = ir.IRBuilder(block)
             self.symbol_table = {}
             self.var_types = {}
+            self.cleanup_vars = [set()]
+            self.freed_vars = set()
             
-            # Mapeia os parâmetros argc e argv para as variáveis da Lumina
             if len(func_node.params) >= 1:
                 p_name = func_node.params[0][0]
                 ptr = self.builder.alloca(self.i32_ty, name=p_name)
@@ -113,7 +133,6 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
                 self.builder.store(func.args[1], ptr)
                 self.symbol_table[p_name] = ptr
                 self.var_types[p_name] = self.i8_ty.as_pointer().as_pointer()
-                
         else:
             ret_ty = self.get_llvm_type(func_node.return_type)
             param_types = [self.get_llvm_param_type(p_type) for _, p_type in func_node.params]
@@ -123,6 +142,8 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
             self.builder = ir.IRBuilder(block)
             self.symbol_table = {}
             self.var_types = {}
+            self.cleanup_vars = [set()]
+            self.freed_vars = set()
             
             for i, (p_name, p_type) in enumerate(func_node.params):
                 p_ty = self.get_llvm_param_type(p_type)
@@ -139,4 +160,7 @@ class LLVMCodegen(ExpressionCodegen, StatementCodegen):
         for stmt in func_node.body:
             self.codegen_stmt(stmt)
         if not self.builder.block.is_terminated:
+            # NOVO: Limpa o escopo global da função antes de retornar implicitamente
+            for scope in self.cleanup_vars:
+                self.cleanup_block(scope)
             self.builder.ret(ir.Constant(ret_ty, 0))

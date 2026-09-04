@@ -1,4 +1,5 @@
 from ..ast import NumberExpr, BoolExpr, StringExpr, VariableExpr, BinaryExpr, CallExpr, ArrayExpr, IndexExpr, MemberExpr, AddressOfExpr, DerefExpr, TupleExpr, UnaryExpr
+from ..errors import LuminaError
 from ..lexer import TokenType
 
 class ExpressionParser:
@@ -97,7 +98,8 @@ class ExpressionParser:
                 self.consume(TokenType.OP)
                 return CallExpr(name, args)
                 
-            node = VariableExpr(name)
+        # ...
+            node = VariableExpr(name, token.line, token.col)
             
             while True:
                 if self.current_token() and self.current_token().type == TokenType.OP and self.current_token().value == '[':
@@ -133,4 +135,4 @@ class ExpressionParser:
             self.consume(TokenType.OP)
             return expr
             
-        raise Exception(f"Erro de Sintaxe na linha {token.line}, coluna {token.col}: Token inesperado {token.type} ('{token.value}')")
+        raise LuminaError(f"Token inesperado {token.type} ('{token.value}')", self.filename, token.line, token.col, self.source_code)

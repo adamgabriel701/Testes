@@ -54,6 +54,19 @@ class ExpressionCodegen:
             return self.builder.load(ptr, name="deref_val")
             
         elif isinstance(node, VariableExpr):
+            # NOVO: Se a "variável" for na verdade um construtor de Enum sem argumentos (ex: None)
+            if node.name in self.variant_defs:
+                enum_name, index, payload_type = self.variant_defs[node.name]
+                enum_ty = self.struct_types[enum_name]
+                
+                ptr = self.builder.alloca(enum_ty, name="enum_tmp")
+                tag_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 0)])
+                payload_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 1)])
+                
+                self.builder.store(ir.Constant(self.i32_ty, index), tag_ptr)
+                self.builder.store(ir.Constant(self.i64_ty, 0), payload_ptr)
+                return ptr
+                
             ptr = self.symbol_table.get(node.name)
             if not ptr: raise Exception(f"Variável '{node.name}' não declarada.")
             if isinstance(ptr.type.pointee, ir.IdentifiedStructType): return ptr
@@ -174,6 +187,13 @@ class ExpressionCodegen:
                 size = self.array_sizes.get(arr_name, 0)
                 return ir.Constant(self.i64_ty, size)
             elif node.name == "free":
+                # NOVO: Se o usuário chamou free manualmente, remove da pilha de auto-free
+                if isinstance(node.args[0], VariableExpr):
+                    var_name = node.args[0].name
+                    for s in self.cleanup_vars:
+                        if var_name in s:
+                            s.remove(var_name)
+                            break
                 ptr = self.codegen_expr(node.args[0])
                 self.builder.call(self.free, [ptr], name="free_call")
                 return ir.Constant(self.i64_ty, 0)
@@ -216,9 +236,49 @@ class ExpressionCodegen:
             # NOVO: Casts de Tipo
             elif node.name == "int":
                 val = self.codegen_expr(node.args[0])
-                if val.type == self.f64_ty: return self.builder.fptosi(val, self.i64_ty, name="int_cast")
-                elif val.type == self.voidptr_ty: return self.builder.call(self.atoi, [val], name="atoi_call")
-                return val
+                # int("abc") -> None
+                # int("42")  -> Some(42)
+                # Como não temos a função strtol do C com checagem de erro aqui, 
+                # vamos simplificar convertendo com atoi. Se for 0, dizemos que é None.
+                res = self.builder.call(self.atoi, [val], name="atoi_call")
+                
+                # Cria a struct Option na memória
+                opt_ty = self.struct_types.get("Option")
+                if not opt_ty: raise Exception("Tipo Option não declarado.")
+                ptr = self.builder.alloca(opt_ty, name="opt_tmp")
+                
+                # Se res == 0, assumimos que falhou (None). Senão, Some(res).
+                is_zero = self.builder.icmp_signed("==", res, ir.Constant(self.i64_ty, 0), name="is_zero")
+                
+                tag_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 0)])
+                payload_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 1)])
+                
+                # Tag: 0 para None, 1 para Some
+                tag_val = self.builder.zext(is_zero, self.i32_ty, name="tag_val")
+                self.builder.store(tag_val, tag_ptr)
+                self.builder.store(res, payload_ptr)
+                return ptr
+            # NOVO: Construtores de Enum (Some, None, Ok, Err)
+            elif node.name in self.variant_defs:
+                enum_name, index, payload_type = self.variant_defs[node.name]
+                enum_ty = self.struct_types[enum_name]
+                
+                ptr = self.builder.alloca(enum_ty, name="enum_tmp")
+                tag_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 0)])
+                payload_ptr = self.builder.gep(ptr, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 1)])
+                
+                self.builder.store(ir.Constant(self.i32_ty, index), tag_ptr)
+                
+                # Se tiver argumento (ex: Some(10)), guardamos no payload
+                if node.args:
+                    val = self.codegen_expr(node.args[0])
+                    if val.type != self.i64_ty:
+                        val = self.builder.zext(val, self.i64_ty, name="payload_cast")
+                    self.builder.store(val, payload_ptr)
+                else:
+                    self.builder.store(ir.Constant(self.i64_ty, 0), payload_ptr)
+                    
+                return ptr
             elif node.name == "float":
                 val = self.codegen_expr(node.args[0])
                 if val.type == self.i64_ty: return self.builder.sitofp(val, self.f64_ty, name="float_cast")

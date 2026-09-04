@@ -17,6 +17,8 @@ class StringExpr:
 @dataclass
 class VariableExpr:
     name: str
+    line: int = 0
+    col: int = 0
 
 @dataclass
 class BinaryExpr:
@@ -52,7 +54,6 @@ class AddressOfExpr:
 class DerefExpr:
     val: any
 
-# NOVO NÓ PARA MÚLTIPLOS RETORNOS
 @dataclass
 class TupleExpr:
     elements: List[any]

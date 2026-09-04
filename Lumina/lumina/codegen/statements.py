@@ -1,5 +1,5 @@
 from llvmlite import ir
-from ..ast import ReturnStmt, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MemberExpr, ArrayExpr, MatchStmt, DerefExpr, IndexExpr, VariableExpr, BinaryExpr, CallExpr, AddressOfExpr, UnaryExpr
+from ..ast import ReturnStmt, VarDecl, AssignStmt, IfStmt, WhileStmt, ForStmt, MemberExpr, ArrayExpr, MatchStmt, DerefExpr, IndexExpr, VariableExpr, CallExpr
 
 class StatementCodegen:
     def codegen_stmt(self, node):
@@ -31,19 +31,19 @@ class StatementCodegen:
                 self.builder.store(val, ptr)
                 self.symbol_table[node.name] = ptr
                 self.var_types[node.name] = var_ty
+                
+                # NOVO: Se a variável recebeu um alloc, adiciona ao escopo para auto-free
+                if isinstance(node.value, CallExpr) and node.value.name == "alloc":
+                    self.cleanup_vars[-1].add(node.name)
 
         elif isinstance(node, AssignStmt):
-            # 1. Atribuição em Ponteiro Desreferenciado (*ptr = val)
             if isinstance(node.target, DerefExpr):
                 ptr = self.codegen_expr(node.target.val)
                 if ptr.type == self.voidptr_ty:
                     ptr = self.builder.bitcast(ptr, self.i64_ty.as_pointer(), name="ptr_cast")
                 val = self.codegen_expr(node.value)
                 self.builder.store(val, ptr)
-                
-            # 2. Atribuição em Array (arr[i] = val)
             elif isinstance(node.target, IndexExpr):
-                # Se for array da pilha (Stack)
                 if isinstance(node.target.array, VariableExpr) and node.target.array.name in self.array_sizes:
                     arr_ptr = self.symbol_table.get(node.target.array.name)
                     idx_val = self.codegen_expr(node.target.index)
@@ -52,7 +52,6 @@ class StatementCodegen:
                     val = self.codegen_expr(node.value)
                     self.builder.store(val, elem_ptr)
                 else:
-                    # Se for array do Heap
                     ptr = self.codegen_expr(node.target.array)
                     idx_val = self.codegen_expr(node.target.index)
                     if idx_val.type != self.i64_ty: idx_val = self.builder.fptosi(idx_val, self.i64_ty, name="idx_int")
@@ -61,46 +60,30 @@ class StatementCodegen:
                     elem_ptr = self.builder.gep(ptr, [idx_val], name="heap_assign_ptr")
                     val = self.codegen_expr(node.value)
                     self.builder.store(val, elem_ptr)
-                    
-            # 3. Atribuição em Membro de Struct (obj.campo = val ou a.b.c = val)
             elif isinstance(node.target, MemberExpr):
-                # Chama o método recursivo para resolver ponteiros encadeados
                 obj_ptr = self.resolve_member_ptr(node.target)
                 val = self.codegen_expr(node.value)
-                
-                # Se for armazenar um ponteiro em outro ponteiro de struct, faz o bitcast
                 if isinstance(val.type, ir.PointerType) and isinstance(obj_ptr.type.pointee, ir.PointerType):
                     val = self.builder.bitcast(val, obj_ptr.type.pointee, name="ptr_cast")
-                    
                 self.builder.store(val, obj_ptr)
-                
-            # 4. Atribuição em Variável Simples (x = val ou x += val)
             else:
                 ptr = self.symbol_table.get(node.target.name)
                 if not ptr: raise Exception(f"Variável '{node.target.name}' não declarada.")
-                
-                # NOVO: Se for atribuição composta (+=, -=, etc)
-                if isinstance(node.value, BinaryExpr) and node.value.op in ('+=', '-=', '*=', '/='):
-                    old_val = self.builder.load(ptr, name=node.target.name + "_old")
-                    right_val = self.codegen_expr(node.value.right)
-                    
-                    # Descobre a operação real
-                    op = node.value.op[0] # Pega só o '+', '-', etc
-                    if op == '+': new_val = self.builder.add(old_val, right_val, name="add_assign")
-                    elif op == '-': new_val = self.builder.sub(old_val, right_val, name="sub_assign")
-                    elif op == '*': new_val = self.builder.mul(old_val, right_val, name="mul_assign")
-                    elif op == '/': new_val = self.builder.sdiv(old_val, right_val, name="div_assign")
-                    
-                    self.builder.store(new_val, ptr)
-                else:
-                    val = self.codegen_expr(node.value)
-                    var_ty = self.var_types[node.target.name]
-                    if var_ty == self.f64_ty and val.type == self.i64_ty: val = self.to_float_if_needed(val)
-                    self.builder.store(val, ptr)
+                val = self.codegen_expr(node.value)
+                var_ty = self.var_types[node.target.name]
+                if var_ty == self.f64_ty and val.type == self.i64_ty: val = self.to_float_if_needed(val)
+                self.builder.store(val, ptr)
 
         elif isinstance(node, ReturnStmt):
-            # Agora retorna uma lista de valores. Retornamos apenas o primeiro por enquanto.
             val = self.codegen_expr(node.values[0])
+            
+            # NOVO: Se for retornar um ponteiro de Struct (como Enums), carrega o valor
+            if isinstance(val.type, ir.PointerType) and isinstance(val.type.pointee, ir.IdentifiedStructType):
+                val = self.builder.load(val, name="ret_val")
+                
+            # Limpa TODOS os escopos ativos antes de retornar
+            for scope in self.cleanup_vars:
+                self.cleanup_block(scope)
             self.builder.ret(val)
 
         elif isinstance(node, IfStmt):
@@ -111,13 +94,25 @@ class StatementCodegen:
             end_bb = self.builder.append_basic_block(name="if.end")
             if else_bb: self.builder.cbranch(cond_val, then_bb, else_bb)
             else: self.builder.cbranch(cond_val, then_bb, end_bb)
+            
             self.builder.position_at_end(then_bb)
+            self.cleanup_vars.append(set()) # Empilha escopo
             for stmt in node.then_body: self.codegen_stmt(stmt)
-            if not self.builder.block.is_terminated: self.builder.branch(end_bb)
+            if not self.builder.block.is_terminated:
+                self.cleanup_block(self.cleanup_vars.pop()) # Limpa antes de sair
+                self.builder.branch(end_bb)
+            else:
+                self.cleanup_vars.pop()
+                
             if else_bb:
                 self.builder.position_at_end(else_bb)
+                self.cleanup_vars.append(set()) # Empilha escopo
                 for stmt in node.else_body: self.codegen_stmt(stmt)
-                if not self.builder.block.is_terminated: self.builder.branch(end_bb)
+                if not self.builder.block.is_terminated:
+                    self.cleanup_block(self.cleanup_vars.pop()) # Limpa antes de sair
+                    self.builder.branch(end_bb)
+                else:
+                    self.cleanup_vars.pop()
             self.builder.position_at_end(end_bb)
 
         elif isinstance(node, WhileStmt):
@@ -129,9 +124,15 @@ class StatementCodegen:
             cond_val = self.codegen_expr(node.condition)
             if cond_val.type != ir.IntType(1): cond_val = self.builder.icmp_signed("!=", cond_val, ir.Constant(self.i64_ty, 0), name="while_cond")
             self.builder.cbranch(cond_val, body_bb, end_bb)
+            
             self.builder.position_at_end(body_bb)
+            self.cleanup_vars.append(set()) # Empilha escopo
             for stmt in node.body: self.codegen_stmt(stmt)
-            if not self.builder.block.is_terminated: self.builder.branch(cond_bb)
+            if not self.builder.block.is_terminated:
+                self.cleanup_block(self.cleanup_vars.pop()) # Limpa antes de voltar pro cond
+                self.builder.branch(cond_bb)
+            else:
+                self.cleanup_vars.pop()
             self.builder.position_at_end(end_bb)
 
         elif isinstance(node, ForStmt):
@@ -152,36 +153,71 @@ class StatementCodegen:
             curr_val = self.builder.load(ptr, name=node.var_name + "_val")
             cond = self.builder.icmp_signed("<", curr_val, end_val, name="for_cond")
             self.builder.cbranch(cond, body_bb, end_bb)
+            
             self.builder.position_at_end(body_bb)
+            self.cleanup_vars.append(set()) # Empilha escopo
             for stmt in node.body: self.codegen_stmt(stmt)
             if not self.builder.block.is_terminated:
+                self.cleanup_block(self.cleanup_vars.pop()) # Limpa antes de voltar pro cond
                 next_val = self.builder.add(curr_val, ir.Constant(self.i64_ty, 1), name="for_next")
                 self.builder.store(next_val, ptr)
                 self.builder.branch(cond_bb)
+            else:
+                self.cleanup_vars.pop()
             self.builder.position_at_end(end_bb)
             
         elif isinstance(node, MatchStmt):
             cond_val = self.codegen_expr(node.condition)
-            if cond_val.type != self.i64_ty:
-                cond_val = self.builder.fptosi(cond_val, self.i64_ty, name="match_cond_int")
+            # cond_val é um ponteiro para {i32, i64}
+            tag_ptr = self.builder.gep(cond_val, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 0)])
+            tag_val = self.builder.load(tag_ptr, name="enum_tag")
+            
             default_bb = self.builder.append_basic_block(name="match.default")
             end_bb = self.builder.append_basic_block(name="match.end")
-            case_bbs = []
-            for val_node, _ in node.cases:
-                case_bbs.append(self.builder.append_basic_block(name=f"match.case_{val_node.value}"))
-            sw = self.builder.switch(cond_val, default_bb)
-            for i, (val_node, body) in enumerate(node.cases):
-                case_bb = case_bbs[i]
-                val = ir.Constant(self.i64_ty, int(val_node.value))
-                sw.add_case(val, case_bb)
+            sw = self.builder.switch(tag_val, default_bb)
+            
+            for variant_name, var_name, body in node.cases:
+                if variant_name not in self.variant_defs:
+                    raise Exception(f"Variante '{variant_name}' não existe.")
+                    
+                enum_name, index, payload_type = self.variant_defs[variant_name]
+                case_bb = self.builder.append_basic_block(name=f"match.case_{variant_name}")
+                sw.add_case(ir.Constant(self.i32_ty, index), case_bb)
+                
                 self.builder.position_at_end(case_bb)
+                
+                # NOVO: Se houver extração (case Some(x):), carrega o payload e cria a variável x
+                if var_name:
+                    payload_ptr = self.builder.gep(cond_val, [ir.Constant(self.i32_ty, 0), ir.Constant(self.i32_ty, 1)])
+                    payload_val = self.builder.load(payload_ptr, name=var_name + "_val")
+                    
+                    # Para simplificar, todas as variants guardam i64 (int ou ptr). Alocamos como i64.
+                    var_ptr = self.builder.alloca(self.i64_ty, name=var_name)
+                    self.builder.store(payload_val, var_ptr)
+                    self.symbol_table[var_name] = var_ptr
+                    self.var_types[var_name] = self.i64_ty
+                    
+                self.cleanup_vars.append(set())
                 for stmt in body: self.codegen_stmt(stmt)
-                if not self.builder.block.is_terminated: self.builder.branch(end_bb)
+                if not self.builder.block.is_terminated:
+                    self.cleanup_block(self.cleanup_vars.pop())
+                    self.builder.branch(end_bb)
+                else:
+                    self.cleanup_vars.pop()
+                    
             self.builder.position_at_end(default_bb)
             if node.default:
+                self.cleanup_vars.append(set())
                 for stmt in node.default: self.codegen_stmt(stmt)
-            if not self.builder.block.is_terminated: self.builder.branch(end_bb)
+                if not self.builder.block.is_terminated:
+                    self.cleanup_block(self.cleanup_vars.pop())
+                    self.builder.branch(end_bb)
+                else:
+                    self.cleanup_vars.pop()
+            else:
+                # NOVO: Se não houver default, o bloco default pula direto para o fim
+                self.builder.branch(end_bb)
+                
             self.builder.position_at_end(end_bb)
-            
         else:
             self.codegen_expr(node)
